@@ -53,5 +53,8 @@ src/
 |---|---|
 | Config de 23 piñatas, rarezas, economía, monetización y eventos | ✅ datos de diseño (balancear) |
 | Remotes, RateLimiter, Validators, Logger | ✅ listos para usar |
-| Servicios y controladores | ⏳ stubs con TODO(WP-xx) |
+| WP-04 a WP-08 (bases, Pasarela, robo, bate, candado) + gravedad | ✅ ver `PLAYTEST.md` |
+| Servicios de economía, tienda, FTUE, fiesta, diarios, ligas | ⏳ stubs con TODO(WP-xx) |
 | IDs de pases, productos y texturas | ⏳ en 0 hasta crearlos en el Creator Dashboard |
+
+Cómo probar el loop en Studio: `PLAYTEST.md`. Cómo se enchufa ProfileStore y el anti-cheat de S1 sin pisar este código: `INTEGRATION.md`. Por qué la gravedad y el salto están así: `PHYSICS.md`.

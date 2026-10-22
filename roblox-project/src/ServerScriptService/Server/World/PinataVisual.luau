@@ -1,0 +1,249 @@
+--!strict
+-- Clona una piñata de ServerStorage o arma un placeholder (bola + aro neón).
+-- El arte real se monta según art/IMPORT_GUIDE.md; si el mesh no está, el juego igual corre.
+
+local ServerStorage = game:GetService("ServerStorage")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Pinatas = require(Shared:WaitForChild("Config"):WaitForChild("Pinatas"))
+local Rarities = require(Shared:WaitForChild("Config"):WaitForChild("Rarities"))
+local Tuning = require(Shared:WaitForChild("Config"):WaitForChild("Tuning"))
+local Format = require(Shared:WaitForChild("Util"):WaitForChild("Format"))
+
+local PinataVisual = {}
+
+local function rarityColor(rarity: string): Color3
+	local color = Rarities.Color[rarity]
+	if typeof(color) == "Color3" then
+		return color
+	end
+	return Color3.fromHex("#FFE14D")
+end
+
+local function ensurePrimary(model: Model): BasePart
+	if model.PrimaryPart ~= nil then
+		return model.PrimaryPart
+	end
+	local body = model:FindFirstChild("Body", true)
+	if body ~= nil and body:IsA("BasePart") then
+		model.PrimaryPart = body
+		return body
+	end
+	local anyPart = model:FindFirstChildWhichIsA("BasePart", true)
+	if anyPart ~= nil then
+		model.PrimaryPart = anyPart
+		return anyPart
+	end
+	local created = Instance.new("Part")
+	created.Name = "Body"
+	created.Size = Vector3.new(3.2, 3.2, 3.2)
+	created.Parent = model
+	model.PrimaryPart = created
+	return created
+end
+
+local function captionFor(model: Model): TextLabel
+	local existing = model:FindFirstChild("Caption", true)
+	if existing ~= nil and existing:IsA("TextLabel") then
+		return existing
+	end
+	local primary = ensurePrimary(model)
+	local gui = Instance.new("BillboardGui")
+	gui.Name = "CaptionGui"
+	gui.Size = UDim2.fromOffset(160, 84)
+	gui.StudsOffset = Vector3.new(0, 3.2, 0)
+	gui.MaxDistance = 80
+	gui.Parent = primary
+	local text = Instance.new("TextLabel")
+	text.Name = "Caption"
+	text.BackgroundTransparency = 1
+	text.Size = UDim2.fromScale(1, 1)
+	text.Font = Enum.Font.FredokaOne
+	text.TextScaled = true
+	text.TextColor3 = Color3.fromHex("#FFF7EC")
+	text.TextStrokeColor3 = Color3.fromHex("#1B1430")
+	text.TextStrokeTransparency = 0
+	text.Parent = gui
+	return text
+end
+
+local function placeholder(pinataId: string, rarity: string): Model
+	local model = Instance.new("Model")
+	model.Name = pinataId
+	local body = Instance.new("Part")
+	body.Name = "Body"
+	body.Shape = Enum.PartType.Ball
+	body.Size = Vector3.new(3.4, 3.4, 3.4)
+	body.Color = rarityColor(rarity)
+	body.Material = Enum.Material.SmoothPlastic
+	body.Anchored = true
+	body.CanCollide = false
+	body.Parent = model
+	local ring = Instance.new("Part")
+	ring.Name = "Neon"
+	ring.Shape = Enum.PartType.Cylinder
+	ring.Size = Vector3.new(0.28, 4.4, 4.4)
+	ring.Color = rarityColor(rarity)
+	ring.Material = Enum.Material.Neon
+	ring.Anchored = true
+	ring.CanCollide = false
+	ring.CastShadow = false
+	ring.CFrame = body.CFrame * CFrame.Angles(0, 0, math.rad(90))
+	ring.Parent = model
+	local weld = Instance.new("WeldConstraint")
+	weld.Part0 = body
+	weld.Part1 = ring
+	weld.Parent = ring
+	model.PrimaryPart = body
+	model:SetAttribute("Placeholder", true)
+	return model
+end
+
+local function fromTemplate(pinataId: string): Model?
+	local folder = ServerStorage:FindFirstChild("Pinatas")
+	if folder == nil then
+		return nil
+	end
+	local template = folder:FindFirstChild(pinataId)
+	if template == nil or not template:IsA("Model") then
+		return nil
+	end
+	local clone = template:Clone()
+	ensurePrimary(clone)
+	for _, desc in clone:GetDescendants() do
+		if desc:IsA("BasePart") then
+			desc.CanCollide = false
+			desc.Anchored = true
+			if string.find(desc.Name, "Neon") ~= nil then
+				desc.Material = Enum.Material.Neon
+				desc.CastShadow = false
+			end
+		end
+	end
+	pcall(function()
+		clone:ScaleTo(1.5)
+	end)
+	return clone
+end
+
+function PinataVisual.describe(pinataId: string, mutation: string?): (string, number, number?, string)
+	local def = Pinatas[pinataId]
+	local name = if def then def.Name else pinataId
+	local perSec = if def then def.CandyPerSec else 0
+	local price = if def then def.Price else nil
+	local rarity = if def then def.Rarity else "Common"
+	if mutation == "Golden" then
+		perSec *= 2
+		name = name .. " Dorada"
+	elseif mutation == "Rainbow" then
+		perSec *= 5
+		name = name .. " Arcoíris"
+	elseif mutation == "Christmas" then
+		perSec *= 3
+		name = name .. " Navideña"
+	end
+	return name, perSec, price, rarity
+end
+
+function PinataVisual.create(pinataId: string, mutation: string?): Model
+	local _, perSec, _, rarity = PinataVisual.describe(pinataId, mutation)
+	local model = fromTemplate(pinataId)
+	if model == nil then
+		model = placeholder(pinataId, rarity)
+	end
+	model.Name = pinataId
+	local primary = ensurePrimary(model)
+	model:SetAttribute("PinataId", pinataId)
+	model:SetAttribute("Rarity", rarity)
+	model:SetAttribute("CandyPerSec", perSec)
+	if mutation ~= nil then
+		model:SetAttribute("Mutation", mutation)
+	end
+	local trail = Instance.new("ParticleEmitter")
+	trail.Name = "CarryTrail"
+	trail.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+	trail.Rate = 6
+	trail.Enabled = false
+	trail.Lifetime = NumberRange.new(0.3, 0.6)
+	trail.Speed = NumberRange.new(1, 3)
+	trail.SpreadAngle = Vector2.new(25, 25)
+	trail.LightEmission = 0.5
+	trail.Size = NumberSequence.new(0.28)
+	trail.Color = ColorSequence.new(rarityColor(rarity))
+	trail.Parent = primary
+	PinataVisual.setCaption(model, pinataId, mutation)
+	return model
+end
+
+function PinataVisual.setCaption(model: Model, pinataId: string, mutation: string?)
+	local name, perSec, price = PinataVisual.describe(pinataId, mutation)
+	local priceText = if price == nil then "¡TOMAR!" else (Format(price) .. " dulces")
+	captionFor(model).Text = string.format("%s\n%s/s\n%s", name, Format(perSec), priceText)
+end
+
+function PinataVisual.place(model: Model, feet: Vector3)
+	local primary = ensurePrimary(model)
+	for _, desc in model:GetDescendants() do
+		if desc:IsA("BasePart") then
+			desc.Anchored = true
+			desc.CanCollide = false
+		end
+	end
+	local lift = math.max(primary.Size.Y * 0.5, 1.4)
+	model:PivotTo(CFrame.new(feet + Vector3.new(0, lift, 0)))
+end
+
+function PinataVisual.setTrail(model: Model, enabled: boolean)
+	local trail = model:FindFirstChild("CarryTrail", true)
+	if trail ~= nil and trail:IsA("ParticleEmitter") then
+		trail.Enabled = enabled
+	end
+end
+
+function PinataVisual.weldOverHead(model: Model, root: BasePart)
+	local primary = ensurePrimary(model)
+	local old = primary:FindFirstChild("CarryWeld")
+	if old ~= nil then
+		old:Destroy()
+	end
+	model.Parent = root.Parent
+	for _, desc in model:GetDescendants() do
+		if desc:IsA("BasePart") then
+			desc.Anchored = false
+			desc.CanCollide = false
+			desc.Massless = true
+			pcall(function()
+				desc:SetNetworkOwner(nil)
+			end)
+		end
+	end
+	local weld = Instance.new("Weld")
+	weld.Name = "CarryWeld"
+	weld.Part0 = root
+	weld.Part1 = primary
+	weld.C0 = CFrame.new(Tuning.CarryOffsetX, Tuning.CarryOffsetY, Tuning.CarryOffsetZ)
+	weld.Parent = primary
+	PinataVisual.setTrail(model, true)
+end
+
+function PinataVisual.unweld(model: Model)
+	local primary = model.PrimaryPart
+	if primary ~= nil then
+		local weld = primary:FindFirstChild("CarryWeld")
+		if weld ~= nil then
+			weld:Destroy()
+		end
+	end
+	PinataVisual.setTrail(model, false)
+	for _, desc in model:GetDescendants() do
+		if desc:IsA("BasePart") then
+			desc.AssemblyLinearVelocity = Vector3.zero
+			desc.AssemblyAngularVelocity = Vector3.zero
+			desc.Anchored = true
+			desc.CanCollide = false
+		end
+	end
+end
+
+return PinataVisual

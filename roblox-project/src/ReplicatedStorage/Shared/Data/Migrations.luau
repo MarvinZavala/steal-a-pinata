@@ -3,7 +3,7 @@
 -- No muta la tabla de entrada: si el perfil está corrupto devuelve nil y el servidor no lo pisa.
 local Migrations = {}
 
-local VERSION = 2
+local VERSION = 3
 Migrations.VERSION = VERSION
 
 export type OwnedPinata = {
@@ -21,12 +21,37 @@ export type PlayerStats = {
 	Steals: number,
 	TimesRobbed: number,
 	Bonks: number,
+	Buys: number,
+	Collects: number,
+	FiestaCandy: number,
+}
+
+export type PlayerPasses = {
+	DoubleCandy: boolean,
+	Vip: boolean,
+	ExtraPedestals: boolean,
+	AutoCollect: boolean,
+	BatPack: boolean,
+}
+
+export type PlayerSubscription = {
+	Active: boolean,
+	LastPinataDay: number,
+	LastBoxWeek: number,
 }
 
 export type PlayerDaily = {
 	LastClaimUnix: number,
 	LastResetUnix: number,
 	Streak: number,
+	ClaimedDay: number,
+	QuestDay: number,
+	QuestClaimedMask: number,
+	BaselineBuys: number,
+	BaselineBonks: number,
+	BaselineSteals: number,
+	BaselineCollects: number,
+	BaselineFiesta: number,
 }
 
 export type PlayerData = {
@@ -51,6 +76,15 @@ export type PlayerData = {
 	RobbedUnix: { number },
 	-- La intro de 60 s ya se cumplió (o se saltó). No vuelve a regalar el Michi.
 	FtueCompleted: boolean,
+	Passes: PlayerPasses,
+	Cosmetics: { [string]: boolean },
+	Subscription: PlayerSubscription,
+	EmergencyCharges: number,
+	EmergencyLockUnix: number,
+	BatTier: number,
+	BatUpgrade: number,
+	RewardedBoostUntil: number,
+	RewardedDay: number,
 }
 
 export type Defaults = {
@@ -147,17 +181,47 @@ function Migrations.blank(defaults: Defaults): PlayerData
 			Steals = 0,
 			TimesRobbed = 0,
 			Bonks = 0,
+			Buys = 0,
+			Collects = 0,
+			FiestaCandy = 0,
 		},
 		Daily = {
 			LastClaimUnix = 0,
 			LastResetUnix = 0,
 			Streak = 0,
+			ClaimedDay = 0,
+			QuestDay = 0,
+			QuestClaimedMask = 0,
+			BaselineBuys = 0,
+			BaselineBonks = 0,
+			BaselineSteals = 0,
+			BaselineCollects = 0,
+			BaselineFiesta = 0,
 		},
 		RookieSeconds = 0,
 		VaultCandy = 0,
 		LockReadyUnix = 0,
 		RobbedUnix = {},
 		FtueCompleted = false,
+		Passes = {
+			DoubleCandy = false,
+			Vip = false,
+			ExtraPedestals = false,
+			AutoCollect = false,
+			BatPack = false,
+		},
+		Cosmetics = {},
+		Subscription = {
+			Active = false,
+			LastPinataDay = 0,
+			LastBoxWeek = 0,
+		},
+		EmergencyCharges = 0,
+		EmergencyLockUnix = 0,
+		BatTier = 0,
+		BatUpgrade = 0,
+		RewardedBoostUntil = 0,
+		RewardedDay = 0,
 	}
 end
 
@@ -293,6 +357,9 @@ local function readStats(raw: any, maxCurrency: number): (PlayerStats?, string?)
 		Steals = 0,
 		TimesRobbed = 0,
 		Bonks = 0,
+		Buys = 0,
+		Collects = 0,
+		FiestaCandy = 0,
 	}
 	if raw == nil then
 		return stats, nil
@@ -300,37 +367,66 @@ local function readStats(raw: any, maxCurrency: number): (PlayerStats?, string?)
 	if type(raw) ~= "table" then
 		return nil, "bad_stats"
 	end
-	local fields = { "PlayTimeSec", "FirstJoinUnix", "LastJoinUnix", "LastLeaveUnix", "Steals", "TimesRobbed", "Bonks" }
-	for _, field in fields do
-		local number, reason = takeInt(raw[field], 0, maxCurrency)
-		if number == nil then
-			return nil, reason
-		end
-		-- Asignación campo por campo: el tipo de PlayerStats no acepta indexar con string suelto.
-		if field == "PlayTimeSec" then
-			stats.PlayTimeSec = number
-		elseif field == "FirstJoinUnix" then
-			stats.FirstJoinUnix = number
-		elseif field == "LastJoinUnix" then
-			stats.LastJoinUnix = number
-		elseif field == "LastLeaveUnix" then
-			stats.LastLeaveUnix = number
-		elseif field == "Steals" then
-			stats.Steals = number
-		elseif field == "TimesRobbed" then
-			stats.TimesRobbed = number
-		else
-			stats.Bonks = number
-		end
+	local play, playErr = takeInt(raw.PlayTimeSec, 0, maxCurrency)
+	local first, firstErr = takeInt(raw.FirstJoinUnix, 0, maxCurrency)
+	local lastJoin, joinErr = takeInt(raw.LastJoinUnix, 0, maxCurrency)
+	local lastLeave, leaveErr = takeInt(raw.LastLeaveUnix, 0, maxCurrency)
+	local steals, stealsErr = takeInt(raw.Steals, 0, maxCurrency)
+	local robbed, robbedErr = takeInt(raw.TimesRobbed, 0, maxCurrency)
+	local bonks, bonksErr = takeInt(raw.Bonks, 0, maxCurrency)
+	local buys, buysErr = takeInt(raw.Buys, 0, maxCurrency)
+	local collects, collectsErr = takeInt(raw.Collects, 0, maxCurrency)
+	local fiesta, fiestaErr = takeInt(raw.FiestaCandy, 0, maxCurrency)
+	if
+		play == nil
+		or first == nil
+		or lastJoin == nil
+		or lastLeave == nil
+		or steals == nil
+		or robbed == nil
+		or bonks == nil
+		or buys == nil
+		or collects == nil
+		or fiesta == nil
+	then
+		return nil,
+			playErr
+				or firstErr
+				or joinErr
+				or leaveErr
+				or stealsErr
+				or robbedErr
+				or bonksErr
+				or buysErr
+				or collectsErr
+				or fiestaErr
 	end
+	stats.PlayTimeSec = play
+	stats.FirstJoinUnix = first
+	stats.LastJoinUnix = lastJoin
+	stats.LastLeaveUnix = lastLeave
+	stats.Steals = steals
+	stats.TimesRobbed = robbed
+	stats.Bonks = bonks
+	stats.Buys = buys
+	stats.Collects = collects
+	stats.FiestaCandy = fiesta
 	return stats, nil
 end
 
-local function readDaily(raw: any, maxCurrency: number, maxReFiestas: number): (PlayerDaily?, string?)
+local function readDaily(raw: any, maxCurrency: number): (PlayerDaily?, string?)
 	local daily: PlayerDaily = {
 		LastClaimUnix = 0,
 		LastResetUnix = 0,
 		Streak = 0,
+		ClaimedDay = 0,
+		QuestDay = 0,
+		QuestClaimedMask = 0,
+		BaselineBuys = 0,
+		BaselineBonks = 0,
+		BaselineSteals = 0,
+		BaselineCollects = 0,
+		BaselineFiesta = 0,
 	}
 	if raw == nil then
 		return daily, nil
@@ -339,21 +435,142 @@ local function readDaily(raw: any, maxCurrency: number, maxReFiestas: number): (
 		return nil, "bad_daily"
 	end
 	local claim, claimErr = takeInt(raw.LastClaimUnix, 0, maxCurrency)
-	if claim == nil then
-		return nil, claimErr
-	end
 	local reset, resetErr = takeInt(raw.LastResetUnix, 0, maxCurrency)
-	if reset == nil then
-		return nil, resetErr
-	end
-	local streak, streakErr = takeInt(raw.Streak, 0, maxReFiestas)
-	if streak == nil then
-		return nil, streakErr
+	-- La racha puede pasar de maxReFiestas: es un índice de días, no un nivel.
+	local streak, streakErr = takeInt(raw.Streak, 0, maxCurrency)
+	local claimedDay, claimedErr = takeInt(raw.ClaimedDay, 0, maxCurrency)
+	local questDay, questErr = takeInt(raw.QuestDay, 0, maxCurrency)
+	local mask, maskErr = takeInt(raw.QuestClaimedMask, 0, maxCurrency)
+	local baseBuys, baseBuysErr = takeInt(raw.BaselineBuys, 0, maxCurrency)
+	local baseBonks, baseBonksErr = takeInt(raw.BaselineBonks, 0, maxCurrency)
+	local baseSteals, baseStealsErr = takeInt(raw.BaselineSteals, 0, maxCurrency)
+	local baseCollects, baseCollectsErr = takeInt(raw.BaselineCollects, 0, maxCurrency)
+	local baseFiesta, baseFiestaErr = takeInt(raw.BaselineFiesta, 0, maxCurrency)
+	if
+		claim == nil
+		or reset == nil
+		or streak == nil
+		or claimedDay == nil
+		or questDay == nil
+		or mask == nil
+		or baseBuys == nil
+		or baseBonks == nil
+		or baseSteals == nil
+		or baseCollects == nil
+		or baseFiesta == nil
+	then
+		return nil,
+			claimErr
+				or resetErr
+				or streakErr
+				or claimedErr
+				or questErr
+				or maskErr
+				or baseBuysErr
+				or baseBonksErr
+				or baseStealsErr
+				or baseCollectsErr
+				or baseFiestaErr
 	end
 	daily.LastClaimUnix = claim
 	daily.LastResetUnix = reset
 	daily.Streak = streak
+	daily.ClaimedDay = claimedDay
+	daily.QuestDay = questDay
+	daily.QuestClaimedMask = mask
+	daily.BaselineBuys = baseBuys
+	daily.BaselineBonks = baseBonks
+	daily.BaselineSteals = baseSteals
+	daily.BaselineCollects = baseCollects
+	daily.BaselineFiesta = baseFiesta
 	return daily, nil
+end
+
+local function readPasses(raw: any): (PlayerPasses?, string?)
+	local passes: PlayerPasses = {
+		DoubleCandy = false,
+		Vip = false,
+		ExtraPedestals = false,
+		AutoCollect = false,
+		BatPack = false,
+	}
+	if raw == nil then
+		return passes, nil
+	end
+	if type(raw) ~= "table" then
+		return nil, "bad_passes"
+	end
+	local function flag(value: any): (boolean?, string?)
+		if value == nil then
+			return false, nil
+		end
+		if type(value) ~= "boolean" then
+			return nil, "bad_passes"
+		end
+		return value, nil
+	end
+	local doubleCandy, doubleErr = flag(raw.DoubleCandy)
+	local vip, vipErr = flag(raw.Vip)
+	local extra, extraErr = flag(raw.ExtraPedestals)
+	local auto, autoErr = flag(raw.AutoCollect)
+	local bat, batErr = flag(raw.BatPack)
+	if doubleCandy == nil or vip == nil or extra == nil or auto == nil or bat == nil then
+		return nil, doubleErr or vipErr or extraErr or autoErr or batErr
+	end
+	passes.DoubleCandy = doubleCandy
+	passes.Vip = vip
+	passes.ExtraPedestals = extra
+	passes.AutoCollect = auto
+	passes.BatPack = bat
+	return passes, nil
+end
+
+local function readCosmetics(raw: any): ({ [string]: boolean }?, string?)
+	if raw == nil then
+		return {}, nil
+	end
+	if type(raw) ~= "table" then
+		return nil, "bad_cosmetics"
+	end
+	local cosmetics: { [string]: boolean } = {}
+	for key, value in raw do
+		if type(key) ~= "string" or not isToken(key, 32) then
+			return nil, "bad_cosmetics"
+		end
+		if type(value) ~= "boolean" then
+			return nil, "bad_cosmetics"
+		end
+		if value == true then
+			cosmetics[key] = true
+		end
+	end
+	return cosmetics, nil
+end
+
+local function readSubscription(raw: any, maxCurrency: number): (PlayerSubscription?, string?)
+	local sub: PlayerSubscription = {
+		Active = false,
+		LastPinataDay = 0,
+		LastBoxWeek = 0,
+	}
+	if raw == nil then
+		return sub, nil
+	end
+	if type(raw) ~= "table" then
+		return nil, "bad_subscription"
+	end
+	if raw.Active ~= nil and type(raw.Active) ~= "boolean" then
+		return nil, "bad_subscription"
+	end
+	local pinataDay, pinataErr = takeInt(raw.LastPinataDay, 0, maxCurrency)
+	local boxWeek, boxErr = takeInt(raw.LastBoxWeek, 0, maxCurrency)
+	if pinataDay == nil or boxWeek == nil then
+		return nil, pinataErr or boxErr
+	end
+	sub.Active = raw.Active == true
+	sub.LastPinataDay = pinataDay
+	sub.LastBoxWeek = boxWeek
+	return sub, nil
 end
 
 local function readUnixList(raw: any, maxCount: number, maxValue: number): ({ number }?, string?)
@@ -442,9 +659,45 @@ function Migrations.migrate(raw: any, defaults: Defaults): (PlayerData?, string?
 	if stats == nil then
 		return fail(statsErr or "bad_stats")
 	end
-	local daily, dailyErr = readDaily(raw.Daily, defaults.maxCurrency, defaults.maxReFiestas)
+	local daily, dailyErr = readDaily(raw.Daily, defaults.maxCurrency)
 	if daily == nil then
 		return fail(dailyErr or "bad_daily")
+	end
+	local passes, passesErr = readPasses(raw.Passes)
+	if passes == nil then
+		return fail(passesErr or "bad_passes")
+	end
+	local cosmetics, cosmeticsErr = readCosmetics(raw.Cosmetics)
+	if cosmetics == nil then
+		return fail(cosmeticsErr or "bad_cosmetics")
+	end
+	local subscription, subErr = readSubscription(raw.Subscription, defaults.maxCurrency)
+	if subscription == nil then
+		return fail(subErr or "bad_subscription")
+	end
+	local charges, chargesErr = takeInt(raw.EmergencyCharges, 0, defaults.maxCurrency)
+	if charges == nil then
+		return fail(chargesErr or "bad_number")
+	end
+	local emergencyAt, emergencyErr = takeInt(raw.EmergencyLockUnix, 0, defaults.maxCurrency)
+	if emergencyAt == nil then
+		return fail(emergencyErr or "bad_number")
+	end
+	local batTier, batTierErr = takeInt(raw.BatTier, 0, defaults.maxReFiestas)
+	if batTier == nil then
+		return fail(batTierErr or "bad_number")
+	end
+	local batUpgrade, batUpgradeErr = takeInt(raw.BatUpgrade, 0, 8)
+	if batUpgrade == nil then
+		return fail(batUpgradeErr or "bad_number")
+	end
+	local boostUntil, boostErr = takeInt(raw.RewardedBoostUntil, 0, defaults.maxCurrency)
+	if boostUntil == nil then
+		return fail(boostErr or "bad_number")
+	end
+	local rewardedDay, rewardedErr = takeInt(raw.RewardedDay, 0, defaults.maxCurrency)
+	if rewardedDay == nil then
+		return fail(rewardedErr or "bad_number")
 	end
 
 	-- v1 no tenía compras ni Bonks ni LastResetUnix: readStats/readDaily ya rellenan 0 si faltan.
@@ -477,6 +730,15 @@ function Migrations.migrate(raw: any, defaults: Defaults): (PlayerData?, string?
 	data.ProcessedPurchases = purchases
 	data.Stats = stats
 	data.Daily = daily
+	data.Passes = passes
+	data.Cosmetics = cosmetics
+	data.Subscription = subscription
+	data.EmergencyCharges = charges
+	data.EmergencyLockUnix = emergencyAt
+	data.BatTier = batTier
+	data.BatUpgrade = batUpgrade
+	data.RewardedBoostUntil = boostUntil
+	data.RewardedDay = rewardedDay
 	return data, nil
 end
 

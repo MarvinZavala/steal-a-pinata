@@ -68,25 +68,39 @@ local function countSpecies(owned: { Types.OwnedPinata }, pinataId: string): num
 	return total
 end
 
-local function hasEpic(owned: { Types.OwnedPinata }): boolean
-	for _, item in owned do
-		local def = Pinatas[item.pinataId]
-		if def and def.Rarity == "Epic" then
-			return true
-		end
-	end
-	return false
-end
-
-local function dulceria(state: Types.GameState): { ShopEntry }
-	local list: { ShopEntry } = {}
+local function resolvedCap(state: Types.GameState): number
 	local cap = state.pedestalCap
 	if cap < Economy.MaxPedestals then
 		cap = Economy.MaxPedestals
 	end
-	if state.passes.extraPedestals then
-		cap += 2
+	-- Un server viejo manda 8. El pase suma 2 solo en ese caso, y Re-Fiesta 3 abre el piso.
+	if state.passes.extraPedestals and cap <= Economy.MaxPedestals then
+		cap += Economy.ExtraPedestals
 	end
+	if state.reFiestas >= Economy.ReFiestaFloorAt then
+		cap = Economy.MaxPedestalSlots
+	end
+	if cap > Economy.MaxPedestalSlots then
+		cap = Economy.MaxPedestalSlots
+	end
+	return cap
+end
+
+local function countRank(owned: { Types.OwnedPinata }, rarity: string): number
+	local need = Economy.rarityRank(rarity)
+	local total = 0
+	for _, item in owned do
+		local def = Pinatas[item.pinataId]
+		if def ~= nil and Economy.rarityRank(def.Rarity) >= need and need > 0 then
+			total += 1
+		end
+	end
+	return total
+end
+
+local function dulceria(state: Types.GameState): { ShopEntry }
+	local list: { ShopEntry } = {}
+	local cap = resolvedCap(state)
 	local nextIndex = state.pedestalCount + 1
 	if nextIndex <= cap then
 		local price = ShopCatalog.pedestalPrice(nextIndex)
@@ -130,14 +144,18 @@ local function dulceria(state: Types.GameState): { ShopEntry }
 		})
 	end
 
-	local refiestaPrice = ShopCatalog.refiestaCandy()
-	local ready = hasEpic(state.owned) and state.candy >= refiestaPrice
+	local offer = Economy.refiestaOffer(state.reFiestas + 1)
+	local ready = countRank(state.owned, offer.Rarity) >= offer.Count and state.candy >= offer.Candy
 	table.insert(list, {
 		id = "ReFiesta",
 		titleKey = "shop.refiesta_title",
 		bodyKey = if ready then "shop.refiesta_body" else "shop.refiesta_need",
-		bodyArgs = { n = tostring(refiestaPrice) },
-		priceCandy = refiestaPrice,
+		bodyArgs = {
+			count = tostring(offer.Count),
+			rarityKey = "rarity." .. offer.Rarity,
+			n = tostring(offer.Candy),
+		},
+		priceCandy = offer.Candy,
 		action = "upgrade",
 		owned = false,
 		enabled = ready,
@@ -159,6 +177,18 @@ local function bates(state: Types.GameState): { ShopEntry }
 			owned = state.batSkin == "wood" or state.batSkin == "",
 			enabled = false,
 			badgeKey = "common.equipped",
+		},
+		{
+			id = "Bat",
+			titleKey = "shop.bat_upgrade_title",
+			bodyKey = if Economy.batUpgradeCost(state.batUpgrade + 1) > 0
+				then "shop.bat_upgrade_body"
+				else "common.max",
+			priceCandy = Economy.batUpgradeCost(state.batUpgrade + 1),
+			action = "upgrade",
+			owned = Economy.batUpgradeCost(state.batUpgrade + 1) <= 0,
+			enabled = Economy.batUpgradeCost(state.batUpgrade + 1) > 0
+				and state.candy >= Economy.batUpgradeCost(state.batUpgrade + 1),
 		},
 		{
 			id = "pass:BatSkinPack",
@@ -368,6 +398,47 @@ local function vip(state: Types.GameState): { ShopEntry }
 			products.EmergencyLock.Price,
 			products.EmergencyLock.Id
 		),
+		{
+			id = "private",
+			titleKey = "shop.private_title",
+			bodyKey = "shop.private_body",
+			bodyArgs = { n = tostring(Monetization.PrivateServerPrice) },
+			action = "info",
+			owned = false,
+			enabled = false,
+		},
+		{
+			id = "subscription",
+			titleKey = "shop.sub_title",
+			bodyKey = "shop.sub_body",
+			priceRobux = Monetization.Subscription.Price,
+			action = "subscription",
+			owned = false,
+			enabled = Monetization.Subscription.Id ~= "",
+			badgeKey = if Monetization.Subscription.Id == "" then "common.soon" else nil,
+		},
+		{
+			id = "rewarded",
+			titleKey = "shop.rewarded_title",
+			bodyKey = "shop.rewarded_body",
+			action = "rewarded",
+			owned = false,
+			enabled = true,
+		},
+		productEntry(
+			"CosmeticTrail",
+			"shop.cosmetic_trail",
+			"shop.cosmetic_only",
+			products.CosmeticTrail.Price,
+			products.CosmeticTrail.Id
+		),
+		productEntry(
+			"CosmeticBat",
+			"shop.cosmetic_bat",
+			"shop.cosmetic_only",
+			products.CosmeticBat.Price,
+			products.CosmeticBat.Id
+		),
 	}
 end
 
@@ -421,6 +492,18 @@ function ShopCatalog.productId(action: string, id: string): number
 			return Monetization.Products.CandyPackL.Id
 		elseif key == "EmergencyLock" then
 			return Monetization.Products.EmergencyLock.Id
+		elseif key == "CosmeticTrail" then
+			return Monetization.Products.CosmeticTrail.Id
+		elseif key == "CosmeticRibbon" then
+			return Monetization.Products.CosmeticRibbon.Id
+		elseif key == "CosmeticDecor" then
+			return Monetization.Products.CosmeticDecor.Id
+		elseif key == "CosmeticPedestal" then
+			return Monetization.Products.CosmeticPedestal.Id
+		elseif key == "CosmeticBat" then
+			return Monetization.Products.CosmeticBat.Id
+		elseif key == "RewardedBoost" then
+			return Monetization.Products.RewardedBoost.Id
 		end
 	end
 	return 0

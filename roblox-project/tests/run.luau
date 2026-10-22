@@ -8,6 +8,9 @@ local specs = {
 	"./pinatas.spec",
 	"./data_service_contract.spec",
 	"./gameplay.spec",
+	"./economy.spec",
+	"./receipts.spec",
+	"./daily.spec",
 }
 
 local failed = 0

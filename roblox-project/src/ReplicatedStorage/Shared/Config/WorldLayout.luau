@@ -38,11 +38,23 @@ function WorldLayout.plots(): { PlotSpot }
 end
 
 -- Índices 1..8, de adelante (la puerta) hacia el fondo, izquierda y luego derecha.
+-- El 2° piso (9..12) repite el xz de 1..4 y sube. Los de abajo no se mueven.
 function WorldLayout.pedestalLocal(index: number): (number, number)
-	local row = math.floor((index - 1) / 2)
-	local side = if (index - 1) % 2 == 0 then -1 else 1
+	local slot = index
+	if index > 8 then
+		slot = index - 8
+	end
+	local row = math.floor((slot - 1) / 2)
+	local side = if (slot - 1) % 2 == 0 then -1 else 1
 	local z = WorldLayout.PedestalZ0 + row * WorldLayout.PedestalStep
 	return side * WorldLayout.PedestalX, z
+end
+
+function WorldLayout.pedestalHeight(index: number): number
+	if index > 8 then
+		return 8
+	end
+	return 0
 end
 
 return WorldLayout

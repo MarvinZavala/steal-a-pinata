@@ -159,11 +159,10 @@ function LockService.tryActivate(player: Player): (boolean, string)
 	if LockService.isLocked(plotIndex) then
 		return false, "active"
 	end
-	-- VIP llega con la monetización. El perfil de hoy no tiene ese flag.
 	local duration = LockRules.duration(
 		Economy.Lock.DurationSec,
 		Economy.Lock.VipBonusSec,
-		false,
+		data.Passes.Vip == true,
 		Economy.Lock.PerReFiestaSec,
 		data.ReFiestas,
 		Economy.Lock.MaxSec

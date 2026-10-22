@@ -18,11 +18,13 @@ El loop de WP-04 a WP-08 ya no tiene un perfil en memoria ni un rate limiter pro
 | Candado | `LockReadyUnix` |
 | Ventana de 2 robos / 5 min | `RobbedUnix` (máximo 8 timestamps) |
 | Escudo | `RookieSeconds`, +1 por segundo en el server |
-| Contadores | `Stats.Steals`, `Stats.TimesRobbed`, `Stats.Bonks` |
+| Contadores | `Stats.Steals`, `Stats.TimesRobbed`, `Stats.Bonks`, `Stats.Buys`, `Stats.Collects`, `Stats.FiestaCandy` |
+| Pases | `Passes.DoubleCandy`, `Vip`, `ExtraPedestals`, `AutoCollect`, `BatPack` |
+| Recibos | `ProcessedPurchases[PurchaseId]`. `DataService.persist` espera a ver ese id en `LastSavedData` |
 
-`Migrations` (sigue en v2) lee esos tres campos nuevos con default 0 / `{}`. Un perfil viejo no se rechaza. El autosave y `EndSession` los persiste ProfileStore; este código no llama `EndSession` otra vez.
+`Migrations` está en v3. Un perfil v1 o v2 recibe los campos nuevos en false / 0 / `{}` y no se rechaza. El autosave y `EndSession` los persiste ProfileStore.
 
-2×, VIP y sets no están en el esquema. El multiplicador usa solo `ReFiestas` hasta WP-11. El bono VIP del candado queda en 0.
+El multiplicador es `Economy.totalMultiplier`: Re-Fiestas, el pase 2× **o** el boost del video (el mismo +1, no se apilan), VIP +0.5 y +0.05 por set completo del Dex. El candado suma `VipBonusSec` si `Passes.Vip`.
 
 Una piñata cargada sigue en el `Inventory` del dueño y sale de `Placed`. `World/Transit.luau` es un set de sesión (no se guarda). Si el server se cae, el set nace vacío y la piñata vuelve al pedestal. Entregarla mueve el ítem con `movePinata`.
 
@@ -36,7 +38,7 @@ La distancia y el ángulo salen de `AntiCheatService.authorize(player, action, p
 
 | Acción | Tope |
 |---|---|
-| `RequestBuy`, `RequestLock` | `Economy.Buy.MaxDistance` |
+| `RequestBuy`, `RequestLock`, `RequestUpgrade`, `RequestFuse` | `Economy.Buy.MaxDistance` |
 | `RequestSteal` | `Economy.Steal.MaxDistance` |
 | `RequestSwing` | `Economy.Bat.MaxDistance` y `MaxAngleDeg` |
 

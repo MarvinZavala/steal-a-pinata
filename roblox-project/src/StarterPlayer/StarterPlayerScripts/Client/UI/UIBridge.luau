@@ -75,6 +75,18 @@ function UIBridge.fuse(pinataId: string)
 	fire("RequestFuse", pinataId)
 end
 
+function UIBridge.claimDaily()
+	fire("RequestClaimDaily")
+end
+
+function UIBridge.claimQuest(index: string)
+	fire("RequestClaimQuest", index)
+end
+
+function UIBridge.rewarded()
+	fire("RequestRewarded")
+end
+
 function UIBridge.buy(slotId: number)
 	fire("RequestBuy", slotId)
 end

@@ -234,5 +234,17 @@
    "pinovela": 12660,
    "pinovela_Neon": 412
   }
+ },
+ "chancla_teledirigida": {
+  "name": "chancla_teledirigida",
+  "size_studs": [
+   5.28,
+   4.54,
+   2.46
+  ],
+  "tris": {
+   "chancla_teledirigida": 6192,
+   "chancla_teledirigida_Neon": 624
+  }
  }
 }

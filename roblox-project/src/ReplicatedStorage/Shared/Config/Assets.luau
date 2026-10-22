@@ -1,9 +1,46 @@
 --!strict
--- Pegá aquí los asset IDs después de subir las texturas (art/IMPORT_GUIDE.md §2).
-return {
-	PaletteColor = "rbxassetid://0",
-	PaletteRoughness = "rbxassetid://0",
-	PaletteMetalness = "rbxassetid://0",
-	PapelPicadoAtlas = "rbxassetid://0",
-	Logo = "rbxassetid://0",
+-- Texturas y mallas. Pegá los asset IDs reales después de subirlos (art/IMPORT_GUIDE.md §2 y §4).
+-- "rbxassetid://0" es un placeholder: PinataRegistry no pide esa malla a Roblox.
+-- Size = { X, Y, Z } en studs. Las modeladas salen de art/export/creatures/_meta.json.
+export type MeshRef = {
+	Body: string,
+	Neon: string?,
+	Size: { number },
 }
+
+local PLACEHOLDER = "rbxassetid://0"
+
+local Assets = {
+	PaletteColor = PLACEHOLDER,
+	PaletteRoughness = PLACEHOLDER,
+	PaletteMetalness = PLACEHOLDER,
+	PapelPicadoAtlas = PLACEHOLDER,
+	Logo = PLACEHOLDER,
+	Meshes = {
+		estrellita = { Body = PLACEHOLDER, Size = { 4.44, 3.53, 2.12 } },
+		pollito = { Body = PLACEHOLDER, Size = { 3, 3.2, 3 } },
+		burrito = { Body = PLACEHOLDER, Size = { 2.17, 3.98, 4.5 } },
+		sandia = { Body = PLACEHOLDER, Size = { 3, 3.2, 3 } },
+		michi = { Body = PLACEHOLDER, Size = { 2.91, 3.96, 2.29 } },
+		elotito = { Body = PLACEHOLDER, Size = { 3, 3.2, 3 } },
+		ranita = { Body = PLACEHOLDER, Size = { 3, 3.2, 3 } },
+		pupusita = { Body = PLACEHOLDER, Size = { 3, 3.2, 3 } },
+		cohetin = { Body = PLACEHOLDER, Neon = PLACEHOLDER, Size = { 2.39, 4.04, 2.63 } },
+		paleton = { Body = PLACEHOLDER, Size = { 3, 3.2, 3 } },
+		tortuga = { Body = PLACEHOLDER, Size = { 3, 3.2, 3 } },
+		pulpo = { Body = PLACEHOLDER, Size = { 3, 3.2, 3 } },
+		robo = { Body = PLACEHOLDER, Size = { 3, 3.2, 3 } },
+		dragon = { Body = PLACEHOLDER, Size = { 4.43, 4.06, 3.66 } },
+		cadejo = { Body = PLACEHOLDER, Size = { 3, 3.2, 3 } },
+		toro = { Body = PLACEHOLDER, Neon = PLACEHOLDER, Size = { 3.48, 3.94, 6.09 } },
+		izalco = { Body = PLACEHOLDER, Neon = PLACEHOLDER, Size = { 3, 3.2, 3 } },
+		torogoz = { Body = PLACEHOLDER, Neon = PLACEHOLDER, Size = { 2.82, 3.77, 3.55 } },
+		sombra = { Body = PLACEHOLDER, Neon = PLACEHOLDER, Size = { 2.86, 2.72, 2.91 } },
+		pixelin = { Body = PLACEHOLDER, Neon = PLACEHOLDER, Size = { 3, 3.2, 3 } },
+		tamalito = { Body = PLACEHOLDER, Size = { 3, 3.2, 3 } },
+		jengibrin = { Body = PLACEHOLDER, Size = { 3, 3.2, 3 } },
+		renito = { Body = PLACEHOLDER, Neon = PLACEHOLDER, Size = { 2.56, 4.52, 2.42 } },
+	} :: { [string]: MeshRef },
+}
+
+return Assets

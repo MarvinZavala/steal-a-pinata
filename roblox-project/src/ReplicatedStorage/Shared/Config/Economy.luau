@@ -3,6 +3,7 @@
 local Economy = {
 	StartPedestals = 4,
 	MaxPedestals = 8, -- +4 con Re-Fiesta 3 (2° piso)
+	MaxPedestalSlots = 12, -- tope absoluto de slots (incluye el 2° piso)
 	PedestalCostBase = 500,
 	PedestalCostGrowth = 2.2,
 	VaultCapSeconds = { 300, 600, 1200, 2400 }, -- tope de la Dulcería en segundos de producción
@@ -10,8 +11,8 @@ local Economy = {
 	OfflineCapHours = 8,
 	ReFiestaMultiplierStep = 0.5,
 	Walk = { Normal = 16, Carrying = 11 },
+	Buy = { MaxDistance = 12 }, -- GDD §3.1, prompt de la Pasarela
 	Conveyor = { SpawnEverySec = 4, CrossSeconds = 40, LuckBoostMultiplier = 2, AnnounceLeadSec = 5 },
-	Buy = { MaxDistance = 12 },
 	Return = { ProtectSec = 3, WalkSpeed = 14 },
 	StealPromptHoldSec = 0.6,
 	Lock = {

@@ -59,7 +59,7 @@ local function hookTool(tool: Instance)
 	if tool:IsA("Tool") and tool.Name == "Bate" and tool:GetAttribute("Hooked") ~= true then
 		tool:SetAttribute("Hooked", true)
 		tool.Activated:Connect(function()
-			Remotes.get("RequestSwing"):FireServer()
+			Remotes.fireServer("RequestSwing")
 		end)
 	end
 end
@@ -146,10 +146,10 @@ function HUDController.start()
 	bannerCorner.Parent = banner
 
 	button(gui, "BATE", YELLOW, -150, function()
-		Remotes.get("RequestSwing"):FireServer()
+		Remotes.fireServer("RequestSwing")
 	end)
 	button(gui, "CANDADO", TURQ, -246, function()
-		Remotes.get("RequestLock"):FireServer()
+		Remotes.fireServer("RequestLock")
 	end)
 
 	Remotes.get("StateChanged").OnClientEvent:Connect(function(payload)

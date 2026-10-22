@@ -13,19 +13,18 @@ local Pinatas = require(Shared:WaitForChild("Config"):WaitForChild("Pinatas"))
 local Remotes = require(Shared:WaitForChild("Net"):WaitForChild("Remotes"))
 local Format = require(Shared:WaitForChild("Util"):WaitForChild("Format"))
 local AssignPlots = require(Shared:WaitForChild("Gameplay"):WaitForChild("AssignPlots"))
-local CandyMath = require(Shared:WaitForChild("Gameplay"):WaitForChild("CandyMath"))
-local Profile = require(Shared:WaitForChild("Types"):WaitForChild("Profile"))
 
 local Server = script.Parent.Parent
-local ProfileAdapter = require(Server:WaitForChild("Adapters"):WaitForChild("ProfileAdapter"))
+local Records = require(Server:WaitForChild("Data"):WaitForChild("Records"))
 local Lifecycle = require(Server:WaitForChild("Adapters"):WaitForChild("Lifecycle"))
-local Validation = require(Server:WaitForChild("Adapters"):WaitForChild("Validation"))
+local Validators = require(Server:WaitForChild("Services"):WaitForChild("AntiCheat"):WaitForChild("Validators"))
 local PlaceBuilder = require(Server:WaitForChild("World"):WaitForChild("PlaceBuilder"))
 local PinataVisual = require(Server:WaitForChild("World"):WaitForChild("PinataVisual"))
 local Movement = require(Server:WaitForChild("World"):WaitForChild("Movement"))
+local Transit = require(Server:WaitForChild("World"):WaitForChild("Transit"))
 local Juice = require(Server:WaitForChild("World"):WaitForChild("Juice"))
 
-type OwnedPinata = Profile.OwnedPinata
+type OwnedPinata = Records.OwnedPinata
 type Plot = PlaceBuilder.Plot
 type Pedestal = PlaceBuilder.Pedestal
 type SeatFn = (userId: number, pedestalIndex: number, model: Model) -> ()
@@ -101,11 +100,11 @@ function BaseService.anchorPosition(userId: number, index: number): Vector3?
 end
 
 function BaseService.hasRoom(userId: number): boolean
-	local data = ProfileAdapter.getByUserId(userId)
+	local data = Records.byUserId(userId)
 	if data == nil then
 		return false
 	end
-	return #data.pinatas < data.pedestalCount
+	return Records.hasRoom(data)
 end
 
 function BaseService.contains(userId: number, position: Vector3): boolean
@@ -121,7 +120,7 @@ function BaseService.contains(userId: number, position: Vector3): boolean
 end
 
 function BaseService.inOwnZone(player: Player): boolean
-	local root = Validation.root(player)
+	local root = Validators.rootOf(player)
 	if root == nil then
 		return false
 	end
@@ -173,23 +172,23 @@ local function locked(plot: Plot): boolean
 end
 
 function BaseService.pushState(player: Player)
-	local data = ProfileAdapter.get(player)
+	local data = Records.get(player)
 	if data == nil then
 		return
 	end
+	local perSec = Records.production(data)
 	local plot = BaseService.plotOf(player.UserId)
 	if plot ~= nil then
-		local perSec = ProfileAdapter.production(data)
-		plot.generatorLabel.Text = string.format("DULCERÍA\n%s\n+%s/s", Format(data.vaultCandy), Format(perSec))
+		plot.generatorLabel.Text = string.format("DULCERÍA\n%s\n+%s/s", Format(data.VaultCandy), Format(perSec))
 	end
-	ProfileAdapter.refreshLeaderstats(player)
+	Records.refreshLeaderstats(player)
 	Remotes.get("StateChanged"):FireClient(player, {
-		candy = data.candy,
-		vault = data.vaultCandy,
-		perSec = ProfileAdapter.production(data),
+		candy = data.Dulces,
+		vault = data.VaultCandy,
+		perSec = perSec,
 		carrying = player:GetAttribute("Carrying") == true,
-		rookie = ProfileAdapter.isRookie(player),
-		rookieLeft = math.max(0, Economy.RookieShieldSec - ProfileAdapter.playedSeconds(player)),
+		rookie = Records.isRookie(data),
+		rookieLeft = Records.rookieLeft(data),
 	})
 end
 
@@ -225,7 +224,7 @@ local function walk(model: Model, feet: Vector3, speed: number)
 end
 
 local function finishSeat(plot: Plot, pedestal: Pedestal, userId: number, owned: OwnedPinata, model: Model)
-	if plot.ownerUserId ~= userId or pedestal.uid ~= owned.uid or model.Parent == nil then
+	if plot.ownerUserId ~= userId or pedestal.uid ~= owned.InstanceId or model.Parent == nil then
 		if model.Parent ~= nil then
 			model:Destroy()
 		end
@@ -245,8 +244,8 @@ local function finishSeat(plot: Plot, pedestal: Pedestal, userId: number, owned:
 	end
 end
 
-function BaseService.receive(userId: number, owned: OwnedPinata, model: Model, animated: boolean)
-	local data = ProfileAdapter.getByUserId(userId)
+function BaseService.receive(userId: number, owned: OwnedPinata, model: Model, animated: boolean, preferred: number?)
+	local data = Records.byUserId(userId)
 	local plot = BaseService.plotOf(userId)
 	if data == nil or plot == nil then
 		if model.Parent ~= nil then
@@ -254,29 +253,30 @@ function BaseService.receive(userId: number, owned: OwnedPinata, model: Model, a
 		end
 		return
 	end
-	owned.inTransit = nil
+	Transit.set(owned.InstanceId, false)
 	local pedestal: Pedestal? = nil
-	if owned.pedestal ~= nil then
-		local wanted = pedestalByIndex(plot, owned.pedestal)
-		if wanted ~= nil and wanted.uid == nil and wanted.index <= data.pedestalCount then
+	local wantedIndex = preferred or Records.slotOf(data, owned.InstanceId)
+	if wantedIndex ~= nil then
+		local wanted = pedestalByIndex(plot, wantedIndex)
+		if wanted ~= nil and wanted.uid == nil and wanted.index <= data.PedestalsOwned then
 			pedestal = wanted
 		end
 	end
 	if pedestal == nil then
-		pedestal = firstFree(plot, data.pedestalCount)
+		pedestal = firstFree(plot, data.PedestalsOwned)
 	end
 	if pedestal == nil then
-		owned.pedestal = nil
+		Records.unplace(data, owned.InstanceId)
 		if model.Parent ~= nil then
 			model:Destroy()
 		end
 		return
 	end
 	local slot = pedestal
-	owned.pedestal = slot.index
-	slot.uid = owned.uid
+	Records.place(data, owned.InstanceId, slot.index)
+	slot.uid = owned.InstanceId
 	slot.model = model
-	model:SetAttribute("Uid", owned.uid)
+	model:SetAttribute("Uid", owned.InstanceId)
 	model:SetAttribute("OwnerUserId", userId)
 	model.Parent = plot.model
 	if animated then
@@ -295,37 +295,42 @@ function BaseService.acceptPurchase(
 	mutation: string?,
 	model: Model
 ): (boolean, string)
-	local data = ProfileAdapter.get(player)
+	local data = Records.get(player)
 	local plot = BaseService.plotOf(player.UserId)
 	local def = Pinatas[pinataId]
 	if data == nil or plot == nil or def == nil then
 		return false, "missing"
 	end
-	if #data.pinatas >= data.pedestalCount then
+	if not Records.hasRoom(data) then
 		return false, "no_room"
 	end
-	local slot = firstFree(plot, data.pedestalCount)
+	local slot = firstFree(plot, data.PedestalsOwned)
 	if slot == nil then
 		return false, "no_room"
 	end
-	if def.Price ~= nil and not ProfileAdapter.trySpend(player, def.Price) then
+	local price = def.Price
+	if price ~= nil and not Records.trySpendDulces(player, price) then
 		return false, "funds"
+	end
+	local granted, instanceId = Records.grantPinata(player, pinataId, mutation)
+	if not granted or instanceId == nil then
+		if price ~= nil then
+			Records.grantDulces(player, price)
+		end
+		return false, "funds"
+	end
+	local owned = Records.find(data, instanceId)
+	if owned == nil then
+		return false, "missing"
 	end
 	local buyPrompt = model:FindFirstChild("BuyPrompt", true)
 	if buyPrompt ~= nil then
 		buyPrompt:Destroy()
 	end
-	local owned: OwnedPinata = {
-		uid = ProfileAdapter.newUid(player.UserId),
-		pinataId = pinataId,
-		mutation = mutation,
-		pedestal = slot.index,
-		inTransit = nil,
-	}
-	table.insert(data.pinatas, owned)
-	slot.uid = owned.uid
+	Records.place(data, instanceId, slot.index)
+	slot.uid = instanceId
 	slot.model = model
-	model:SetAttribute("Uid", owned.uid)
+	model:SetAttribute("Uid", instanceId)
 	model:SetAttribute("OwnerUserId", player.UserId)
 	model.Parent = plot.model
 	Juice.confetti(model:GetPivot().Position, Tuning.Sfx.Buy)
@@ -341,7 +346,7 @@ function BaseService.acceptPurchase(
 end
 
 function BaseService.detach(ownerUserId: number, pedestalIndex: number): (Model?, OwnedPinata?)
-	local data = ProfileAdapter.getByUserId(ownerUserId)
+	local data = Records.byUserId(ownerUserId)
 	local plot = BaseService.plotOf(ownerUserId)
 	if data == nil or plot == nil then
 		return nil, nil
@@ -350,17 +355,12 @@ function BaseService.detach(ownerUserId: number, pedestalIndex: number): (Model?
 	if pedestal == nil or pedestal.model == nil or pedestal.uid == nil then
 		return nil, nil
 	end
-	local owned: OwnedPinata? = nil
-	for _, item in data.pinatas do
-		if item.uid == pedestal.uid then
-			owned = item
-			break
-		end
-	end
+	local owned = Records.find(data, pedestal.uid)
 	if owned == nil then
 		return nil, nil
 	end
-	owned.inTransit = true
+	Records.unplace(data, owned.InstanceId)
+	Transit.set(owned.InstanceId, true)
 	local model = pedestal.model
 	pedestal.model = nil
 	pedestal.uid = nil
@@ -368,15 +368,15 @@ function BaseService.detach(ownerUserId: number, pedestalIndex: number): (Model?
 end
 
 local function restore(player: Player, plot: Plot)
-	local data = ProfileAdapter.get(player)
+	local data = Records.get(player)
 	if data == nil then
 		return
 	end
-	paintPads(plot, data.pedestalCount)
-	for _, owned in data.pinatas do
-		if owned.inTransit ~= true then
-			local model = PinataVisual.create(owned.pinataId, owned.mutation)
-			BaseService.receive(player.UserId, owned, model, false)
+	paintPads(plot, data.PedestalsOwned)
+	for _, owned in data.Inventory do
+		if not Transit.has(owned.InstanceId) then
+			local model = PinataVisual.create(owned.PinataId, Records.mutationOf(owned))
+			BaseService.receive(player.UserId, owned, model, false, Records.slotOf(data, owned.InstanceId))
 		end
 	end
 end
@@ -387,8 +387,21 @@ local function moveCharacter(player: Player, plot: Plot, character: Model)
 	Movement.watch(player, character)
 end
 
+local playtestGranted: { [number]: boolean } = {}
+
 local function assign(player: Player)
-	local data = ProfileAdapter.load(player)
+	local data = Records.wait(player)
+	if data == nil then
+		warn("[Piñata] el perfil no cargó para", player.Name)
+		return
+	end
+	Records.applyOffline(data)
+	if game:GetService("RunService"):IsStudio() and not playtestGranted[player.UserId] then
+		playtestGranted[player.UserId] = true
+		if data.Dulces == 0 and #data.Inventory == 0 then
+			Records.grantDulces(player, Tuning.PlaytestCandy)
+		end
+	end
 	local index = AssignPlots.claim(assignments, Layout.PlotCount, player.UserId)
 	if index == nil then
 		warn("[Piñata] no quedan bases para", player.Name)
@@ -424,7 +437,7 @@ local function assign(player: Player)
 			"[Piñata] %s → base %d (%d dulces de práctica si el perfil estaba vacío)",
 			player.Name,
 			index,
-			data.candy
+			data.Dulces
 		)
 	)
 end
@@ -477,14 +490,16 @@ local function bindCollect(plot: Plot)
 		if not BaseService.inOwnZone(player) then
 			return
 		end
-		local data = ProfileAdapter.get(player)
-		if data == nil or data.vaultCandy <= 0 then
+		local data = Records.get(player)
+		if data == nil or data.VaultCandy <= 0 then
 			return
 		end
 		lastCollect[player] = now
-		local gain = data.vaultCandy
-		data.vaultCandy = 0
-		ProfileAdapter.addCandy(player, gain)
+		local gain = math.floor(data.VaultCandy)
+		data.VaultCandy = 0
+		if gain > 0 and not Records.grantDulces(player, gain) then
+			data.VaultCandy = gain
+		end
 		Juice.confetti(plot.collect.Position, Tuning.Sfx.Collect)
 		BaseService.pushState(player)
 	end)
@@ -492,7 +507,6 @@ end
 
 function BaseService.init(services: { [string]: any })
 	servicesRef = services
-	ProfileAdapter.bind(services.DataService)
 	Movement.applyWorld()
 	world = PlaceBuilder.build()
 	for _, plot in world.plots do
@@ -500,7 +514,6 @@ function BaseService.init(services: { [string]: any })
 	end
 	Lifecycle.install()
 	Lifecycle.onLeave(40, release)
-	Lifecycle.onLeave(50, ProfileAdapter.release)
 	Players.PlayerAdded:Connect(assign)
 	for _, player in Players:GetPlayers() do
 		task.spawn(assign, player)
@@ -508,17 +521,13 @@ function BaseService.init(services: { [string]: any })
 end
 
 function BaseService.start()
-	ProfileAdapter.startAutosave()
 	task.spawn(function()
 		while true do
 			task.wait(1)
 			for _, player in Players:GetPlayers() do
-				local data = ProfileAdapter.get(player)
-				if data ~= nil then
-					local perSec = ProfileAdapter.production(data)
-					local tier = Economy.VaultCapSeconds[data.vaultTier] or Economy.VaultCapSeconds[1]
-					local cap = CandyMath.cap(perSec, tier)
-					data.vaultCandy = CandyMath.accrue(data.vaultCandy, perSec, 1, cap)
+				local data = Records.get(player)
+				if data ~= nil and BaseService.plotOf(player.UserId) ~= nil then
+					Records.tickSecond(data)
 					BaseService.pushState(player)
 				end
 			end

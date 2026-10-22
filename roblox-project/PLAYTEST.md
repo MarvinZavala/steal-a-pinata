@@ -8,7 +8,7 @@ No hace falta subir los mesh. Al dar Play, `PlaceBuilder` arma la plaza, la Pasa
 2. `Workspace → Server Authority → AuthorityMode = Server` (prende StreamingEnabled y la simulación del servidor). Sin eso el juego corre igual, pero un cliente puede pelearse con el knockback: el servidor igual intenta `SetNetworkOwner(nil)` durante el batazo.
 3. Play. En la consola tiene que aparecer `[SelfCheck] N pruebas ok` y `[Piñata] TuNombre → base 1`.
 
-En Studio el perfil vacío arranca con **2500 Dulces** (`Tuning.PlaytestCandy`) para poder comprar. Un server publicado no los da.
+En Studio el perfil vacío arranca con **2500 Dulces** (`Tuning.PlaytestCandy`) vía `DataService.grant`. Un server publicado no los da. El perfil es el de ProfileStore (mock en Studio): `DataService.profile(player)`.
 
 ## WP-04 — Bases
 
@@ -32,7 +32,15 @@ En Studio el perfil vacío arranca con **2500 Dulces** (`Tuning.PlaytestCandy`) 
 
 Hacen falta 2 jugadores: Test → Start Server and Players → 2.
 
-- El escudo de novato dura 15 min de juego total. Con el perfil de práctica **ya estás protegido**: para probar el robo, en la consola del servidor podés subir el tiempo jugado o bajar `Economy.RookieShieldSec` en una sesión local. El HUD dice `protegido Ns` mientras dure.
+- El escudo de novato dura 15 min (`RookieSeconds`). El HUD dice `protegido Ns`. Para probar el robo en la consola del **servidor**:
+
+```lua
+local DS = require(game.ServerScriptService.Server.Services.DataService)
+local data = DS.profile(game.Players:GetPlayers()[1])
+data.RookieSeconds = 15 * 60
+```
+
+Hacé lo mismo con el otro jugador. Si no, `RequestSteal` responde `rookie`.
 - Prompt **Robar** (hold 0.6 s) en una piñata ajena, a ≤ 8 studs, base sin candado, sin cargar otra, con un pedestal libre.
 - Queda soldada **sobre la cabeza**, WalkSpeed 11, aro rosa y confeti detrás.
 - Al entrar a tu propia base, pasa a ser tuya y camina a un pedestal (confeti).
@@ -64,4 +72,4 @@ Desde `roblox-project/`, con [Lune](https://github.com/lune-org/lune):
 lune run tests/run.luau
 ```
 
-Cubre asignación, Dulces/s a 10 min (±1 %) y tope, offline, pesos de la Pasarela, compra sin Dulces, reglas de robo y de bate, duración del candado, y el ápice del salto. `selene src` y `stylua --check src` tienen que pasar; este PR no toca la CI ni `rokit.toml` (los está armando S1).
+`lune run tests/run` corre las suites de S1 y `gameplay.spec` (reglas, migración de `VaultCandy` y `Wallet.movePinata`). `selene src tests`, `stylua --check src tests` y `rojo build` son el CI.

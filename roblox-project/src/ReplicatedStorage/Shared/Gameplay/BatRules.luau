@@ -1,5 +1,5 @@
 --!strict
--- Reglas del bate (GDD §4.4 y §7). inRange / inFront los mide Validation.
+-- Reglas del bate (GDD §4.4 y §7). inRange / inFront los mide AntiCheatService.authorize.
 
 local BatRules = {}
 

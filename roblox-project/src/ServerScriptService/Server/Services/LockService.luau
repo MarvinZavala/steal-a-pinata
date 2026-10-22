@@ -9,12 +9,11 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Economy = require(Shared:WaitForChild("Config"):WaitForChild("Economy"))
 local Tuning = require(Shared:WaitForChild("Config"):WaitForChild("Tuning"))
-local Remotes = require(Shared:WaitForChild("Net"):WaitForChild("Remotes"))
 local LockRules = require(Shared:WaitForChild("Gameplay"):WaitForChild("LockRules"))
 
 local Server = script.Parent.Parent
-local Validation = require(Server:WaitForChild("Adapters"):WaitForChild("Validation"))
-local ProfileAdapter = require(Server:WaitForChild("Adapters"):WaitForChild("ProfileAdapter"))
+local Records = require(Server:WaitForChild("Data"):WaitForChild("Records"))
+local AntiCheatService = require(script.Parent:WaitForChild("AntiCheatService"))
 local Juice = require(Server:WaitForChild("World"):WaitForChild("Juice"))
 local BaseService = require(script.Parent:WaitForChild("BaseService"))
 
@@ -124,33 +123,39 @@ function LockService.grant(plotIndex: number, seconds: number, ownerUserId: numb
 end
 
 function LockService.tryActivate(player: Player): (boolean, string)
-	if not Validation.allow(player, "RequestLock") then
-		return false, "rate"
-	end
-	local data = ProfileAdapter.get(player)
+	local data = Records.get(player)
 	local plotIndex = BaseService.plotIndexOf(player.UserId)
 	if data == nil or plotIndex == nil then
 		return false, "no_plot"
 	end
-	if not LockRules.canStart(os.time(), data.lockCooldownUntil) then
+	local world = BaseService.getWorld()
+	local plot = if world ~= nil then world.plots[plotIndex] else nil
+	if plot == nil then
+		return false, "no_plot"
+	end
+	local allowed = AntiCheatService.authorize(player, "RequestLock", plot.padlock.Position)
+	if not allowed then
+		return false, "distance"
+	end
+	if not LockRules.canStart(os.time(), data.LockReadyUnix) then
 		return false, "cooldown"
 	end
 	if LockService.isLocked(plotIndex) then
 		return false, "active"
 	end
+	-- VIP llega con la monetización. El perfil de hoy no tiene ese flag.
 	local duration = LockRules.duration(
 		Economy.Lock.DurationSec,
 		Economy.Lock.VipBonusSec,
-		data.hasVip,
+		false,
 		Economy.Lock.PerReFiestaSec,
-		data.reFiestas,
+		data.ReFiestas,
 		Economy.Lock.MaxSec
 	)
-	data.lockCooldownUntil = os.time() + Economy.Lock.CooldownSec
+	data.LockReadyUnix = os.time() + Economy.Lock.CooldownSec
 	active[plotIndex] = { endsAt = os.clock() + duration, ownerUserId = player.UserId }
 	paint(plotIndex)
-	local world = BaseService.getWorld()
-	local at = if world ~= nil then world.plots[plotIndex].laser.Position else Vector3.zero
+	local at = plot.laser.Position
 	Juice.sound(at, Tuning.Sfx.Lock)
 	Juice.feedback("LOCK", at)
 	print(string.format("[Piñata] %s cerró el candado %ds", player.Name, duration))
@@ -158,6 +163,9 @@ function LockService.tryActivate(player: Player): (boolean, string)
 end
 
 function LockService.init(_services: { [string]: any })
+	AntiCheatService.register("RequestLock", function(player, _args)
+		LockService.tryActivate(player)
+	end)
 	registerGroups()
 	local world = BaseService.getWorld()
 	if world == nil then
@@ -182,9 +190,6 @@ function LockService.init(_services: { [string]: any })
 end
 
 function LockService.start()
-	Remotes.get("RequestLock").OnServerEvent:Connect(function(player)
-		LockService.tryActivate(player)
-	end)
 	local function hook(player: Player)
 		player.CharacterAdded:Connect(function()
 			task.defer(function()

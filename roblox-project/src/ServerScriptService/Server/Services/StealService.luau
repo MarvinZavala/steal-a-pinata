@@ -10,21 +10,21 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Economy = require(Shared:WaitForChild("Config"):WaitForChild("Economy"))
 local Rarities = require(Shared:WaitForChild("Config"):WaitForChild("Rarities"))
 local Tuning = require(Shared:WaitForChild("Config"):WaitForChild("Tuning"))
-local Remotes = require(Shared:WaitForChild("Net"):WaitForChild("Remotes"))
 local StealRules = require(Shared:WaitForChild("Gameplay"):WaitForChild("StealRules"))
-local Inventory = require(Shared:WaitForChild("Gameplay"):WaitForChild("Inventory"))
-local Profile = require(Shared:WaitForChild("Types"):WaitForChild("Profile"))
 
 local Server = script.Parent.Parent
-local Validation = require(Server:WaitForChild("Adapters"):WaitForChild("Validation"))
-local ProfileAdapter = require(Server:WaitForChild("Adapters"):WaitForChild("ProfileAdapter"))
+local Records = require(Server:WaitForChild("Data"):WaitForChild("Records"))
 local Lifecycle = require(Server:WaitForChild("Adapters"):WaitForChild("Lifecycle"))
+local AntiCheatService = require(script.Parent:WaitForChild("AntiCheatService"))
+local Validators = require(script.Parent:WaitForChild("AntiCheat"):WaitForChild("Validators"))
+local Logger = require(script.Parent:WaitForChild("AntiCheat"):WaitForChild("Logger"))
 local PinataVisual = require(Server:WaitForChild("World"):WaitForChild("PinataVisual"))
 local Movement = require(Server:WaitForChild("World"):WaitForChild("Movement"))
+local Transit = require(Server:WaitForChild("World"):WaitForChild("Transit"))
 local Juice = require(Server:WaitForChild("World"):WaitForChild("Juice"))
 local BaseService = require(script.Parent:WaitForChild("BaseService"))
 
-type OwnedPinata = Profile.OwnedPinata
+type OwnedPinata = Records.OwnedPinata
 
 type Carry = {
 	uid: string,
@@ -76,16 +76,33 @@ function StealService.peek(player: Player): Carry?
 end
 
 local function findOwned(userId: number, uid: string): OwnedPinata?
-	local data = ProfileAdapter.getByUserId(userId)
+	local data = Records.byUserId(userId)
 	if data == nil then
 		return nil
 	end
-	for _, item in data.pinatas do
-		if item.uid == uid then
-			return item
-		end
+	return Records.find(data, uid)
+end
+
+local function measure(player: Player, position: Vector3): number
+	local root = Validators.rootOf(player)
+	if root == nil then
+		return math.huge
 	end
-	return nil
+	return (root.Position - position).Magnitude
+end
+
+-- authorize() es la distancia (y el slack de ping) del anti-cheat. Si pasa,
+-- las reglas de juego ven la distancia recortada al máximo para no pelearse con el slack.
+local function approach(player: Player, action: string, position: Vector3, maxDistance: number): (boolean, number)
+	local distance = measure(player, position)
+	local allowed, why = AntiCheatService.authorize(player, action, position)
+	if not allowed then
+		if why == "distance" and distance >= 200 then
+			Logger.flag(player, action .. ".far", { distance = distance })
+		end
+		return false, distance
+	end
+	return true, math.min(distance, maxDistance)
 end
 
 local function worldFolder(): Instance
@@ -119,7 +136,7 @@ local function beginCarry(
 	ownerUserId: number,
 	pedestal: number
 ): boolean
-	local root = Validation.root(player)
+	local root = Validators.rootOf(player)
 	if root == nil then
 		return false
 	end
@@ -130,22 +147,29 @@ local function beginCarry(
 	PinataVisual.weldOverHead(model, root)
 	markStolen(model, true)
 	carried[player] = {
-		uid = owned.uid,
+		uid = owned.InstanceId,
 		ownerUserId = ownerUserId,
 		pedestal = pedestal,
 		model = model,
 		since = os.clock(),
 		hitsTaken = 0,
 		hitsRequired = hitsRequired(model),
-		pinataId = owned.pinataId,
-		mutation = owned.mutation,
+		pinataId = owned.PinataId,
+		mutation = Records.mutationOf(owned),
 	}
 	player:SetAttribute("Carrying", true)
 	if Movement.mode(player) ~= "stun" then
 		Movement.setMode(player, "carry")
 	end
 	lastSteal[player] = os.clock()
-	ProfileAdapter.noteRobbed(ownerUserId)
+	local victimData = Records.byUserId(ownerUserId)
+	if victimData ~= nil then
+		Records.noteRobbed(victimData)
+	end
+	local thiefData = Records.get(player)
+	if thiefData ~= nil then
+		thiefData.Stats.Steals += 1
+	end
 	Juice.confetti(root.Position, Tuning.Sfx.Steal)
 	Juice.feedback("STEAL", root.Position)
 	BaseService.pushState(player)
@@ -153,7 +177,7 @@ local function beginCarry(
 	if victim ~= nil then
 		BaseService.pushState(victim)
 	end
-	print(string.format("[Piñata] %s carga %s de %d", player.Name, owned.pinataId, ownerUserId))
+	print(string.format("[Piñata] %s carga %s de %d", player.Name, owned.PinataId, ownerUserId))
 	return true
 end
 
@@ -179,26 +203,31 @@ local function addPrompt(ownerUserId: number, pedestalIndex: number, model: Mode
 end
 
 local function victimRookie(userId: number): boolean
-	local player = Players:GetPlayerByUserId(userId)
-	if player ~= nil then
-		return ProfileAdapter.isRookie(player)
+	local data = Records.byUserId(userId)
+	if data == nil then
+		return false
 	end
-	return ProfileAdapter.isRookieUser(userId, nil)
+	return Records.isRookie(data)
+end
+
+local function thiefRookie(player: Player): boolean
+	local data = Records.get(player)
+	if data == nil then
+		return true
+	end
+	return Records.isRookie(data)
 end
 
 local function recentAgainst(userId: number): number
-	local data = ProfileAdapter.getByUserId(userId)
+	local data = Records.byUserId(userId)
 	if data == nil then
 		return 0
 	end
-	return StealRules.countSince(data.robbedAt, os.time(), Economy.Steal.WindowSec)
+	return Records.recentRobbed(data, os.time())
 end
 
 function StealService.trySteal(player: Player, ownerUserId: number, pedestalIndex: number)
-	if not Validation.allow(player, "RequestSteal") then
-		return
-	end
-	if not Validation.isFinite(ownerUserId) or not Validation.isFinite(pedestalIndex) then
+	if type(ownerUserId) ~= "number" or type(pedestalIndex) ~= "number" then
 		return
 	end
 	ownerUserId = math.floor(ownerUserId)
@@ -220,13 +249,16 @@ function StealService.grabLoose(player: Player, item: Loose)
 		return
 	end
 	local position = item.model:GetPivot().Position
-	local distance = Validation.distance(player, position)
+	local near, distance = approach(player, "RequestSteal", position, Economy.Steal.MaxDistance)
+	if not near then
+		return
+	end
 	local ok, reason = StealRules.evaluate({
 		distance = distance,
-		inRange = Validation.inRange(player, position, Economy.Steal.MaxDistance),
+		inRange = true,
 		locked = false,
 		alreadyCarrying = carried[player] ~= nil,
-		thiefIsRookie = ProfileAdapter.isRookie(player),
+		thiefIsRookie = thiefRookie(player),
 		victimIsRookie = victimRookie(item.ownerUserId),
 		cooldownReady = os.clock() - (lastSteal[player] or 0) >= Economy.Steal.CooldownSec,
 		recentStealsOnVictim = recentAgainst(item.ownerUserId),
@@ -237,7 +269,7 @@ function StealService.grabLoose(player: Player, item: Loose)
 	})
 	if not ok then
 		if StealRules.shouldLogFar(distance, reason) then
-			Validation.flag(player, "RequestSteal.far", { distance = distance, reason = reason })
+			Logger.flag(player, "RequestSteal.far", { distance = distance, reason = reason })
 		end
 		return
 	end
@@ -257,13 +289,16 @@ function StealService.grabSeated(player: Player, ownerUserId: number, pedestalIn
 		return
 	end
 	local lockService = require(script.Parent:WaitForChild("LockService"))
-	local distance = Validation.distance(player, position)
+	local near, distance = approach(player, "RequestSteal", position, Economy.Steal.MaxDistance)
+	if not near then
+		return
+	end
 	local ok, reason = StealRules.evaluate({
 		distance = distance,
-		inRange = Validation.inRange(player, position, Economy.Steal.MaxDistance),
+		inRange = true,
 		locked = lockService.isLocked(plotIndex),
 		alreadyCarrying = carried[player] ~= nil,
-		thiefIsRookie = ProfileAdapter.isRookie(player),
+		thiefIsRookie = thiefRookie(player),
 		victimIsRookie = victimRookie(ownerUserId),
 		cooldownReady = os.clock() - (lastSteal[player] or 0) >= Economy.Steal.CooldownSec,
 		recentStealsOnVictim = recentAgainst(ownerUserId),
@@ -274,7 +309,7 @@ function StealService.grabSeated(player: Player, ownerUserId: number, pedestalIn
 	})
 	if not ok then
 		if StealRules.shouldLogFar(distance, reason) then
-			Validation.flag(player, "RequestSteal.far", { distance = distance, reason = reason, owner = ownerUserId })
+			Logger.flag(player, "RequestSteal.far", { distance = distance, reason = reason, owner = ownerUserId })
 		end
 		return
 	end
@@ -283,8 +318,8 @@ function StealService.grabSeated(player: Player, ownerUserId: number, pedestalIn
 		return
 	end
 	if not beginCarry(player, model, owned, ownerUserId, pedestalIndex) then
-		owned.inTransit = nil
-		BaseService.receive(ownerUserId, owned, model, false)
+		Transit.set(owned.InstanceId, false)
+		BaseService.receive(ownerUserId, owned, model, false, pedestalIndex)
 		return
 	end
 	lockService.grant(plotIndex, Economy.Lock.AfterRobbedFreeSec, ownerUserId)
@@ -317,43 +352,40 @@ function StealService.deliver(player: Player)
 	if Movement.mode(player) ~= "stun" then
 		Movement.setMode(player, "normal")
 	end
-	local victimData = ProfileAdapter.getByUserId(carry.ownerUserId)
-	local thiefData = ProfileAdapter.get(player)
+	local victim = Players:GetPlayerByUserId(carry.ownerUserId)
+	local victimData = if victim ~= nil then Records.get(victim) else nil
+	local thiefData = Records.get(player)
 	PinataVisual.unweld(carry.model)
 	markStolen(carry.model, false)
 	local function refundToOwner()
 		local owned = findOwned(carry.ownerUserId, carry.uid)
 		if owned ~= nil then
-			owned.inTransit = nil
-			BaseService.receive(carry.ownerUserId, owned, carry.model, false)
+			Transit.set(owned.InstanceId, false)
+			BaseService.receive(carry.ownerUserId, owned, carry.model, false, carry.pedestal)
 		elseif carry.model.Parent ~= nil then
+			Transit.set(carry.uid, false)
 			carry.model:Destroy()
 		end
 	end
-	if victimData == nil or thiefData == nil then
+	if victim == nil or victimData == nil or thiefData == nil then
 		refundToOwner()
 		return
 	end
-	local moved = Inventory.move(victimData.pinatas, thiefData.pinatas, carry.uid)
+	local moved = Records.movePinata(victim, player, carry.uid)
 	if not moved then
 		refundToOwner()
 		return
 	end
-	local owned = findOwned(player.UserId, carry.uid)
+	Transit.set(carry.uid, false)
+	local owned = Records.find(thiefData, carry.uid)
 	if owned == nil then
-		for _, item in thiefData.pinatas do
-			if item.uid == carry.uid then
-				item.inTransit = nil
-			end
-		end
 		if carry.model.Parent ~= nil then
 			carry.model:Destroy()
 		end
 		return
 	end
-	owned.pedestal = nil
-	BaseService.receive(player.UserId, owned, carry.model, true)
-	local root = Validation.root(player)
+	BaseService.receive(player.UserId, owned, carry.model, true, nil)
+	local root = Validators.rootOf(player)
 	local at = if root ~= nil then root.Position else carry.model:GetPivot().Position
 	Juice.confetti(at, Tuning.Sfx.Deliver)
 	Juice.feedback("DELIVER", at)
@@ -366,6 +398,7 @@ local function sendHome(item: Loose)
 		local goal = BaseService.anchorPosition(item.ownerUserId, item.pedestal)
 		if goal == nil or item.model.Parent == nil then
 			item.alive = false
+			Transit.set(item.uid, false)
 			return
 		end
 		local primary = item.model.PrimaryPart
@@ -393,7 +426,7 @@ local function sendHome(item: Loose)
 			item.prompt:Destroy()
 		end
 		removeLoose(item)
-		BaseService.receive(item.ownerUserId, item.owned, item.model, false)
+		BaseService.receive(item.ownerUserId, item.owned, item.model, false, item.pedestal)
 	end)
 end
 
@@ -415,9 +448,7 @@ function StealService.drop(player: Player)
 	local owned = findOwned(carry.ownerUserId, carry.uid)
 	local home = BaseService.plotOf(carry.ownerUserId)
 	if owned == nil or home == nil then
-		if owned ~= nil then
-			owned.inTransit = nil
-		end
+		Transit.set(carry.uid, false)
 		if carry.model.Parent ~= nil then
 			carry.model:Destroy()
 		end
@@ -461,6 +492,14 @@ end
 function StealService.init(_services: { [string]: any })
 	BaseService.onSeated(addPrompt)
 	BaseService.forEachSeated(addPrompt)
+	AntiCheatService.register("RequestSteal", function(player, args)
+		local ownerUserId = args[1]
+		local pedestalIndex = args[2]
+		if type(ownerUserId) ~= "number" or type(pedestalIndex) ~= "number" then
+			return
+		end
+		StealService.trySteal(player, ownerUserId, pedestalIndex)
+	end)
 	Lifecycle.onLeave(20, function(player)
 		lastSteal[player] = nil
 		StealService.drop(player)
@@ -468,12 +507,6 @@ function StealService.init(_services: { [string]: any })
 end
 
 function StealService.start()
-	Remotes.get("RequestSteal").OnServerEvent:Connect(function(player, ownerUserId, pedestalIndex)
-		if type(ownerUserId) ~= "number" or type(pedestalIndex) ~= "number" then
-			return
-		end
-		StealService.trySteal(player, ownerUserId, pedestalIndex)
-	end)
 	task.spawn(function()
 		while true do
 			task.wait(0.15)

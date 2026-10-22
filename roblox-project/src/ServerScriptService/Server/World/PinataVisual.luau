@@ -2,7 +2,6 @@
 -- Clona una piñata de ServerStorage o arma un placeholder (bola + aro neón).
 -- El arte real se monta según art/IMPORT_GUIDE.md; si el mesh no está, el juego igual corre.
 
-local ServerStorage = game:GetService("ServerStorage")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
@@ -101,29 +100,18 @@ local function placeholder(pinataId: string, rarity: string): Model
 end
 
 local function fromTemplate(pinataId: string): Model?
-	local folder = ServerStorage:FindFirstChild("Pinatas")
-	if folder == nil then
+	local Registry = require(script.Parent.Parent:WaitForChild("Services"):WaitForChild("PinataRegistry"))
+	local clone = Registry.clone(pinataId)
+	if clone == nil then
 		return nil
 	end
-	local template = folder:FindFirstChild(pinataId)
-	if template == nil or not template:IsA("Model") then
-		return nil
-	end
-	local clone = template:Clone()
 	ensurePrimary(clone)
 	for _, desc in clone:GetDescendants() do
 		if desc:IsA("BasePart") then
 			desc.CanCollide = false
 			desc.Anchored = true
-			if string.find(desc.Name, "Neon") ~= nil then
-				desc.Material = Enum.Material.Neon
-				desc.CastShadow = false
-			end
 		end
 	end
-	pcall(function()
-		clone:ScaleTo(1.5)
-	end)
 	return clone
 end
 

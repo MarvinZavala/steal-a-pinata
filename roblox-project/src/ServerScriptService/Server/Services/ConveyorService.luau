@@ -13,8 +13,10 @@ local SpawnWeights = require(Shared:WaitForChild("Gameplay"):WaitForChild("Spawn
 local BuyRules = require(Shared:WaitForChild("Gameplay"):WaitForChild("BuyRules"))
 
 local Server = script.Parent.Parent
-local Validation = require(Server:WaitForChild("Adapters"):WaitForChild("Validation"))
-local ProfileAdapter = require(Server:WaitForChild("Adapters"):WaitForChild("ProfileAdapter"))
+local Records = require(Server:WaitForChild("Data"):WaitForChild("Records"))
+local AntiCheatService = require(script.Parent:WaitForChild("AntiCheatService"))
+local Validators = require(script.Parent:WaitForChild("AntiCheat"):WaitForChild("Validators"))
+local Logger = require(script.Parent:WaitForChild("AntiCheat"):WaitForChild("Logger"))
 local PinataVisual = require(Server:WaitForChild("World"):WaitForChild("PinataVisual"))
 local BaseService = require(script.Parent:WaitForChild("BaseService"))
 
@@ -125,10 +127,7 @@ local function spawnSlot(pinataId: string, rarity: string)
 end
 
 function ConveyorService.tryBuy(player: Player, slotId: number)
-	if not Validation.allow(player, "RequestBuy") then
-		return
-	end
-	if not Validation.isFinite(slotId) then
+	if type(slotId) ~= "number" then
 		return
 	end
 	local slot = findSlot(slotId)
@@ -136,34 +135,40 @@ function ConveyorService.tryBuy(player: Player, slotId: number)
 		return
 	end
 	local position = slot.model:GetPivot().Position
-	local distance = Validation.distance(player, position)
-	local inRange = Validation.inRange(player, position, Economy.Buy.MaxDistance)
-	local data = ProfileAdapter.get(player)
-	local candy = if data ~= nil then data.candy else 0
-	local ruleDistance = if inRange then math.min(distance, Economy.Buy.MaxDistance) else distance
+	local root = Validators.rootOf(player)
+	local distance = if root ~= nil then (root.Position - position).Magnitude else math.huge
+	local allowed, why = AntiCheatService.authorize(player, "RequestBuy", position)
+	if not allowed then
+		if why == "distance" and distance >= 200 then
+			Logger.flag(player, "RequestBuy.far", { distance = distance })
+		end
+		return
+	end
+	local data = Records.get(player)
+	local candy = if data ~= nil then data.Dulces else 0
 	local ok, reason = BuyRules.evaluate({
 		candy = candy,
 		price = slot.price,
-		distance = ruleDistance,
+		distance = math.min(distance, Economy.Buy.MaxDistance),
 		maxDistance = Economy.Buy.MaxDistance,
 		hasRoom = BaseService.hasRoom(player.UserId),
 	})
 	if not ok then
-		if distance >= 200 then
-			Validation.flag(player, "RequestBuy.far", { distance = distance, reason = reason })
+		if reason == "distance" and distance >= 200 then
+			Logger.flag(player, "RequestBuy.far", { distance = distance, reason = reason })
 		end
 		return
 	end
 	slot.sold = true
 	removeSlot(slot)
-	local accepted, why = BaseService.acceptPurchase(player, slot.pinataId, slot.mutation, slot.model)
+	local accepted, reject = BaseService.acceptPurchase(player, slot.pinataId, slot.mutation, slot.model)
 	if not accepted then
 		slot.sold = false
 		slot.born = os.clock()
 		table.insert(slots, slot)
 		-- "funds" / "no_room" son rechazos normales, no un exploit.
 		if distance >= 200 then
-			Validation.flag(player, "RequestBuy.rejected", { distance = distance, reason = why })
+			Logger.flag(player, "RequestBuy.rejected", { distance = distance, reason = reject })
 		end
 	end
 end
@@ -196,15 +201,16 @@ function ConveyorService.init(_services: { [string]: any })
 	for id, def in Pinatas do
 		table.insert(rows, { id = id, rarity = def.Rarity, currency = def.Currency })
 	end
-end
-
-function ConveyorService.start()
-	Remotes.get("RequestBuy").OnServerEvent:Connect(function(player, slotId)
+	AntiCheatService.register("RequestBuy", function(player, args)
+		local slotId = args[1]
 		if type(slotId) ~= "number" then
 			return
 		end
 		ConveyorService.tryBuy(player, slotId)
 	end)
+end
+
+function ConveyorService.start()
 	task.spawn(function()
 		while true do
 			local pinataId, rarity = rollPinata()

@@ -1,81 +1,49 @@
-# Integración con S1 (WP-02 datos y WP-10a anti-cheat)
+# Integración con S1 (WP-02 y WP-10a)
 
-El gameplay de WP-04 a WP-08 **no escribe** `DataService.luau` ni `Services/AntiCheat/*`. Esos archivos los está implementando otro agente. Este código habla con dos módulos chicos. Cuando S1 esté listo, se reemplaza el adaptador o se conecta el puerto: los servicios de juego no cambian.
+El loop de WP-04 a WP-08 ya no tiene un perfil en memoria ni un rate limiter propio. Usa lo que quedó en `main`.
 
-## Datos — `Server/Adapters/ProfileAdapter.luau`
+## Datos
 
-Todo el dulce, las piñatas y el escudo salen de acá.
+`DataService` es el dueño de la sesión de ProfileStore. `Server/Data/Records.luau` no copia esa tabla: `Records.get(player)` devuelve `DataService.profile(player)`, que es `profile.Data`.
 
-```lua
-ProfileAdapter.bind(dataService) -- BaseService.init ya lo llama con services.DataService
-ProfileAdapter.load(player) --> ProfileData
-ProfileAdapter.get(player) --> ProfileData?
-ProfileAdapter.getByUserId(userId) --> ProfileData?
-ProfileAdapter.release(player) -- sella lastLogoutUnix y, si hay puerto, commit + releaseProfile
-```
-
-Si `DataService` expone estas funciones, el adaptador las usa. Si no (el stub de hoy), la sesión vive en memoria y **sobrevive a salir y volver en el mismo server**. No persiste si se cierra el server: eso es ProfileStore.
-
-| Método en DataService | Cuándo se llama | Contrato |
-|---|---|---|
-| `loadProfile(player) -> table?` | La primera vez que vemos ese UserId | Tabla del esquema v1, o `nil` si es jugador nuevo. Si tira error, se avisa y se sigue en memoria. |
-| `commit(player, data)` | Cada 30 s y al salir | Guardar la tabla. Tiene que ser idempotente. |
-| `releaseProfile(player)` | Al salir, después de `commit` | Soltar el session lock. |
-
-En un reingreso **al mismo server** se reutiliza la tabla que ya está en memoria (el robo en curso vive ahí). `loadProfile` no se vuelve a llamar para no pisar esa sesión con un snapshot viejo. Si el modelo de sesión de S1 necesita un lock por cada join, lo correcto es reemplazar este archivo, no parchar los servicios.
-
-### Esquema v1 (`Shared/Types/Profile.luau`)
-
-`Profile.hydrate` completa lo que falte y tira campos de tipo raro, así un perfil a medias no tumba el server.
-
-| Campo | Tipo | Uso |
-|---|---|---|
-| `schemaVersion` | number | Siempre `1` |
-| `candy`, `bastones` | number | Billetera |
-| `reFiestas`, `has2x`, `hasVip`, `setsDone` | number / bool | Entran a `Economy.totalMultiplier` |
-| `pedestalCount` | number | Arranca en `Economy.StartPedestals` (4) |
-| `vaultTier` | number | Índice 1..4 de `Economy.VaultCapSeconds` |
-| `vaultCandy` | number | Lo que hay en la Dulcería, sin reclamar |
-| `pinatas` | `{ uid, pinataId, mutation?, pedestal?, inTransit? }` | Inventario. `inTransit` = alguien la está cargando |
-| `totalPlaySeconds` | number | Escudo de novato (15 min) |
-| `lastLogoutUnix` | number? | Para la ganancia offline (50 %, tope 8 h) |
-| `robbedAt` | `{ number }` | Unix de cada robo sufrido (máximo 2 / 5 min) |
-| `lockCooldownUntil` | number | Unix. El láser en sí no se persiste: al salir la base se vacía |
-| `lastStealUnix`, `stealTimes` | | Reservados; el cooldown de 1.5 s es de sesión |
-
-`inTransit = true` y un crash: al cargar en frío el adaptador lo limpia, así la piñata **vuelve al dueño**. No se duplica y no se pierde. Entregar en la base propia sí mueve el registro de un perfil al otro (`Shared/Gameplay/Inventory.luau`).
-
-Los Dulces de práctica (`Tuning.PlaytestCandy`, 2500) solo se suman en Studio y solo si el perfil llega vacío. Un server publicado no los regala.
-
-## Anti-cheat — `Server/Adapters/Validation.luau`
-
-Único archivo de este PR que hace `require` de `Services/AntiCheat/`.
-
-| Función | Delega en |
+| Qué | Dónde |
 |---|---|
-| `allow(player, key)` | `RateLimiter` (capacidad 5, fuga 2/s) |
-| `root`, `inRange`, `inFront` | `Validators` (incluye el slack de ping) |
-| `isFinite` | `Validators.isFiniteNumber` |
-| `distance` | magnitud en el servidor, para el log |
-| `flag(player, reason, data)` | `Logger.flag` |
+| Dulces | `DataService.trySpend` / `grant` (`Wallet`) |
+| Alta de piñata | `DataService.grantPinata` → `(ok, instanceId)`. `Wallet.grantPinata` sigue devolviendo boolean. |
+| Pasar una piñata de un jugador a otro | `DataService.movePinata` → `Wallet.movePinata`. El `InstanceId` no cambia. |
+| Pedestal | `Wallet.place` / `unplace` sobre `Placed` (`"1"` … slot) |
+| Dulcería sin reclamar | `VaultCandy` en el perfil (entero). Se suma 1 vez por segundo y al volver (`LastLeaveUnix`, 50 %, tope 8 h). |
+| Candado | `LockReadyUnix` |
+| Ventana de 2 robos / 5 min | `RobbedUnix` (máximo 8 timestamps) |
+| Escudo | `RookieSeconds`, +1 por segundo en el server |
+| Contadores | `Stats.Steals`, `Stats.TimesRobbed`, `Stats.Bonks` |
 
-Las reglas de juego (robo, bate, compra, candado, pesos, offline) están en `Shared/Gameplay/*` y se testean sin el motor. El server arma el input con lo que mide `Validation`, así que si S1 cambia la fórmula de ping, el gameplay la hereda sin copiarla.
+`Migrations` (sigue en v2) lee esos tres campos nuevos con default 0 / `{}`. Un perfil viejo no se rechaza. El autosave y `EndSession` los persiste ProfileStore; este código no llama `EndSession` otra vez.
 
-Un remote a ≥ 200 studs se rechaza (`StealRules` / `BatRules`) **y** se manda a `Logger` con `RequestSteal.far` o `RequestSwing.range`. Un swing que no llega por poco no se loguea: es un whiff.
+2×, VIP y sets no están en el esquema. El multiplicador usa solo `ReFiestas` hasta WP-11. El bono VIP del candado queda en 0.
 
-## Qué no hay que mover
+Una piñata cargada sigue en el `Inventory` del dueño y sale de `Placed`. `World/Transit.luau` es un set de sesión (no se guarda). Si el server se cae, el set nace vacío y la piñata vuelve al pedestal. Entregarla mueve el ítem con `movePinata`.
 
-- `init.server.luau` ya prende los servicios en orden. No hizo falta tocarlo.
-- Los remotes usados ya estaban en `Shared/Net/Remotes.luau`: `RequestBuy`, `RequestSteal`, `RequestSwing`, `RequestLock`, `StateChanged`, `Feedback`, `Announce`.
-- `Economy.luau` ganó tres bloques (`Buy`, `Return`, `StealPromptHoldSec`, `Steal.WindowSec`, `Conveyor.AnnounceLeadSec`). El resto de los números de diseño sigue ahí. La física está en `Shared/Config/Tuning.luau`, no en Economy.
+En Studio, un perfil vacío recibe `Tuning.PlaytestCandy` (2500) una vez por `UserId` en ese server. Un server publicado no.
 
-## Ganchos que S1 / los WP de después pueden llamar
+## Anti-cheat
 
-| Función | Para qué |
+Los remotes de cliente los escucha `AntiCheatService` (payload, leaky bucket, honeypot, posición). El gameplay se anota con `AntiCheatService.register` y no abre otro `OnServerEvent`.
+
+La distancia y el ángulo salen de `AntiCheatService.authorize(player, action, posicionDelServidor)`:
+
+| Acción | Tope |
 |---|---|
-| `ConveyorService.setServerLuck(seconds)` | Suerte de Server (WP-11). Duplica el peso de Rara para arriba. |
-| `LockService.grant(plotIndex, seconds, ownerUserId)` | Candado de emergencia o el de 20 s post-robo. No gasta el cooldown manual. |
-| `LockService.tryActivate(player)` | Candado del dueño. Sí gasta el cooldown. |
-| `BaseService.hasRoom` / `acceptPurchase` / `pushState` | Comprar sin pasar por la Pasarela (FTUE, fiesta). |
-| `ProfileAdapter.isRookie(player)` | El escudo. Los primeros 15 min de `totalPlaySeconds` no se roba ni te roban. |
-| `Movement.setMode(player, "normal" \| "carry" \| "stun")` | Dueño de `WalkSpeed`. No lo pise otro sistema. |
+| `RequestBuy`, `RequestLock` | `Economy.Buy.MaxDistance` |
+| `RequestSteal` | `Economy.Steal.MaxDistance` |
+| `RequestSwing` | `Economy.Bat.MaxDistance` y `MaxAngleDeg` |
+
+El slack de ping es el de `Validators.pingSlack`. Un intento a ≥ 200 studs se manda a `Logger` (`RequestBuy.far`, `RequestSteal.far`, `RequestSwing.range`). El cliente dispara con `Remotes.fireServer`.
+
+## Qué se sacó
+
+- `Adapters/ProfileAdapter.luau` (perfil en memoria y el puerto `loadProfile`)
+- `Adapters/Validation.luau` (el leaky bucket paralelo)
+- `Shared/Types/Profile.luau` (esquema v1 paralelo)
+
+`Adapters/Lifecycle.luau` se queda: ordena el drop del robo antes de liberar la base. El `EndSession` lo hace `DataService` en `PlayerRemoving`, que corre después.

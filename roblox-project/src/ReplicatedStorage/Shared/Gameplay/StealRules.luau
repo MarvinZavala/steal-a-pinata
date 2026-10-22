@@ -1,6 +1,6 @@
 --!strict
--- Reglas de robo (GDD §4.3 y §7). El servidor llena los booleanos con Validation
--- (distancia/ping viven en el módulo de anti-cheat). Esto solo decide sí o no.
+-- Reglas de robo (GDD §4.3 y §7). El servidor llena los booleanos con
+-- AntiCheatService.authorize (distancia y slack de ping). Esto solo decide sí o no.
 
 local StealRules = {}
 

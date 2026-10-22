@@ -10,12 +10,14 @@ local ServerStorage = game:GetService("ServerStorage")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Economy = require(Shared:WaitForChild("Config"):WaitForChild("Economy"))
 local Tuning = require(Shared:WaitForChild("Config"):WaitForChild("Tuning"))
-local Remotes = require(Shared:WaitForChild("Net"):WaitForChild("Remotes"))
 local BatRules = require(Shared:WaitForChild("Gameplay"):WaitForChild("BatRules"))
 
 local Server = script.Parent.Parent
-local Validation = require(Server:WaitForChild("Adapters"):WaitForChild("Validation"))
+local Records = require(Server:WaitForChild("Data"):WaitForChild("Records"))
 local Lifecycle = require(Server:WaitForChild("Adapters"):WaitForChild("Lifecycle"))
+local AntiCheatService = require(script.Parent:WaitForChild("AntiCheatService"))
+local Validators = require(script.Parent:WaitForChild("AntiCheat"):WaitForChild("Validators"))
+local Logger = require(script.Parent:WaitForChild("AntiCheat"):WaitForChild("Logger"))
 local Movement = require(Server:WaitForChild("World"):WaitForChild("Movement"))
 local Juice = require(Server:WaitForChild("World"):WaitForChild("Juice"))
 local StealService = require(script.Parent:WaitForChild("StealService"))
@@ -86,10 +88,7 @@ local function give(player: Player, character: Model)
 end
 
 function CombatService.trySwing(player: Player)
-	if not Validation.allow(player, "RequestSwing") then
-		return
-	end
-	local root = Validation.root(player)
+	local root = Validators.rootOf(player)
 	if root == nil then
 		return
 	end
@@ -103,15 +102,15 @@ function CombatService.trySwing(player: Player)
 	local nearest = math.huge
 	for _, other in Players:GetPlayers() do
 		if other ~= player then
-			local otherRoot = Validation.root(other)
+			local otherRoot = Validators.rootOf(other)
 			if otherRoot ~= nil then
 				local distance = (root.Position - otherRoot.Position).Magnitude
-				local inFront = Validation.inFront(player, otherRoot.Position, Economy.Bat.MaxAngleDeg)
+				local inFront = Validators.inFront(player, otherRoot.Position, Economy.Bat.MaxAngleDeg)
 				if inFront and distance < nearest then
 					nearest = distance
 				end
-				local inRange = Validation.inRange(player, otherRoot.Position, Economy.Bat.MaxDistance)
-				if inFront and inRange and distance < bestDistance then
+				local allowed = AntiCheatService.authorize(player, "RequestSwing", otherRoot.Position)
+				if allowed and distance < bestDistance then
 					best = other
 					bestDistance = distance
 					bestPosition = otherRoot.Position
@@ -123,12 +122,12 @@ function CombatService.trySwing(player: Player)
 	Juice.sound(root.Position, Tuning.Sfx.Swing)
 	if best == nil or bestPosition == nil then
 		if nearest < math.huge and BatRules.shouldLog(nearest, Economy.Bat.MaxDistance, "range") then
-			Validation.flag(player, "RequestSwing.range", { distance = nearest })
+			Logger.flag(player, "RequestSwing.range", { distance = nearest })
 		end
 		return
 	end
 	local ok, reason = BatRules.evaluate({
-		distance = bestDistance,
+		distance = math.min(bestDistance, Economy.Bat.MaxDistance),
 		maxDistance = Economy.Bat.MaxDistance,
 		inRange = true,
 		inFront = true,
@@ -136,7 +135,7 @@ function CombatService.trySwing(player: Player)
 	})
 	if not ok then
 		if BatRules.shouldLog(bestDistance, Economy.Bat.MaxDistance, reason) then
-			Validation.flag(player, "RequestSwing.range", { distance = bestDistance, reason = reason })
+			Logger.flag(player, "RequestSwing.range", { distance = bestDistance, reason = reason })
 		end
 		return
 	end
@@ -148,6 +147,10 @@ function CombatService.trySwing(player: Player)
 		end
 		return "normal"
 	end)
+	local targetData = Records.get(target)
+	if targetData ~= nil then
+		targetData.Stats.Bonks += 1
+	end
 	local carry = StealService.peek(target)
 	if carry ~= nil then
 		carry.hitsTaken += 1
@@ -171,6 +174,9 @@ end
 
 function CombatService.init(_services: { [string]: any })
 	template = makeTemplate()
+	AntiCheatService.register("RequestSwing", function(player, _args)
+		CombatService.trySwing(player)
+	end)
 	Lifecycle.onLeave(10, function(player)
 		lastSwing[player] = nil
 		Movement.forget(player)
@@ -178,9 +184,6 @@ function CombatService.init(_services: { [string]: any })
 end
 
 function CombatService.start()
-	Remotes.get("RequestSwing").OnServerEvent:Connect(function(player)
-		CombatService.trySwing(player)
-	end)
 	local function hook(player: Player)
 		player.CharacterAdded:Connect(function(character)
 			give(player, character)

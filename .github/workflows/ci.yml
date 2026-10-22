@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rojo, Wally, Selene, StyLua and Lune
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash roblox-project/scripts/install-toolchain.sh
+
+      - name: Put tools on PATH
+        run: |
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          echo "$HOME/.rokit/bin" >> "$GITHUB_PATH"
+
+      - name: Wally install
+        working-directory: roblox-project
+        run: |
+          wally install
+          bash scripts/ensure-packages.sh
+
+      - name: Selene
+        working-directory: roblox-project
+        run: selene src tests
+
+      - name: StyLua
+        working-directory: roblox-project
+        run: stylua --check src tests
+
+      - name: Unit tests
+        working-directory: roblox-project
+        run: lune run tests/run
+
+      - name: Rojo build
+        working-directory: roblox-project
+        run: rojo build -o "$RUNNER_TEMP/StealAPinata.rbxlx"

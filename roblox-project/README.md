@@ -9,10 +9,17 @@ Esqueleto de código para la fase 1. El diseño completo está en `../plan/GDD.m
 
 ```bash
 cd roblox-project
-rokit install          # instala rojo / wally / selene / stylua
-wally install          # (cuando haya dependencias en wally.toml) -> Packages/
+rokit install          # instala rojo / wally / selene / stylua / lune (rokit.toml)
+wally install          # Packages/ (gitignore). Hoy no hay dependencias de Wally.
+bash scripts/ensure-packages.sh   # Rojo exige Packages/ aunque Wally no lo cree
+selene src tests
+stylua --check src tests
+lune run tests/run     # migraciones, wallet, rate limit, validadores, fuzz de remotes
 rojo serve             # luego en Studio: plugin Rojo -> Connect
 ```
+
+Si `rokit install` no puede bajar los binarios, `bash scripts/install-toolchain.sh` los instala en `~/.local/bin` con los mismos tags. El CI está en `../.github/workflows/ci.yml`. Cómo verificar cada WP en Studio: [TESTING.md](TESTING.md).
+
 Para generar un place desde cero: `rojo build -o StealAPinata.rbxlx` (está en .gitignore).
 
 ## Configuración obligatoria en Studio (una vez)
@@ -51,7 +58,10 @@ src/
 ## Estado
 | Pieza | Estado |
 |---|---|
-| Config de 23 piñatas, rarezas, economía, monetización y eventos | ✅ datos de diseño (balancear) |
-| Remotes, RateLimiter, Validators, Logger | ✅ listos para usar |
-| Servicios y controladores | ⏳ stubs con TODO(WP-xx) |
-| IDs de pases, productos y texturas | ⏳ en 0 hasta crearlos en el Creator Dashboard |
+| Tooling (Rojo 7, Wally, Selene, StyLua, Lune, CI) | ✅ WP-01 |
+| DataService + ProfileStore (esquema v2, migraciones, mock, autosave, EndSession) | ✅ WP-02. El dupe de 2 servers se prueba en Studio con API Services ([TESTING.md](TESTING.md)) |
+| Registro de 23 piñatas, mesh ids placeholder y modelos en ServerStorage | ✅ WP-03. Los FBX se importan aparte; `rbxassetid://0` hasta subirlos |
+| Anti-cheat (payload, leaky bucket, honeypots, distancia/posición) | ✅ WP-10a. La distancia contra un pedestal real entra con WP-06 |
+| Config de rarezas, economía, monetización y eventos | ✅ datos de diseño (balancear) |
+| Resto de servicios y controladores | ⏳ stubs con TODO(WP-xx) |
+| IDs de pases, productos, texturas y mallas | ⏳ en 0 hasta crearlos en el Creator Dashboard |

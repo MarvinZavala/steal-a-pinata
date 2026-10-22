@@ -14,5 +14,6 @@
 | Scripts que generan TODO el arte | `art/scripts/` (`plib.py` = librería; `creatures.py`, `props.py`, `base.py`, `lobby.py`, `hero.py`, `lineup.py`) |
 | Renders | `art/renders/` |
 | Proyecto Roblox (Rojo) | `roblox-project/` |
+| Cómo probar la semana 1 en Studio | `roblox-project/TESTING.md` |
 
 Regenerar un asset: `cd art/scripts && blender -b --factory-startup -P creatures.py -- toro` (Blender 4.2).

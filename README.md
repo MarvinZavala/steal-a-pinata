@@ -15,5 +15,6 @@
 | Renders | `art/renders/` |
 | Proyecto Roblox (Rojo) | `roblox-project/` |
 | Cómo probar la semana 1 en Studio | `roblox-project/TESTING.md` |
+| Cómo probar el loop (bases, robo, bate, candado) | `roblox-project/PLAYTEST.md` |
 
 Regenerar un asset: `cd art/scripts && blender -b --factory-startup -P creatures.py -- toro` (Blender 4.2).

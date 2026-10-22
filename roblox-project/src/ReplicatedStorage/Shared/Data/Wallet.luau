@@ -129,4 +129,107 @@ function Wallet.markPurchase(data: any, purchaseId: any): boolean
 	return true
 end
 
+local function findItem(data: any, instanceId: string): any?
+	if type(data) ~= "table" or type(data.Inventory) ~= "table" then
+		return nil
+	end
+	for _, item in data.Inventory do
+		if type(item) == "table" and item.InstanceId == instanceId then
+			return item
+		end
+	end
+	return nil
+end
+
+function Wallet.slotOf(data: any, instanceId: string): number?
+	if type(data) ~= "table" or type(data.Placed) ~= "table" then
+		return nil
+	end
+	for key, value in data.Placed do
+		if value == instanceId then
+			local slot = tonumber(key)
+			if slot ~= nil then
+				return slot
+			end
+		end
+	end
+	return nil
+end
+
+function Wallet.unplace(data: any, instanceId: string)
+	if type(data) ~= "table" or type(data.Placed) ~= "table" then
+		return
+	end
+	local drop: { string } = {}
+	for key, value in data.Placed do
+		if value == instanceId and type(key) == "string" then
+			table.insert(drop, key)
+		end
+	end
+	for _, key in drop do
+		data.Placed[key] = nil
+	end
+end
+
+function Wallet.place(data: any, instanceId: any, slot: any, maxSlots: number): boolean
+	if type(data) ~= "table" or type(instanceId) ~= "string" then
+		return false
+	end
+	if type(slot) ~= "number" or slot % 1 ~= 0 or slot < 1 or slot > maxSlots then
+		return false
+	end
+	if type(data.Placed) ~= "table" or findItem(data, instanceId) == nil then
+		return false
+	end
+	Wallet.unplace(data, instanceId)
+	local key = tostring(slot)
+	local previous = data.Placed[key]
+	if type(previous) == "string" and previous ~= instanceId then
+		data.Placed[key] = nil
+	end
+	data.Placed[key] = instanceId
+	return true
+end
+
+-- Saca la piñata del inventario de origen (y de sus pedestales) y la deja en el destino.
+-- El InstanceId no cambia: no hay copia.
+function Wallet.movePinata(fromData: any, toData: any, instanceId: any, maxInventory: number): boolean
+	if type(fromData) ~= "table" or type(toData) ~= "table" or fromData == toData then
+		return false
+	end
+	if type(instanceId) ~= "string" or type(fromData.Inventory) ~= "table" or type(toData.Inventory) ~= "table" then
+		return false
+	end
+	if type(toData.Dex) ~= "table" then
+		return false
+	end
+	if #toData.Inventory >= maxInventory then
+		return false
+	end
+	if findItem(toData, instanceId) ~= nil then
+		return false
+	end
+	local item = findItem(fromData, instanceId)
+	if item == nil then
+		return false
+	end
+	local keep: { any } = {}
+	for _, other in fromData.Inventory do
+		if other ~= item then
+			table.insert(keep, other)
+		end
+	end
+	table.clear(fromData.Inventory)
+	for _, other in keep do
+		table.insert(fromData.Inventory, other)
+	end
+	Wallet.unplace(fromData, instanceId)
+	Wallet.unplace(toData, instanceId)
+	table.insert(toData.Inventory, item)
+	if type(item.PinataId) == "string" then
+		toData.Dex[item.PinataId] = true
+	end
+	return true
+end
+
 return Wallet

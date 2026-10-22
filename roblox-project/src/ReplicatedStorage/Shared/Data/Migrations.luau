@@ -43,6 +43,12 @@ export type PlayerData = {
 	Stats: PlayerStats,
 	Daily: PlayerDaily,
 	RookieSeconds: number,
+	-- Dulces ya generados que todavía no se reclamaron en la Dulcería.
+	VaultCandy: number,
+	-- Unix hasta el que el candado manual no se puede volver a prender.
+	LockReadyUnix: number,
+	-- Unix de los últimos robos sufridos (ventana de 5 min, tope corto).
+	RobbedUnix: { number },
 }
 
 export type Defaults = {
@@ -146,6 +152,9 @@ function Migrations.blank(defaults: Defaults): PlayerData
 			Streak = 0,
 		},
 		RookieSeconds = 0,
+		VaultCandy = 0,
+		LockReadyUnix = 0,
+		RobbedUnix = {},
 	}
 end
 
@@ -344,6 +353,23 @@ local function readDaily(raw: any, maxCurrency: number, maxReFiestas: number): (
 	return daily, nil
 end
 
+local function readUnixList(raw: any, maxCount: number, maxValue: number): ({ number }?, string?)
+	if raw == nil then
+		return {}, nil
+	end
+	if type(raw) ~= "table" or not isPureArray(raw) or #raw > maxCount then
+		return nil, "bad_robbed"
+	end
+	local list: { number } = {}
+	for _, value in raw do
+		if not isGoodInt(value, maxValue) then
+			return nil, "bad_robbed"
+		end
+		table.insert(list, value)
+	end
+	return list, nil
+end
+
 function Migrations.migrate(raw: any, defaults: Defaults): (PlayerData?, string?)
 	if type(raw) ~= "table" or type(defaults) ~= "table" then
 		return fail("not_table")
@@ -383,6 +409,18 @@ function Migrations.migrate(raw: any, defaults: Defaults): (PlayerData?, string?
 	local rookie, rookieErr = takeInt(raw.RookieSeconds, 0, defaults.maxCurrency)
 	if rookie == nil then
 		return fail(rookieErr or "bad_number")
+	end
+	local vaultCandy, vaultCandyErr = takeInt(raw.VaultCandy, 0, defaults.maxCurrency)
+	if vaultCandy == nil then
+		return fail(vaultCandyErr or "bad_number")
+	end
+	local lockReady, lockReadyErr = takeInt(raw.LockReadyUnix, 0, defaults.maxCurrency)
+	if lockReady == nil then
+		return fail(lockReadyErr or "bad_number")
+	end
+	local robbedUnix, robbedErr = readUnixList(raw.RobbedUnix, 8, defaults.maxCurrency)
+	if robbedUnix == nil then
+		return fail(robbedErr or "bad_robbed")
 	end
 
 	local inventory, inventoryErr = readInventory(raw.Inventory, defaults.maxInventory)
@@ -425,6 +463,9 @@ function Migrations.migrate(raw: any, defaults: Defaults): (PlayerData?, string?
 	data.PedestalsOwned = pedestals
 	data.VaultCapTier = vault
 	data.RookieSeconds = rookie
+	data.VaultCandy = vaultCandy
+	data.LockReadyUnix = lockReady
+	data.RobbedUnix = robbedUnix
 	data.Inventory = inventory
 	data.Placed = placed
 	data.Dex = dex

@@ -7,6 +7,7 @@ local specs = {
 	"./payload.spec",
 	"./pinatas.spec",
 	"./data_service_contract.spec",
+	"./gameplay.spec",
 }
 
 local failed = 0

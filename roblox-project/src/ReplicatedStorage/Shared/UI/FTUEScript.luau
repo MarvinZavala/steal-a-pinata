@@ -1,0 +1,110 @@
+--!strict
+-- Guion de los primeros 60 s (GDD §10.1). Los tiempos dejan completar los 8 pasos en ≤ 70 s
+-- si la persona toca cuando aparece el botón. El +9/s sale de Pinatas.michi, no de un número suelto.
+
+export type StepDef = {
+	index: number,
+	name: string,
+	mode: string,
+	seconds: number,
+	after: number,
+	promptKey: string?,
+	guideKey: string?,
+	action: string?,
+	hud: string?,
+}
+
+local FTUEScript = {
+	Funnel = "ftue_first_60",
+	-- GDD §10.1: "+250 🍬" al pisar la Dulcería. No está en Economy.
+	CollectCandy = 250,
+	ClaimId = "michi",
+	ClaimMutation = "Golden",
+	BuyId = "burrito",
+	PeekId = "dragon",
+	SlowMo = 0.4,
+	ShieldSec = 15 * 60,
+	FiestaPreview = 4 * 60 + 59,
+	Steps = {
+		{
+			index = 1,
+			name = "1_spawn",
+			mode = "auto",
+			seconds = 3.2,
+			after = 0,
+			guideKey = "ftue.guide_base",
+		},
+		{
+			index = 2,
+			name = "2_arrow_followed",
+			mode = "tap",
+			seconds = 1.15,
+			after = 0.45,
+			promptKey = "ftue.go",
+			guideKey = "ftue.guide_arrow",
+			hud = "ftuePrompt",
+		},
+		{
+			index = 3,
+			name = "3_first_claim",
+			mode = "tap",
+			seconds = 1.2,
+			after = 1.7,
+			promptKey = "ftue.take",
+			guideKey = "ftue.free",
+			action = "claim",
+			hud = "ftuePrompt",
+		},
+		{
+			index = 4,
+			name = "4_thief_seen",
+			mode = "auto",
+			seconds = 6.0,
+			after = 0,
+			guideKey = "ftue.guide_thief",
+		},
+		{
+			index = 5,
+			name = "5_first_bonk",
+			mode = "tap",
+			seconds = 0.35,
+			after = 2.5,
+			promptKey = "ftue.hit",
+			guideKey = "ftue.guide_thief",
+			action = "bonk",
+			hud = "bat",
+		},
+		{
+			index = 6,
+			name = "6_first_income",
+			mode = "auto",
+			seconds = 4.0,
+			after = 0,
+			guideKey = "ftue.guide_income",
+		},
+		{
+			index = 7,
+			name = "7_first_collect",
+			mode = "tap",
+			seconds = 0.7,
+			after = 1.25,
+			promptKey = "ftue.collect_btn",
+			guideKey = "ftue.guide_income",
+			action = "collect",
+			hud = "collect",
+		},
+		{
+			index = 8,
+			name = "8_first_purchase",
+			mode = "tap",
+			seconds = 1.05,
+			after = 2.1,
+			promptKey = "ftue.buy",
+			guideKey = "ftue.next",
+			action = "buy",
+			hud = "ftuePrompt",
+		},
+	} :: { StepDef },
+}
+
+return FTUEScript

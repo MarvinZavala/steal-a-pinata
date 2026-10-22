@@ -1,0 +1,86 @@
+--!strict
+-- Contratos de estado que el HUD entiende. El servidor manda parches por StateChanged
+-- (ver UI_INTEGRATION.md). Los nil no viajan en remotes: para soltar la carga se manda carrying = false.
+
+export type OwnedPinata = {
+	uid: string,
+	pinataId: string,
+	mutation: string,
+	pedestal: number?,
+}
+
+export type CarryInfo = {
+	pinataId: string,
+	mutation: string,
+	fromUserId: number,
+	hitsLeft: number,
+}
+
+export type LockPing = {
+	userId: number,
+	name: string,
+	remaining: number,
+	cooldown: number,
+}
+
+export type Passes = {
+	doubleCandy: boolean,
+	vip: boolean,
+	extraPedestals: boolean,
+	autoCollect: boolean,
+	batPack: boolean,
+}
+
+export type Settings = {
+	locale: string,
+	music: number,
+	sfx: number,
+	reduceMotion: boolean,
+	cameraShake: boolean,
+}
+
+export type GameState = {
+	candy: number,
+	candyPerSec: number,
+	bastones: number,
+	owned: { OwnedPinata },
+	pedestalCount: number,
+	pedestalCap: number,
+	vaultTier: number,
+	vaultStored: number,
+	carrying: CarryInfo?,
+	rookieShieldRemaining: number,
+	myLockRemaining: number,
+	myLockCooldown: number,
+	nearbyLocks: { LockPing },
+	fiestaRemaining: number,
+	reFiestas: number,
+	passes: Passes,
+	batSkin: string,
+	settings: Settings,
+	ftueCompleted: boolean,
+	multiplier: number,
+}
+
+export type ShopEntry = {
+	id: string,
+	titleKey: string,
+	bodyKey: string,
+	titleArgs: { [string]: string }?,
+	bodyArgs: { [string]: string }?,
+	priceCandy: number?,
+	priceRobux: number?,
+	action: string,
+	owned: boolean,
+	enabled: boolean,
+	badgeKey: string?,
+	odds: { OddsRow }?,
+}
+
+export type OddsRow = {
+	key: string,
+	percent: number,
+	swatch: string,
+}
+
+return {}

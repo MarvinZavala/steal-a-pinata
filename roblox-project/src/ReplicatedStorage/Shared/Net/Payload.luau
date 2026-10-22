@@ -5,7 +5,17 @@
 local Payload = {}
 
 export type Direction = "C2S" | "S2C"
-export type ArgKind = "slot" | "userId" | "pedestal" | "upgrade" | "pinataId"
+export type ArgKind =
+	"slot"
+	| "userId"
+	| "pedestal"
+	| "upgrade"
+	| "pinataId"
+	| "ftueStep"
+	| "ftueAction"
+	| "locale"
+	| "unit"
+	| "flag"
 
 export type RemoteSpec = {
 	Direction: Direction,
@@ -37,6 +47,12 @@ local SPECS: { [string]: RemoteSpec } = {
 	StateChanged = { Direction = "S2C", Honeypot = false, Args = {} },
 	Feedback = { Direction = "S2C", Honeypot = false, Args = {} },
 	Announce = { Direction = "S2C", Honeypot = false, Args = {} },
+	-- UI (WP-12a / WP-13). Misma carpeta Remotes; el anti-cheat ya los escucha por estar acá.
+	RequestCollect = { Direction = "C2S", Honeypot = false, Args = {} },
+	RequestSettings = { Direction = "C2S", Honeypot = false, Args = { "locale", "unit", "unit", "flag", "flag" } },
+	RequestFTUEStep = { Direction = "C2S", Honeypot = false, Args = { "ftueStep" } },
+	RequestFTUEAction = { Direction = "C2S", Honeypot = false, Args = { "ftueAction" } },
+	OpenShop = { Direction = "S2C", Honeypot = false, Args = {} },
 	-- Señuelos. El cliente legítimo no los dispara (Remotes.fireServer los rechaza).
 	RequestGrantCurrency = { Direction = "C2S", Honeypot = true, Args = {} },
 	RequestSetWalkSpeed = { Direction = "C2S", Honeypot = true, Args = {} },
@@ -91,6 +107,32 @@ local function checkInteger(value: any, min: number, max: number): (boolean, str
 	end
 	if value > max then
 		return false, "max"
+	end
+	return true, nil
+end
+
+local function allowList(list: any): { [string]: boolean }
+	local allowed: { [string]: boolean } = {}
+	if type(list) ~= "table" then
+		return allowed
+	end
+	for _, item in list do
+		if type(item) == "string" then
+			allowed[item] = true
+		end
+	end
+	return allowed
+end
+
+local function checkUnit(value: any): (boolean, string?)
+	if type(value) ~= "number" then
+		return false, "type"
+	end
+	if not isFinite(value) then
+		return false, "nonfinite"
+	end
+	if value < 0 or value > 1 then
+		return false, "range"
 	end
 	return true, nil
 end
@@ -182,6 +224,30 @@ function Payload.validate(name: string, args: any, security: any, pinatas: any):
 			local ok, reason = checkString(value, bounds.String.MaxLen, allowed)
 			if not ok then
 				return false, reason
+			end
+		elseif kind == "ftueStep" then
+			local ok, reason = checkString(value, bounds.String.MaxLen, allowList(security.FtueSteps))
+			if not ok then
+				return false, reason
+			end
+		elseif kind == "ftueAction" then
+			local ok, reason = checkString(value, bounds.String.MaxLen, allowList(security.FtueActions))
+			if not ok then
+				return false, reason
+			end
+		elseif kind == "locale" then
+			local ok, reason = checkString(value, bounds.String.MaxLen, allowList(security.Locales))
+			if not ok then
+				return false, reason
+			end
+		elseif kind == "unit" then
+			local ok, reason = checkUnit(value)
+			if not ok then
+				return false, reason
+			end
+		elseif kind == "flag" then
+			if type(value) ~= "boolean" then
+				return false, "type"
 			end
 		else
 			return false, "spec"

@@ -387,7 +387,16 @@ local function samplePlayer(player: Player, now: number)
 	local mode = Movement.mode(player)
 	local knockAge = Movement.impulseAge(player, now)
 	local blocked = plotNoclip(previous.x, previous.y, previous.z, position.X, position.Y, position.Z)
-	local verdict = MovementSanity.classify(moveCfg, distance, dt, mode, pingOf(player), knockAge, position.Y)
+	local verdict = MovementSanity.classify(
+		moveCfg,
+		distance,
+		dt,
+		mode,
+		pingOf(player),
+		knockAge,
+		position.Y,
+		Movement.impulseScale(player)
+	)
 	local kind: string? = nil
 	if blocked then
 		kind = "noclip"

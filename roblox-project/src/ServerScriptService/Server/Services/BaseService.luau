@@ -230,15 +230,40 @@ function BaseService.pushState(player: Player)
 		rookieShieldRemaining = Records.rookieLeft(data),
 		owned = owned,
 		pedestalCount = data.PedestalsOwned,
-		pedestalCap = Economy.MaxPedestals,
+		pedestalCap = Economy.pedestalCap(data.ReFiestas, data.Passes.ExtraPedestals == true),
 		vaultTier = data.VaultCapTier,
 		bastones = data.Bastones,
 		reFiestas = data.ReFiestas,
-		multiplier = Economy.totalMultiplier(data.ReFiestas, false, false, 0),
+		multiplier = Records.multiplier(data),
+		passes = {
+			doubleCandy = data.Passes.DoubleCandy == true,
+			vip = data.Passes.Vip == true,
+			extraPedestals = data.Passes.ExtraPedestals == true,
+			autoCollect = data.Passes.AutoCollect == true,
+			batPack = data.Passes.BatPack == true,
+		},
+		batSkin = if data.Cosmetics.bat_oro == true then "gold" else "wood",
+		batUpgrade = data.BatUpgrade,
 		ftueCompleted = data.FtueCompleted == true,
 		myLockRemaining = lockRemaining,
 		myLockCooldown = lockCooldown,
 	}
+	local eventService = servicesRef.EventService
+	if type(eventService) == "table" and type(eventService.snapshot) == "function" then
+		local snap = eventService.snapshot(player)
+		if type(snap) == "table" then
+			for key, value in snap do
+				payload[key] = value
+			end
+		end
+	end
+	local dailyService = servicesRef.DailyService
+	if type(dailyService) == "table" and type(dailyService.snapshot) == "function" then
+		local snap = dailyService.snapshot(player)
+		if type(snap) == "table" then
+			payload.daily = snap
+		end
+	end
 	local ui = servicesRef.UiIntentService
 	if type(ui) == "table" and type(ui.settingsOf) == "function" then
 		local settings = ui.settingsOf(player)
@@ -404,6 +429,9 @@ function BaseService.acceptPurchase(
 	if buyPrompt ~= nil then
 		buyPrompt:Destroy()
 	end
+	if charge ~= nil then
+		data.Stats.Buys += 1
+	end
 	Records.place(data, instanceId, slot.index)
 	slot.uid = instanceId
 	slot.model = model
@@ -456,6 +484,22 @@ local function restore(player: Player, plot: Plot)
 			BaseService.receive(player.UserId, owned, model, false, Records.slotOf(data, owned.InstanceId))
 		end
 	end
+end
+
+function BaseService.resync(player: Player)
+	local plot = BaseService.plotOf(player.UserId)
+	if plot == nil then
+		return
+	end
+	for _, pedestal in plot.pedestals do
+		if pedestal.model ~= nil then
+			pedestal.model:Destroy()
+		end
+		pedestal.model = nil
+		pedestal.uid = nil
+	end
+	restore(player, plot)
+	BaseService.pushState(player)
 end
 
 local function moveCharacter(player: Player, plot: Plot, character: Model)
@@ -576,6 +620,8 @@ local function bindCollect(plot: Plot)
 		data.VaultCandy = 0
 		if gain > 0 and not Records.grantDulces(player, gain) then
 			data.VaultCandy = gain
+		elseif gain > 0 then
+			data.Stats.Collects += 1
 		end
 		Juice.confetti(plot.collect.Position, Tuning.Sfx.Collect)
 		Remotes.get("Feedback"):FireClient(player, "COLLECT", {

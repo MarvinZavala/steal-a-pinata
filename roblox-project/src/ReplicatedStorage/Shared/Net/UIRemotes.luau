@@ -12,6 +12,9 @@ local NAMES = {
 	"RequestSettings",
 	"RequestFTUEStep",
 	"RequestFTUEAction",
+	"RequestClaimDaily",
+	"RequestClaimQuest",
+	"RequestRewarded",
 	"OpenShop",
 }
 

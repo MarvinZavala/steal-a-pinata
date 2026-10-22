@@ -14,6 +14,7 @@ local Movement = {}
 local modeOf: { [Player]: string } = {}
 local tokenOf: { [Player]: {} } = {}
 local impulseAt: { [Player]: number } = {}
+local impulseScaleOf: { [Player]: number } = {}
 
 local function desiredSpeed(mode: string): number
 	return MoveMath.speed(mode, Tuning.WalkSpeed, Tuning.CarrySpeed)
@@ -56,10 +57,15 @@ function Movement.impulseAge(player: Player, now: number): number?
 	return now - at
 end
 
+function Movement.impulseScale(player: Player): number
+	return impulseScaleOf[player] or 1
+end
+
 function Movement.forget(player: Player)
 	modeOf[player] = nil
 	tokenOf[player] = nil
 	impulseAt[player] = nil
+	impulseScaleOf[player] = nil
 end
 
 function Movement.watch(player: Player, character: Model)
@@ -128,7 +134,7 @@ function Movement.watch(player: Player, character: Model)
 	end)
 end
 
-function Movement.knock(player: Player, direction: Vector3, stunSec: number, restore: () -> string)
+function Movement.knock(player: Player, direction: Vector3, stunSec: number, restore: () -> string, pushScale: number?)
 	local character = player.Character
 	if character == nil then
 		return
@@ -158,7 +164,10 @@ function Movement.knock(player: Player, direction: Vector3, stunSec: number, res
 		local look = root.CFrame.LookVector
 		flat = Vector3.new(look.X, 0, look.Z)
 	end
-	local ix, iy, iz = MoveMath.impulse(flat.X, flat.Z, mass, Tuning.KnockbackHorizontal, Tuning.KnockbackVertical)
+	local scale = if type(pushScale) == "number" and pushScale > 0 then pushScale else 1
+	impulseScaleOf[player] = scale
+	local ix, iy, iz =
+		MoveMath.impulse(flat.X, flat.Z, mass, Tuning.KnockbackHorizontal * scale, Tuning.KnockbackVertical * scale)
 	root:ApplyImpulse(Vector3.new(ix, iy, iz))
 	task.delay(stunSec, function()
 		if tokenOf[player] ~= token then

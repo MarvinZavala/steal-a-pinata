@@ -112,9 +112,9 @@ local entries: { [string]: Entry } = {
 		pt = "Zera Doces e piñatas comuns. Conserva Secretas e de Evento. +0.5× para sempre.",
 	},
 	["shop.refiesta_need"] = {
-		es = "Pedís 1 Épica y {n} Dulces.",
-		en = "Needs 1 Epic and {n} Candy.",
-		pt = "Pede 1 Épica e {n} Doces.",
+		es = "Pedís {count} {rarity} y {n} Dulces.",
+		en = "Needs {count} {rarity} and {n} Candy.",
+		pt = "Pede {count} {rarity} e {n} Doces.",
 	},
 	["shop.bat_wood_title"] = { es = "Bate de madera", en = "Wood bat", pt = "Taco de madeira" },
 	["shop.bat_wood_body"] = {
@@ -343,6 +343,64 @@ local entries: { [string]: Entry } = {
 	["pinata.tamalito"] = { es = "Tamalito", en = "Tamalito", pt = "Tamalzinho" },
 	["pinata.jengibrin"] = { es = "Jengibrín", en = "Jengibrín", pt = "Gengibrinho" },
 	["pinata.renito"] = { es = "Renito", en = "Renito", pt = "Reninha" },
+
+	["hud.hoy"] = { es = "HOY", en = "TODAY", pt = "HOJE" },
+	["daily.already"] = { es = "Eso ya lo reclamaste hoy.", en = "Already claimed today.", pt = "Já resgatou hoje." },
+	["daily.title"] = { es = "Racha {n}", en = "Streak {n}", pt = "Sequência {n}" },
+	["daily.reward"] = { es = "Hoy: {n} Dulces", en = "Today: {n} Candy", pt = "Hoje: {n} Doces" },
+	["daily.claim"] = { es = "Reclamar", en = "Claim", pt = "Resgatar" },
+	["daily.claimed"] = { es = "Listo", en = "Claimed", pt = "Pronto" },
+	["daily.claim_quest"] = { es = "Cobrar misión", en = "Claim quest", pt = "Cobrar missão" },
+	["daily.quest_buy"] = { es = "Compra 5 piñatas", en = "Buy 5 piñatas", pt = "Compre 5 piñatas" },
+	["daily.quest_bonk"] = { es = "Batea a 3", en = "Bonk 3 players", pt = "Bata em 3" },
+	["daily.quest_fiesta"] = { es = "10.000 Dulces de Fiesta", en = "10,000 Party Candy", pt = "10.000 Doces de Festa" },
+	["daily.quest_steal"] = { es = "Roba 1 piñata", en = "Steal 1 piñata", pt = "Roube 1 piñata" },
+	["daily.quest_collect"] = { es = "Junta 3 veces", en = "Collect 3 times", pt = "Junte 3 vezes" },
+	["fiesta.title"] = { es = "Fiesta", en = "Party", pt = "Festa" },
+	["fiesta.wait"] = {
+		es = "La próxima empieza en {time}.",
+		en = "The next one starts in {time}.",
+		pt = "A próxima começa em {time}.",
+	},
+	["fiesta.rain"] = {
+		es = "Llueven piñatas. Quedan {time}.",
+		en = "Piñatas are falling. {time} left.",
+		pt = "Chovem piñatas. Faltam {time}.",
+	},
+	["fiesta.giant"] = { es = "Piñata Gigante", en = "Giant Piñata", pt = "Piñata Gigante" },
+	["fiesta.hp"] = { es = "{hp}/{max} · {time}", en = "{hp}/{max} · {time}", pt = "{hp}/{max} · {time}" },
+	["fiesta.hits"] = { es = "Tus golpes: {n}", en = "Your hits: {n}", pt = "Seus golpes: {n}" },
+	["fiesta.body"] = {
+		es = "Toda la plaza pega junta. El premio sigue tus golpes.",
+		en = "The whole plaza hits together. The prize follows your hits.",
+		pt = "A praça inteira bate junto. O prêmio segue seus golpes.",
+	},
+	["shop.bat_upgrade_title"] = { es = "Bate más largo", en = "Longer bat", pt = "Taco mais longo" },
+	["shop.bat_upgrade_body"] = {
+		es = "Empuja un poco más. Las skins no cambian el golpe.",
+		en = "Shoves a bit farther. Skins do not change the hit.",
+		pt = "Empurra um pouco mais. As skins não mudam o golpe.",
+	},
+	["shop.private_title"] = { es = "Servidor privado", en = "Private server", pt = "Servidor privado" },
+	["shop.private_body"] = {
+		es = "{n} R$ al mes, en la página del juego. Acá no se vende.",
+		en = "{n} R$ a month, on the game page. Not sold here.",
+		pt = "{n} R$ por mês, na página do jogo. Não se vende aqui.",
+	},
+	["shop.sub_title"] = { es = "Pase Fiesta", en = "Party Pass", pt = "Passe Festa" },
+	["shop.sub_body"] = {
+		es = "49 R$/mes. Una piñata diaria extra y una caja por semana.",
+		en = "49 R$/month. An extra daily piñata and a weekly box.",
+		pt = "49 R$/mês. Uma piñata diária extra e uma caixa por semana.",
+	},
+	["shop.rewarded_title"] = { es = "Video de Dulces", en = "Candy video", pt = "Vídeo de Doces" },
+	["shop.rewarded_body"] = {
+		es = "+1 al multiplicador por 10 min, una vez por día. No se suma al pase 2x.",
+		en = "+1 multiplier for 10 min, once a day. Does not stack with the 2x pass.",
+		pt = "+1 no multiplicador por 10 min, uma vez por dia. Não soma com o passe 2x.",
+	},
+	["shop.cosmetic_trail"] = { es = "Trail de confeti", en = "Confetti trail", pt = "Rastro de confete" },
+	["shop.cosmetic_bat"] = { es = "Bate de oro", en = "Gold bat", pt = "Taco de ouro" },
 }
 
 local Catalog = {

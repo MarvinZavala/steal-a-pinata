@@ -14,6 +14,7 @@ export type MoveConfig = {
 	knockbackHorizontal: number,
 	knockbackVertical: number,
 	knockbackGraceSec: number,
+	knockScaleCap: number,
 	jumpHeight: number,
 	groundY: number,
 	flySlack: number,
@@ -36,6 +37,7 @@ function MovementSanity.fromTuning(tuning: any, security: any, fair: any): MoveC
 		knockbackHorizontal = tuning.KnockbackHorizontal,
 		knockbackVertical = tuning.KnockbackVertical,
 		knockbackGraceSec = fair.KnockbackGraceSec,
+		knockScaleCap = fair.KnockScaleCap,
 		jumpHeight = tuning.JumpHeight,
 		groundY = fair.GroundY,
 		flySlack = fair.FlySlack,
@@ -60,12 +62,31 @@ function MovementSanity.knockbackActive(cfg: MoveConfig, knockAge: number?): boo
 	return knockAge >= 0 and knockAge <= cfg.knockbackGraceSec
 end
 
+local function knockFactor(cfg: MoveConfig, knockAge: number?, knockScale: number?): number
+	if not MovementSanity.knockbackActive(cfg, knockAge) then
+		return 0
+	end
+	local scale = 1
+	if knockScale ~= nil and finite(knockScale) and knockScale > 0 then
+		scale = knockScale
+	end
+	local cap = cfg.knockScaleCap
+	if not finite(cap) or cap < 1 then
+		cap = 1
+	end
+	if scale > cap then
+		scale = cap
+	end
+	return scale
+end
+
 function MovementSanity.allowedDistance(
 	cfg: MoveConfig,
 	dt: number,
 	mode: string,
 	pingSec: number,
-	knockAge: number?
+	knockAge: number?,
+	knockScale: number?
 ): number
 	if not finite(dt) or dt <= 0 then
 		return 0
@@ -78,17 +99,19 @@ function MovementSanity.allowedDistance(
 	end
 	local allowed = MovementSanity.modeSpeed(cfg, mode) * cfg.speedMultiplier * dt + cfg.teleportSlack
 	allowed += cfg.walkSpeed * ping
-	if MovementSanity.knockbackActive(cfg, knockAge) then
+	local scale = knockFactor(cfg, knockAge, knockScale)
+	if scale > 0 then
 		local window = math.min(dt, cfg.knockbackGraceSec)
-		allowed += (cfg.knockbackHorizontal + cfg.knockbackVertical) * window
+		allowed += (cfg.knockbackHorizontal + cfg.knockbackVertical) * window * scale
 	end
 	return allowed
 end
 
-function MovementSanity.maxHeight(cfg: MoveConfig, dt: number, knockAge: number?): number
+function MovementSanity.maxHeight(cfg: MoveConfig, dt: number, knockAge: number?, knockScale: number?): number
 	local extra = 0
-	if MovementSanity.knockbackActive(cfg, knockAge) and finite(dt) and dt > 0 then
-		extra = cfg.knockbackVertical * math.min(dt, cfg.knockbackGraceSec)
+	local scale = knockFactor(cfg, knockAge, knockScale)
+	if scale > 0 and finite(dt) and dt > 0 then
+		extra = cfg.knockbackVertical * math.min(dt, cfg.knockbackGraceSec) * scale
 	end
 	return cfg.groundY + cfg.jumpHeight + cfg.flySlack + extra
 end
@@ -100,15 +123,16 @@ function MovementSanity.classify(
 	mode: string,
 	pingSec: number,
 	knockAge: number?,
-	y: number
+	y: number,
+	knockScale: number?
 ): Verdict
 	if not finite(distance) or not finite(y) or distance < 0 then
 		return "teleport"
 	end
-	if y > MovementSanity.maxHeight(cfg, dt, knockAge) then
+	if y > MovementSanity.maxHeight(cfg, dt, knockAge, knockScale) then
 		return "fly"
 	end
-	local allowed = MovementSanity.allowedDistance(cfg, dt, mode, pingSec, knockAge)
+	local allowed = MovementSanity.allowedDistance(cfg, dt, mode, pingSec, knockAge, knockScale)
 	if distance <= allowed then
 		return "ok"
 	end

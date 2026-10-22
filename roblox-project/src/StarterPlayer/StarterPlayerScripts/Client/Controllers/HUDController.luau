@@ -18,6 +18,8 @@ local InventoryPanel = require(script.Parent.Parent.UI.InventoryPanel)
 local Locale = require(script.Parent.Parent.UI.Locale)
 local Menus = require(script.Parent.Parent.UI.Menus)
 local Metrics = require(script.Parent.Parent.UI.Metrics)
+local DailyPanel = require(script.Parent.Parent.UI.DailyPanel)
+local FiestaPanel = require(script.Parent.Parent.UI.FiestaPanel)
 local SettingsPanel = require(script.Parent.Parent.UI.SettingsPanel)
 local SoundBus = require(script.Parent.Parent.UI.SoundBus)
 local UIBridge = require(script.Parent.Parent.UI.UIBridge)
@@ -42,6 +44,8 @@ local vaultFill: Frame
 local fiestaLabel: TextLabel
 local shieldLabel: TextLabel
 local fiestaWrap: Frame
+local hoyWrap: Frame
+local hoyLabel: TextLabel
 local shieldWrap: Frame
 local badge: TextLabel
 local carryWrap: Frame
@@ -161,12 +165,16 @@ local function layout(m: any)
 	settingsWrap.Position = UDim2.new(1, -right, 0, top)
 	settingsWrap.Size = UDim2.fromOffset(m.button, m.button)
 
-	local chipW = if m.compact then 158 else 176
+	local chipW = if m.compact then 148 else 168
+	hoyWrap.AnchorPoint = Vector2.zero
+	hoyWrap.Position = UDim2.fromOffset(left, top + m.candyH + 6)
+	hoyWrap.Size = UDim2.fromOffset(chipW, m.chip)
+	hoyLabel.TextSize = m.small
 	if m.compact then
 		fiestaWrap.AnchorPoint = Vector2.zero
-		fiestaWrap.Position = UDim2.fromOffset(left, top + m.candyH + 6)
+		fiestaWrap.Position = UDim2.fromOffset(left + chipW + 8, top + m.candyH + 6)
 		shieldWrap.AnchorPoint = Vector2.zero
-		shieldWrap.Position = UDim2.fromOffset(left + chipW + 8, top + m.candyH + 6)
+		shieldWrap.Position = UDim2.fromOffset(left, top + m.candyH + m.chip + 12)
 	else
 		fiestaWrap.AnchorPoint = Vector2.new(1, 0)
 		fiestaWrap.Position = UDim2.new(1, -(right + m.button + 8), 0, top)
@@ -441,8 +449,28 @@ function HUDController.start()
 	Theme.apply(fiestaLabel, "display", Theme.color.white)
 	fiestaLabel.TextStrokeColor3 = Theme.color.ink
 	fiestaLabel.TextStrokeTransparency = 0
+	local fiestaFace = fiestaWrap:FindFirstChild("Fiesta", true)
+	if fiestaFace and fiestaFace:IsA("TextButton") then
+		fiestaFace.Active = true
+		fiestaFace.Activated:Connect(function()
+			FiestaPanel.toggle()
+		end)
+	end
+	local hoyButton: TextButton
+	hoyWrap, hoyButton, hoyLabel = UIKit.button(layer, {
+		name = "Hoy",
+		key = "hud.hoy",
+		color = Theme.color.sun_yellow,
+		size = UDim2.fromOffset(160, 40),
+		onClick = function()
+			DailyPanel.toggle()
+		end,
+	})
+	hoyButton.Active = true
+	Theme.apply(hoyLabel, "display", Theme.color.ink)
 	shieldWrap, shieldLabel = chip("Shield", Theme.color.bubblegum)
 	fiestaWrap.Visible = false
+	hoyWrap.Visible = true
 	shieldWrap.Visible = false
 
 	badge = UIKit.label(layer, "", "body", 14, Theme.color.ink_soft)

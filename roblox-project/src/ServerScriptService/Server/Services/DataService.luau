@@ -320,6 +320,51 @@ function DataService.markPurchase(player: Player, purchaseId: string): boolean
 	return Wallet.markPurchase(profile.Data, purchaseId)
 end
 
+function DataService.purchaseSaved(player: Player, purchaseId: string): boolean
+	local profile = activeProfile(player)
+	if profile == nil or type(purchaseId) ~= "string" then
+		return false
+	end
+	local last = profile.LastSavedData
+	if type(last) ~= "table" or type(last.ProcessedPurchases) ~= "table" then
+		return false
+	end
+	return last.ProcessedPurchases[purchaseId] == true
+end
+
+-- Espera a que el PurchaseId quede en el snapshot guardado. Un autosave viejo no cuenta.
+function DataService.persist(player: Player, purchaseId: string): boolean
+	if not RunService:IsServer() then
+		return false
+	end
+	local profile = activeProfile(player)
+	if profile == nil then
+		return false
+	end
+	if DataService.purchaseSaved(player, purchaseId) then
+		return true
+	end
+	local saved = false
+	local conn = profile.OnAfterSave:Connect(function(last: any)
+		if
+			type(last) == "table"
+			and type(last.ProcessedPurchases) == "table"
+			and last.ProcessedPurchases[purchaseId] == true
+		then
+			saved = true
+		end
+	end)
+	pcall(function()
+		profile:Save()
+	end)
+	local deadline = os.clock() + 12
+	while not saved and player.Parent == Players and os.clock() < deadline do
+		task.wait(0.1)
+	end
+	conn:Disconnect()
+	return saved or DataService.purchaseSaved(player, purchaseId)
+end
+
 function DataService.init(_services: { [string]: any })
 	for id in Pinatas do
 		pinataAllowed[id] = true

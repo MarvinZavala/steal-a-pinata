@@ -7,6 +7,8 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Economy = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"):WaitForChild("Economy")) :: any
+local Monetization =
+	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config"):WaitForChild("Monetization")) :: any
 local Theme = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("UI"):WaitForChild("Theme")) :: any
 local ShopCatalog =
 	require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("UI"):WaitForChild("ShopCatalog")) :: any
@@ -155,6 +157,22 @@ local function onEntry(entry: any)
 		else
 			MarketplaceService:PromptProductPurchase(player, productId)
 		end
+	elseif entry.action == "rewarded" then
+		UIBridge.rewarded()
+		Toast.push("info", Locale.t("common.sent"))
+	elseif entry.action == "subscription" then
+		local subId = Monetization.Subscription.Id
+		local prompt = (MarketplaceService :: any).PromptSubscriptionPurchase
+		if subId == "" or type(prompt) ~= "function" then
+			Toast.push("info", Locale.t("toast.soon"))
+			return
+		end
+		local ok = pcall(function()
+			prompt(MarketplaceService, Players.LocalPlayer, subId)
+		end)
+		if not ok then
+			Toast.push("info", Locale.t("toast.soon"))
+		end
 	end
 end
 
@@ -288,7 +306,15 @@ local function renderKiosk(name: string)
 		heading.Size = UDim2.new(1, 0, 0, m.body + 6)
 		heading.TextXAlignment = Enum.TextXAlignment.Left
 		heading.LayoutOrder = 1
-		local body = UIKit.label(row, Locale.t(entry.bodyKey, entry.bodyArgs), "body", m.small, Theme.color.ink_soft)
+		local bodyArgs = entry.bodyArgs
+		if typeof(bodyArgs) == "table" and typeof(bodyArgs.rarityKey) == "string" then
+			bodyArgs = {
+				count = bodyArgs.count,
+				n = bodyArgs.n,
+				rarity = Locale.t(bodyArgs.rarityKey),
+			}
+		end
+		local body = UIKit.label(row, Locale.t(entry.bodyKey, bodyArgs), "body", m.small, Theme.color.ink_soft)
 		body.Size = UDim2.new(1, 0, 0, m.small * 2 + 4)
 		body.TextXAlignment = Enum.TextXAlignment.Left
 		body.LayoutOrder = 2

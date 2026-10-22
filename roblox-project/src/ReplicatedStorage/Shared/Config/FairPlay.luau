@@ -7,6 +7,9 @@ local FairPlay = {
 	-- Movimiento. Un sample corto con este extra todavía es "speed"; más allá es teleport.
 	TeleportExtra = 40,
 	KnockbackGraceSec = 1.8,
+	-- El bate de economía escala el impulso (Economy.BatPushCap = 1.6). Este tope
+	-- deja pasar ese golpe y corta un factor absurdo.
+	KnockScaleCap = 2,
 	PingCapSec = 0.3,
 	-- Cadera de un avatar parado en la plaza. El salto de Tuning se suma encima.
 	GroundY = 3,

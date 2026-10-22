@@ -38,6 +38,7 @@ type Slot = {
 local slots: { Slot } = {}
 local nextId = 1
 local luckUntil = 0
+local goldenLeft = 0
 local rows: { SpawnWeights.RosterRow } = {}
 
 local function luckOn(): boolean
@@ -46,6 +47,13 @@ end
 
 function ConveyorService.setServerLuck(seconds: number)
 	luckUntil = math.max(luckUntil, os.clock() + seconds)
+end
+
+function ConveyorService.queueGolden(spawns: number)
+	if spawns ~= spawns or spawns <= 0 then
+		return
+	end
+	goldenLeft += math.floor(spawns)
 end
 
 local function findSlot(id: number): Slot?
@@ -79,6 +87,17 @@ end
 
 local function rollPinata(): (string?, string)
 	local rarity = SpawnWeights.pick(Rarities.SpawnWeight, math.random(), luckOn(), BOOST)
+	if goldenLeft > 0 then
+		goldenLeft -= 1
+		local lifted = rarity == "Rare"
+			or rarity == "Epic"
+			or rarity == "Legendary"
+			or rarity == "Mythic"
+			or rarity == "Secret"
+		if not lifted then
+			rarity = "Rare"
+		end
+	end
 	local ids = SpawnWeights.eligibleIds(rows, rarity)
 	local id = SpawnWeights.chooseId(ids, math.random())
 	return id, rarity

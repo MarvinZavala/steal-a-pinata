@@ -1,0 +1,106 @@
+{
+ "estrellita": {
+  "name": "estrellita",
+  "size_studs": [
+   4.44,
+   3.53,
+   2.12
+  ],
+  "tris": {
+   "estrellita": 7280
+  }
+ },
+ "burrito": {
+  "name": "burrito",
+  "size_studs": [
+   2.17,
+   3.98,
+   4.5
+  ],
+  "tris": {
+   "burrito": 9848
+  }
+ },
+ "michi": {
+  "name": "michi",
+  "size_studs": [
+   2.91,
+   3.96,
+   2.29
+  ],
+  "tris": {
+   "michi": 7696
+  }
+ },
+ "cohetin": {
+  "name": "cohetin",
+  "size_studs": [
+   2.39,
+   4.04,
+   2.63
+  ],
+  "tris": {
+   "cohetin": 6220,
+   "cohetin_Neon": 316
+  }
+ },
+ "dragon": {
+  "name": "dragon",
+  "size_studs": [
+   4.43,
+   4.06,
+   3.66
+  ],
+  "tris": {
+   "dragon": 8108
+  }
+ },
+ "toro": {
+  "name": "toro",
+  "size_studs": [
+   3.48,
+   3.94,
+   6.09
+  ],
+  "tris": {
+   "toro": 9260,
+   "toro_Neon": 500
+  }
+ },
+ "renito": {
+  "name": "renito",
+  "size_studs": [
+   2.56,
+   4.52,
+   2.42
+  ],
+  "tris": {
+   "renito": 7632,
+   "renito_Neon": 196
+  }
+ },
+ "torogoz": {
+  "name": "torogoz",
+  "size_studs": [
+   2.82,
+   3.77,
+   3.55
+  ],
+  "tris": {
+   "torogoz": 5892,
+   "torogoz_Neon": 964
+  }
+ },
+ "sombra": {
+  "name": "sombra",
+  "size_studs": [
+   2.86,
+   2.72,
+   2.91
+  ],
+  "tris": {
+   "sombra": 8632,
+   "sombra_Neon": 1448
+  }
+ }
+}

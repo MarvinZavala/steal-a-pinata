@@ -1,0 +1,48 @@
+{
+ "lobby_kiosk": {
+  "name": "lobby_kiosk",
+  "size_studs": [
+   12.27,
+   11.28,
+   12.45
+  ],
+  "tris": {
+   "lobby_kiosk": 3088
+  }
+ },
+ "lobby_fountain": {
+  "name": "lobby_fountain",
+  "size_studs": [
+   25.47,
+   10.1,
+   25.47
+  ],
+  "tris": {
+   "lobby_fountain": 3688,
+   "lobby_fountain_Neon": 832
+  }
+ },
+ "lobby_palm": {
+  "name": "lobby_palm",
+  "size_studs": [
+   8.74,
+   8.87,
+   8.96
+  ],
+  "tris": {
+   "lobby_palm": 2080
+  }
+ },
+ "lobby_lamp": {
+  "name": "lobby_lamp",
+  "size_studs": [
+   1.77,
+   10.2,
+   1.77
+  ],
+  "tris": {
+   "lobby_lamp": 584,
+   "lobby_lamp_Neon": 196
+  }
+ }
+}

@@ -1,0 +1,18 @@
+# Blender autosaves / backups
+*.blend1
+*.blend2
+# Python
+__pycache__/
+*.pyc
+# Rojo / Studio build outputs
+roblox-project/*.rbxl
+roblox-project/*.rbxlx
+roblox-project/*.rbxl.lock
+roblox-project/*.rbxlx.lock
+roblox-project/sourcemap.json
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+# temp renders
+art/renders/*_raw.png

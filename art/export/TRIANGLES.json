@@ -1,0 +1,224 @@
+[
+ {
+  "folder": "base",
+  "file": "base_fence",
+  "mesh": "base_fence",
+  "tris": 936
+ },
+ {
+  "folder": "base",
+  "file": "base_floor",
+  "mesh": "base_floor",
+  "tris": 2012
+ },
+ {
+  "folder": "base",
+  "file": "base_gate",
+  "mesh": "base_gate",
+  "tris": 6808
+ },
+ {
+  "folder": "base",
+  "file": "base_gate",
+  "mesh": "base_gate_Neon",
+  "tris": 140
+ },
+ {
+  "folder": "base",
+  "file": "base_generator",
+  "mesh": "base_generator",
+  "tris": 9624
+ },
+ {
+  "folder": "base",
+  "file": "base_generator",
+  "mesh": "base_generator_Glass",
+  "tris": 840
+ },
+ {
+  "folder": "base",
+  "file": "base_padlock",
+  "mesh": "base_padlock",
+  "tris": 852
+ },
+ {
+  "folder": "base",
+  "file": "base_pedestal",
+  "mesh": "base_pedestal",
+  "tris": 2512
+ },
+ {
+  "folder": "base",
+  "file": "base_pedestal",
+  "mesh": "base_pedestal_Neon",
+  "tris": 240
+ },
+ {
+  "folder": "base",
+  "file": "base_signpost",
+  "mesh": "base_signpost",
+  "tris": 608
+ },
+ {
+  "folder": "creatures",
+  "file": "burrito",
+  "mesh": "burrito",
+  "tris": 9848
+ },
+ {
+  "folder": "creatures",
+  "file": "cohetin",
+  "mesh": "cohetin",
+  "tris": 6220
+ },
+ {
+  "folder": "creatures",
+  "file": "cohetin",
+  "mesh": "cohetin_Neon",
+  "tris": 316
+ },
+ {
+  "folder": "creatures",
+  "file": "dragon",
+  "mesh": "dragon",
+  "tris": 8108
+ },
+ {
+  "folder": "creatures",
+  "file": "estrellita",
+  "mesh": "estrellita",
+  "tris": 7280
+ },
+ {
+  "folder": "creatures",
+  "file": "michi",
+  "mesh": "michi",
+  "tris": 7696
+ },
+ {
+  "folder": "creatures",
+  "file": "renito",
+  "mesh": "renito",
+  "tris": 7632
+ },
+ {
+  "folder": "creatures",
+  "file": "renito",
+  "mesh": "renito_Neon",
+  "tris": 196
+ },
+ {
+  "folder": "creatures",
+  "file": "sombra",
+  "mesh": "sombra",
+  "tris": 8632
+ },
+ {
+  "folder": "creatures",
+  "file": "sombra",
+  "mesh": "sombra_Neon",
+  "tris": 1448
+ },
+ {
+  "folder": "creatures",
+  "file": "toro",
+  "mesh": "toro",
+  "tris": 9260
+ },
+ {
+  "folder": "creatures",
+  "file": "toro",
+  "mesh": "toro_Neon",
+  "tris": 500
+ },
+ {
+  "folder": "creatures",
+  "file": "torogoz",
+  "mesh": "torogoz",
+  "tris": 5892
+ },
+ {
+  "folder": "creatures",
+  "file": "torogoz",
+  "mesh": "torogoz_Neon",
+  "tris": 964
+ },
+ {
+  "folder": "lobby",
+  "file": "lobby_fountain",
+  "mesh": "lobby_fountain",
+  "tris": 3688
+ },
+ {
+  "folder": "lobby",
+  "file": "lobby_fountain",
+  "mesh": "lobby_fountain_Neon",
+  "tris": 832
+ },
+ {
+  "folder": "lobby",
+  "file": "lobby_kiosk",
+  "mesh": "lobby_kiosk",
+  "tris": 3088
+ },
+ {
+  "folder": "lobby",
+  "file": "lobby_lamp",
+  "mesh": "lobby_lamp",
+  "tris": 584
+ },
+ {
+  "folder": "lobby",
+  "file": "lobby_lamp",
+  "mesh": "lobby_lamp_Neon",
+  "tris": 196
+ },
+ {
+  "folder": "lobby",
+  "file": "lobby_palm",
+  "mesh": "lobby_palm",
+  "tris": 2080
+ },
+ {
+  "folder": "props",
+  "file": "bat_gold",
+  "mesh": "bat_gold",
+  "tris": 1646
+ },
+ {
+  "folder": "props",
+  "file": "bat_wood",
+  "mesh": "bat_wood",
+  "tris": 1646
+ },
+ {
+  "folder": "props",
+  "file": "caja_sorpresa",
+  "mesh": "caja_sorpresa",
+  "tris": 7768
+ },
+ {
+  "folder": "props",
+  "file": "caja_sorpresa",
+  "mesh": "caja_sorpresa_Neon",
+  "tris": 32
+ },
+ {
+  "folder": "props",
+  "file": "candy_pile",
+  "mesh": "candy_pile",
+  "tris": 12618
+ },
+ {
+  "folder": "props",
+  "file": "papel_picado_banner",
+  "mesh": "papel_picado_banner",
+  "tris": 816
+ },
+ {
+  "folder": "props",
+  "file": "papel_picado_banner",
+  "mesh": "papel_picado_Flags",
+  "tris": 144
+ }
+]

@@ -1,0 +1,82 @@
+{
+ "base_pedestal": {
+  "name": "base_pedestal",
+  "size_studs": [
+   6.52,
+   1.65,
+   8.6
+  ],
+  "tris": {
+   "base_pedestal": 2512,
+   "base_pedestal_Neon": 240
+  }
+ },
+ "base_gate": {
+  "name": "base_gate",
+  "size_studs": [
+   17.78,
+   14.36,
+   3.78
+  ],
+  "tris": {
+   "base_gate": 6808,
+   "base_gate_Neon": 140
+  }
+ },
+ "base_padlock": {
+  "name": "base_padlock",
+  "size_studs": [
+   2.2,
+   2.82,
+   1.12
+  ],
+  "tris": {
+   "base_padlock": 852
+  }
+ },
+ "base_generator": {
+  "name": "base_generator",
+  "size_studs": [
+   5.92,
+   10.75,
+   6.56
+  ],
+  "tris": {
+   "base_generator": 9624,
+   "base_generator_Glass": 840
+  }
+ },
+ "base_fence": {
+  "name": "base_fence",
+  "size_studs": [
+   8.0,
+   3.8,
+   0.78
+  ],
+  "tris": {
+   "base_fence": 936
+  }
+ },
+ "base_floor": {
+  "name": "base_floor",
+  "size_studs": [
+   47.6,
+   1.45,
+   59.6
+  ],
+  "tris": {
+   "base_floor": 2012
+  }
+ },
+ "base_signpost": {
+  "name": "base_signpost",
+  "size_studs": [
+   6.0,
+   6.5,
+   1.05
+  ],
+  "tris": {
+   "base_signpost": 608
+  }
+ }
+}

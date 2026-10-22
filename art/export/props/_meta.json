@@ -1,0 +1,59 @@
+{
+ "bat_wood": {
+  "name": "bat_wood",
+  "size_studs": [
+   0.74,
+   4.05,
+   0.73
+  ],
+  "tris": {
+   "bat_wood": 1646
+  }
+ },
+ "caja_sorpresa": {
+  "name": "caja_sorpresa",
+  "size_studs": [
+   3.38,
+   3.67,
+   3.38
+  ],
+  "tris": {
+   "caja_sorpresa": 7768,
+   "caja_sorpresa_Neon": 32
+  }
+ },
+ "candy_pile": {
+  "name": "candy_pile",
+  "size_studs": [
+   4.12,
+   3.28,
+   3.87
+  ],
+  "tris": {
+   "candy_pile": 12618
+  }
+ },
+ "papel_picado_banner": {
+  "name": "papel_picado_banner",
+  "size_studs": [
+   16.7,
+   9.45,
+   0.7
+  ],
+  "tris": {
+   "papel_picado_banner": 816,
+   "papel_picado_Flags": 144
+  }
+ },
+ "bat_gold": {
+  "name": "bat_gold",
+  "size_studs": [
+   0.74,
+   4.05,
+   0.73
+  ],
+  "tris": {
+   "bat_gold": 1646
+  }
+ }
+}

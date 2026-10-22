@@ -1,0 +1,578 @@
+{
+ "white": {
+  "hex": "#FFF7EC",
+  "roughness": 0.45,
+  "metalness": 0,
+  "uv": [
+   0.03125,
+   0.96875
+  ]
+ },
+ "ink": {
+  "hex": "#1B1430",
+  "roughness": 0.3,
+  "metalness": 0,
+  "uv": [
+   0.09375,
+   0.96875
+  ]
+ },
+ "ink_soft": {
+  "hex": "#3A2A55",
+  "roughness": 0.4,
+  "metalness": 0,
+  "uv": [
+   0.15625,
+   0.96875
+  ]
+ },
+ "eye_white": {
+  "hex": "#FFFFFF",
+  "roughness": 0.15,
+  "metalness": 0,
+  "uv": [
+   0.21875,
+   0.96875
+  ]
+ },
+ "blush": {
+  "hex": "#FF7FA8",
+  "roughness": 0.55,
+  "metalness": 0,
+  "uv": [
+   0.28125,
+   0.96875
+  ]
+ },
+ "tongue": {
+  "hex": "#FF4D6D",
+  "roughness": 0.45,
+  "metalness": 0,
+  "uv": [
+   0.34375,
+   0.96875
+  ]
+ },
+ "fiesta_pink": {
+  "hex": "#FF3E9A",
+  "roughness": 0.55,
+  "metalness": 0,
+  "uv": [
+   0.40625,
+   0.96875
+  ]
+ },
+ "hot_magenta": {
+  "hex": "#E0187A",
+  "roughness": 0.55,
+  "metalness": 0,
+  "uv": [
+   0.46875,
+   0.96875
+  ]
+ },
+ "mango": {
+  "hex": "#FFB400",
+  "roughness": 0.5,
+  "metalness": 0,
+  "uv": [
+   0.53125,
+   0.96875
+  ]
+ },
+ "sun_yellow": {
+  "hex": "#FFE14D",
+  "roughness": 0.5,
+  "metalness": 0,
+  "uv": [
+   0.59375,
+   0.96875
+  ]
+ },
+ "tangerine": {
+  "hex": "#FF7A1A",
+  "roughness": 0.5,
+  "metalness": 0,
+  "uv": [
+   0.65625,
+   0.96875
+  ]
+ },
+ "chili": {
+  "hex": "#E8262E",
+  "roughness": 0.5,
+  "metalness": 0,
+  "uv": [
+   0.71875,
+   0.96875
+  ]
+ },
+ "lime": {
+  "hex": "#8BE530",
+  "roughness": 0.55,
+  "metalness": 0,
+  "uv": [
+   0.78125,
+   0.96875
+  ]
+ },
+ "jade": {
+  "hex": "#18C98A",
+  "roughness": 0.5,
+  "metalness": 0,
+  "uv": [
+   0.84375,
+   0.96875
+  ]
+ },
+ "turquoise": {
+  "hex": "#16D3E8",
+  "roughness": 0.45,
+  "metalness": 0,
+  "uv": [
+   0.90625,
+   0.96875
+  ]
+ },
+ "sky": {
+  "hex": "#3DA5FF",
+  "roughness": 0.5,
+  "metalness": 0,
+  "uv": [
+   0.96875,
+   0.96875
+  ]
+ },
+ "cobalt": {
+  "hex": "#2A55E0",
+  "roughness": 0.5,
+  "metalness": 0,
+  "uv": [
+   0.03125,
+   0.90625
+  ]
+ },
+ "grape": {
+  "hex": "#8A3CF0",
+  "roughness": 0.5,
+  "metalness": 0,
+  "uv": [
+   0.09375,
+   0.90625
+  ]
+ },
+ "lavender": {
+  "hex": "#C59BFF",
+  "roughness": 0.55,
+  "metalness": 0,
+  "uv": [
+   0.15625,
+   0.90625
+  ]
+ },
+ "mint": {
+  "hex": "#9FF5D6",
+  "roughness": 0.55,
+  "metalness": 0,
+  "uv": [
+   0.21875,
+   0.90625
+  ]
+ },
+ "bubblegum": {
+  "hex": "#FFB3D9",
+  "roughness": 0.55,
+  "metalness": 0,
+  "uv": [
+   0.28125,
+   0.90625
+  ]
+ },
+ "cream": {
+  "hex": "#FFE6B8",
+  "roughness": 0.6,
+  "metalness": 0,
+  "uv": [
+   0.34375,
+   0.90625
+  ]
+ },
+ "donkey_grey": {
+  "hex": "#A9B4C9",
+  "roughness": 0.6,
+  "metalness": 0,
+  "uv": [
+   0.40625,
+   0.90625
+  ]
+ },
+ "donkey_dark": {
+  "hex": "#6C7894",
+  "roughness": 0.6,
+  "metalness": 0,
+  "uv": [
+   0.46875,
+   0.90625
+  ]
+ },
+ "brown": {
+  "hex": "#8A4B2A",
+  "roughness": 0.65,
+  "metalness": 0,
+  "uv": [
+   0.53125,
+   0.90625
+  ]
+ },
+ "wood": {
+  "hex": "#C98A4B",
+  "roughness": 0.7,
+  "metalness": 0,
+  "uv": [
+   0.59375,
+   0.90625
+  ]
+ },
+ "wood_dark": {
+  "hex": "#7A4A26",
+  "roughness": 0.75,
+  "metalness": 0,
+  "uv": [
+   0.65625,
+   0.90625
+  ]
+ },
+ "gold": {
+  "hex": "#FFC22E",
+  "roughness": 0.28,
+  "metalness": 0.8,
+  "uv": [
+   0.71875,
+   0.90625
+  ]
+ },
+ "gold_deep": {
+  "hex": "#E08A00",
+  "roughness": 0.32,
+  "metalness": 0.8,
+  "uv": [
+   0.78125,
+   0.90625
+  ]
+ },
+ "gold_pale": {
+  "hex": "#FFE9A0",
+  "roughness": 0.25,
+  "metalness": 0.7,
+  "uv": [
+   0.84375,
+   0.90625
+  ]
+ },
+ "silver": {
+  "hex": "#D9E2F2",
+  "roughness": 0.25,
+  "metalness": 1,
+  "uv": [
+   0.90625,
+   0.90625
+  ]
+ },
+ "steel": {
+  "hex": "#7D8AA6",
+  "roughness": 0.35,
+  "metalness": 1,
+  "uv": [
+   0.96875,
+   0.90625
+  ]
+ },
+ "xmas_red": {
+  "hex": "#D7192F",
+  "roughness": 0.5,
+  "metalness": 0,
+  "uv": [
+   0.03125,
+   0.84375
+  ]
+ },
+ "xmas_green": {
+  "hex": "#11A35A",
+  "roughness": 0.55,
+  "metalness": 0,
+  "uv": [
+   0.09375,
+   0.84375
+  ]
+ },
+ "snow": {
+  "hex": "#F4FBFF",
+  "roughness": 0.6,
+  "metalness": 0,
+  "uv": [
+   0.15625,
+   0.84375
+  ]
+ },
+ "pine": {
+  "hex": "#0B6E45",
+  "roughness": 0.6,
+  "metalness": 0,
+  "uv": [
+   0.21875,
+   0.84375
+  ]
+ },
+ "cosmic_1": {
+  "hex": "#2B0F6B",
+  "roughness": 0.35,
+  "metalness": 0,
+  "uv": [
+   0.28125,
+   0.84375
+  ]
+ },
+ "cosmic_2": {
+  "hex": "#5B2BE0",
+  "roughness": 0.35,
+  "metalness": 0,
+  "uv": [
+   0.34375,
+   0.84375
+  ]
+ },
+ "cosmic_3": {
+  "hex": "#FF4FD8",
+  "roughness": 0.35,
+  "metalness": 0,
+  "uv": [
+   0.40625,
+   0.84375
+  ]
+ },
+ "cosmic_4": {
+  "hex": "#3FF2FF",
+  "roughness": 0.3,
+  "metalness": 0,
+  "uv": [
+   0.46875,
+   0.84375
+  ]
+ },
+ "torogoz_t": {
+  "hex": "#1FC7C1",
+  "roughness": 0.45,
+  "metalness": 0,
+  "uv": [
+   0.53125,
+   0.84375
+  ]
+ },
+ "torogoz_r": {
+  "hex": "#D9572B",
+  "roughness": 0.5,
+  "metalness": 0,
+  "uv": [
+   0.59375,
+   0.84375
+  ]
+ },
+ "grass": {
+  "hex": "#5FD35A",
+  "roughness": 0.8,
+  "metalness": 0,
+  "uv": [
+   0.65625,
+   0.84375
+  ]
+ },
+ "grass_dark": {
+  "hex": "#3FAE45",
+  "roughness": 0.85,
+  "metalness": 0,
+  "uv": [
+   0.71875,
+   0.84375
+  ]
+ },
+ "stone": {
+  "hex": "#E9E1F2",
+  "roughness": 0.7,
+  "metalness": 0,
+  "uv": [
+   0.78125,
+   0.84375
+  ]
+ },
+ "stone_dark": {
+  "hex": "#B9AECB",
+  "roughness": 0.75,
+  "metalness": 0,
+  "uv": [
+   0.84375,
+   0.84375
+  ]
+ },
+ "plaza_tile": {
+  "hex": "#FFD9A8",
+  "roughness": 0.75,
+  "metalness": 0,
+  "uv": [
+   0.90625,
+   0.84375
+  ]
+ },
+ "terracotta": {
+  "hex": "#E07A4F",
+  "roughness": 0.75,
+  "metalness": 0,
+  "uv": [
+   0.96875,
+   0.84375
+  ]
+ },
+ "glass": {
+  "hex": "#BFF4FF",
+  "roughness": 0.05,
+  "metalness": 0,
+  "uv": [
+   0.03125,
+   0.78125
+  ]
+ },
+ "rubber": {
+  "hex": "#2D2440",
+  "roughness": 0.85,
+  "metalness": 0,
+  "uv": [
+   0.09375,
+   0.78125
+  ]
+ },
+ "neon_pink": {
+  "hex": "#FF4FD8",
+  "roughness": 0.3,
+  "metalness": 0,
+  "uv": [
+   0.15625,
+   0.78125
+  ]
+ },
+ "neon_cyan": {
+  "hex": "#3FF2FF",
+  "roughness": 0.3,
+  "metalness": 0,
+  "uv": [
+   0.21875,
+   0.78125
+  ]
+ },
+ "neon_gold": {
+  "hex": "#FFD84D",
+  "roughness": 0.3,
+  "metalness": 0,
+  "uv": [
+   0.28125,
+   0.78125
+  ]
+ },
+ "neon_green": {
+  "hex": "#5CFF8A",
+  "roughness": 0.3,
+  "metalness": 0,
+  "uv": [
+   0.34375,
+   0.78125
+  ]
+ },
+ "red_dark": {
+  "hex": "#9E1420",
+  "roughness": 0.55,
+  "metalness": 0,
+  "uv": [
+   0.40625,
+   0.78125
+  ]
+ },
+ "rocket_fin": {
+  "hex": "#2A55E0",
+  "roughness": 0.45,
+  "metalness": 0,
+  "uv": [
+   0.46875,
+   0.78125
+  ]
+ },
+ "cat_orange": {
+  "hex": "#FF9A3D",
+  "roughness": 0.55,
+  "metalness": 0,
+  "uv": [
+   0.53125,
+   0.78125
+  ]
+ },
+ "cat_cream": {
+  "hex": "#FFE2C2",
+  "roughness": 0.6,
+  "metalness": 0,
+  "uv": [
+   0.59375,
+   0.78125
+  ]
+ },
+ "peach": {
+  "hex": "#FFC9A8",
+  "roughness": 0.6,
+  "metalness": 0,
+  "uv": [
+   0.65625,
+   0.78125
+  ]
+ },
+ "candy_red": {
+  "hex": "#FF2D55",
+  "roughness": 0.25,
+  "metalness": 0,
+  "uv": [
+   0.71875,
+   0.78125
+  ]
+ },
+ "candy_teal": {
+  "hex": "#00C2B8",
+  "roughness": 0.25,
+  "metalness": 0,
+  "uv": [
+   0.78125,
+   0.78125
+  ]
+ },
+ "candy_violet": {
+  "hex": "#9B4DFF",
+  "roughness": 0.25,
+  "metalness": 0,
+  "uv": [
+   0.84375,
+   0.78125
+  ]
+ },
+ "chocolate": {
+  "hex": "#5A2E1A",
+  "roughness": 0.45,
+  "metalness": 0,
+  "uv": [
+   0.90625,
+   0.78125
+  ]
+ },
+ "dark_green": {
+  "hex": "#0E5C3A",
+  "roughness": 0.6,
+  "metalness": 0,
+  "uv": [
+   0.96875,
+   0.78125
+  ]
+ }
+}

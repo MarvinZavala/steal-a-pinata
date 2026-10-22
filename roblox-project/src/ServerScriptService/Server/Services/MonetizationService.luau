@@ -40,10 +40,10 @@ local function applyEffects(player: Player, effects: { Receipts.Effect })
 	for _, effect in effects do
 		if effect.kind == "serverLuck" and type(effect.seconds) == "number" then
 			ConveyorService.setServerLuck(effect.seconds)
-			Remotes.get("Announce"):FireAllClients("¡Suerte de server x2! Gracias, " .. player.Name, "Rare")
+			Remotes.get("Announce"):FireAllClients("announce.luck:" .. player.DisplayName, "Rare")
 		elseif effect.kind == "goldenConveyor" and type(effect.spawns) == "number" then
 			ConveyorService.queueGolden(effect.spawns)
-			Remotes.get("Announce"):FireAllClients("¡Pasarela dorada! Gracias, " .. player.Name, "Epic")
+			Remotes.get("Announce"):FireAllClients("announce.golden:" .. player.DisplayName, "Epic")
 		elseif effect.kind == "emergency" and data ~= nil then
 			local product = Monetization.Products.EmergencyLock
 			local cooldown = if type(product.CooldownSec) == "number" then product.CooldownSec else 600

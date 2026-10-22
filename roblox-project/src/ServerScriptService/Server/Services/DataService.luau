@@ -12,11 +12,16 @@ local Pinatas = require(ReplicatedStorage.Shared.Config.Pinatas)
 local DataConfig = require(ReplicatedStorage.Shared.Config.Data)
 local Migrations = require(ReplicatedStorage.Shared.Data.Migrations)
 local Wallet = require(ReplicatedStorage.Shared.Data.Wallet)
+local Text = require(ReplicatedStorage.Shared.Locale.Text)
 local ProfileStore = require(script.Parent.Parent.Vendor.ProfileStore)
 
-local KICK_LOAD = "No se pudieron cargar tus datos. Volvé a entrar."
-local KICK_MIGRATION = "Tus datos no se pudieron migrar. Avisá al equipo y volvé a entrar."
-local KICK_STOLEN = "Tu sesión se abrió en otro servidor. Volvé a entrar."
+local function kick(player: Player, key: string)
+	local locale = "es"
+	pcall(function()
+		locale = player.LocaleId
+	end)
+	player:Kick(Text.line(key, locale))
+end
 
 local DataService = {}
 
@@ -113,7 +118,7 @@ local function loadPlayer(player: Player)
 		if not ok then
 			warn("[WP-02] StartSessionAsync falló", player.UserId, result)
 			if player.Parent == Players then
-				player:Kick(KICK_LOAD)
+				kick(player, "kick.load")
 			end
 			return
 		end
@@ -122,7 +127,7 @@ local function loadPlayer(player: Player)
 
 	if profile == nil then
 		if player.Parent == Players then
-			player:Kick(KICK_LOAD)
+			kick(player, "kick.load")
 		end
 		return
 	end
@@ -136,7 +141,7 @@ local function loadPlayer(player: Player)
 		profiles[player] = nil
 		ended[player] = nil
 		if not wasEnded and player.Parent == Players then
-			player:Kick(KICK_STOLEN)
+			kick(player, "kick.stolen")
 		end
 	end)
 
@@ -161,7 +166,7 @@ local function loadPlayer(player: Player)
 		warn("[WP-02] migración rechazada", player.UserId, reason)
 		endProfile(player, profile, false)
 		if player.Parent == Players then
-			player:Kick(KICK_MIGRATION)
+			kick(player, "kick.migration")
 		end
 		return
 	end
@@ -205,7 +210,7 @@ local function onPlayer(player: Player)
 		if not ok then
 			warn("[WP-02] error al cargar", player.UserId, err)
 			if player.Parent == Players then
-				player:Kick(KICK_LOAD)
+				kick(player, "kick.load")
 			end
 		end
 	end)

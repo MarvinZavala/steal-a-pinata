@@ -104,6 +104,35 @@ function Toast.push(kind: string, text: string)
 	end)
 end
 
+local function stringArgs(raw: any): { [string]: string }?
+	if typeof(raw) ~= "table" then
+		return nil
+	end
+	local args: { [string]: string } = {}
+	for key, value in raw do
+		if typeof(key) == "string" then
+			args[key] = tostring(value)
+		end
+	end
+	return args
+end
+
+local function announceText(raw: string): string
+	if raw == "" then
+		return Locale.t("hud.fiesta_now")
+	end
+	if Locale.has(raw) then
+		return Locale.t(raw)
+	end
+	local key, rest = string.match(raw, "^([%w%._]+):(.*)$")
+	if key == "announce.runway" and rest ~= nil and rest ~= "" then
+		return Locale.t("announce.runway", { name = Locale.pinataName(rest) })
+	elseif (key == "announce.luck" or key == "announce.golden") and rest ~= nil then
+		return Locale.t(key, { name = rest })
+	end
+	return raw
+end
+
 local function onFeedback(kind: string, payload: { [string]: any })
 	if kind == "BONK" then
 		Toast.push("legend", Locale.t("toast.bonk"))
@@ -128,11 +157,14 @@ local function onFeedback(kind: string, payload: { [string]: any })
 			Toast.push("bad", Locale.t("toast.denied"))
 		end
 	elseif kind == "ANNOUNCE" then
-		local text = if typeof(payload.text) == "string" then payload.text else Locale.t("hud.fiesta_now")
-		Toast.push("announce", text)
+		local raw = if typeof(payload.text) == "string" then payload.text else ""
+		Toast.push("announce", announceText(raw))
 	elseif kind == "TOAST" then
 		if typeof(payload.key) == "string" and Locale.has(payload.key) then
-			Toast.push(if typeof(payload.kind) == "string" then payload.kind else "info", Locale.t(payload.key))
+			Toast.push(
+				if typeof(payload.kind) == "string" then payload.kind else "info",
+				Locale.t(payload.key, stringArgs(payload.args))
+			)
 		elseif typeof(payload.text) == "string" then
 			Toast.push("info", payload.text)
 		end

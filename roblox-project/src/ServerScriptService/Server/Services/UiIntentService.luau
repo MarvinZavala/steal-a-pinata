@@ -16,6 +16,7 @@ local Server = script.Parent.Parent
 local Records = require(Server:WaitForChild("Data"):WaitForChild("Records"))
 local AntiCheatService = require(script.Parent:WaitForChild("AntiCheatService"))
 local Juice = require(Server:WaitForChild("World"):WaitForChild("Juice"))
+local Labels = require(Server:WaitForChild("World"):WaitForChild("Labels"))
 local BaseService = require(script.Parent:WaitForChild("BaseService"))
 local ConveyorService = require(script.Parent:WaitForChild("ConveyorService"))
 
@@ -95,7 +96,7 @@ local function spawnBot(player: Player)
 	label.Size = UDim2.fromScale(1, 1)
 	label.Font = Enum.Font.FredokaOne
 	label.TextScaled = true
-	label.Text = "Ladronzuelo"
+	Labels.line(label, "ftue.thief")
 	label.TextColor3 = Color3.fromHex("#FFE14D")
 	label.TextStrokeColor3 = Color3.fromHex("#1B1430")
 	label.TextStrokeTransparency = 0
@@ -135,9 +136,8 @@ end
 
 local function announce(player: Player, pinataId: string)
 	local def = Pinatas[pinataId]
-	local name = if def ~= nil then def.Name else pinataId
 	local rarity = if def ~= nil then def.Rarity else "Common"
-	Remotes.get("Announce"):FireClient(player, string.format("¡%s en la Pasarela!", name), rarity)
+	Remotes.get("Announce"):FireClient(player, "announce.runway:" .. pinataId, rarity)
 end
 
 local function offerOnce(player: Player, key: string, pinataId: string, mutation: string?, free: boolean)

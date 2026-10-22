@@ -401,6 +401,237 @@ local entries: { [string]: Entry } = {
 	},
 	["shop.cosmetic_trail"] = { es = "Trail de confeti", en = "Confetti trail", pt = "Rastro de confete" },
 	["shop.cosmetic_bat"] = { es = "Bate de oro", en = "Gold bat", pt = "Taco de ouro" },
+
+	["pinata.michi_aplausos"] = { es = "Michi Aplausos", en = "Clapping Michi", pt = "Michi Palmas" },
+	["pinata.seis_siete"] = { es = "Seis-Siete", en = "Six-Seven", pt = "Seis-Sete" },
+	["pinata.manzanin_iq"] = { es = "Manzanín IQ", en = "Manzanín IQ", pt = "Manzanin QI" },
+	["pinata.mapache_nel"] = { es = "Mapache Nel", en = "Nel the Raccoon", pt = "Guaxinim Nel" },
+	["pinata.fichadito"] = { es = "Fichadito", en = "Fichadito", pt = "Fichadito" },
+	["pinata.gemelos_pupusa"] = { es = "Los Gemelos Pupusa", en = "The Pupusa Twins", pt = "Os Gêmeos Pupusa" },
+
+	["world.plaza"] = { es = "LA PLAZA", en = "THE PLAZA", pt = "A PRAÇA" },
+	["world.factory"] = { es = "FÁBRICA", en = "FACTORY", pt = "FÁBRICA" },
+	["world.exit"] = { es = "SALIDA", en = "EXIT", pt = "SAÍDA" },
+	["world.free"] = { es = "LIBRE", en = "OPEN", pt = "LIVRE" },
+	["world.open"] = { es = "ABIERTA", en = "OPEN", pt = "ABERTA" },
+	["world.step_collect"] = { es = "PISÁ PARA JUNTAR", en = "STEP TO COLLECT", pt = "PISE PARA JUNTAR" },
+	["world.vault"] = {
+		es = "Dulcería\n{n}\n+{rate}/s",
+		en = "Vault\n{n}\n+{rate}/s",
+		pt = "Doçaria\n{n}\n+{rate}/s",
+	},
+
+	["prompt.open"] = { es = "Abrir", en = "Open", pt = "Abrir" },
+	["prompt.buy"] = { es = "Comprar", en = "Buy", pt = "Comprar" },
+	["prompt.take"] = { es = "¡Tomar!", en = "Take!", pt = "Pegar!" },
+	["prompt.lock"] = { es = "Candado", en = "Lock", pt = "Cadeado" },
+	["prompt.door"] = { es = "Puerta", en = "Door", pt = "Porta" },
+	["prompt.steal"] = { es = "Robar", en = "Steal", pt = "Roubar" },
+	["prompt.pinata"] = { es = "Piñata", en = "Piñata", pt = "Piñata" },
+	["prompt.loose"] = { es = "Piñata suelta", en = "Loose piñata", pt = "Piñata solta" },
+
+	["caption.free"] = { es = "¡TOMAR!", en = "TAKE!", pt = "PEGAR!" },
+	["caption.price"] = { es = "{n} {currency}", en = "{n} {currency}", pt = "{n} {currency}" },
+	["currency.dulces"] = { es = "dulces", en = "candy", pt = "doces" },
+	["currency.bastones"] = { es = "bastones", en = "candy canes", pt = "bengalas" },
+
+	["kick.load"] = {
+		es = "No se pudieron cargar tus datos. Volvé a entrar.",
+		en = "We couldn't load your data. Join again.",
+		pt = "Não deu para carregar seus dados. Entra de novo.",
+	},
+	["kick.migration"] = {
+		es = "Tus datos no se pudieron migrar. Avisá al equipo y volvé a entrar.",
+		en = "Your data couldn't be migrated. Tell the team and join again.",
+		pt = "Seus dados não puderam ser migrados. Avisa a equipe e entra de novo.",
+	},
+	["kick.stolen"] = {
+		es = "Tu sesión se abrió en otro servidor. Volvé a entrar.",
+		en = "Your session opened on another server. Join again.",
+		pt = "Sua sessão abriu em outro servidor. Entra de novo.",
+	},
+	["kick.anticheat"] = {
+		es = "Cerramos esta sesión por actividad imposible. Podés volver a entrar.",
+		en = "We closed this session for impossible activity. You can join again.",
+		pt = "Fechamos esta sessão por atividade impossível. Você pode entrar de novo.",
+	},
+
+	["league.Confeti"] = { es = "Liga Confeti", en = "Confetti League", pt = "Liga Confete" },
+	["league.Serpentina"] = { es = "Liga Serpentina", en = "Streamer League", pt = "Liga Serpentina" },
+	["league.Fuego"] = { es = "Liga Fuego", en = "Fire League", pt = "Liga Fogo" },
+	["league.Mixto"] = { es = "Liga Mixta", en = "Mixed League", pt = "Liga Mista" },
+
+	["announce.runway"] = {
+		es = "¡{name} en la Pasarela!",
+		en = "{name} on the runway!",
+		pt = "{name} na passarela!",
+	},
+	["announce.refiesta"] = { es = "¡Re-Fiesta!", en = "Re-Party!", pt = "Re-Festa!" },
+	["announce.luck"] = {
+		es = "¡Suerte de server x2! Gracias, {name}",
+		en = "Server luck ×2! Thanks, {name}",
+		pt = "Sorte do server ×2! Valeu, {name}",
+	},
+	["announce.golden"] = {
+		es = "¡Pasarela dorada! Gracias, {name}",
+		en = "Golden runway! Thanks, {name}",
+		pt = "Passarela dourada! Valeu, {name}",
+	},
+
+	["shop.kiosk_navidad"] = { es = "Navidad", en = "Holiday", pt = "Natal" },
+	["shop.blurb_navidad"] = {
+		es = "Bastones de la posada. El 7 de enero se vuelven Dulces.",
+		en = "Posada candy canes. On January 7 they turn into Candy.",
+		pt = "Bengalas da posada. No dia 7 de janeiro viram Doces.",
+	},
+	["shop.price_bastones"] = { es = "{n} Bastones", en = "{n} candy canes", pt = "{n} bengalas" },
+
+	["deny.poor_bastones"] = {
+		es = "Te faltan Bastones",
+		en = "Not enough candy canes",
+		pt = "Faltam bengalas",
+	},
+	["deny.event_off"] = {
+		es = "Esa tienda está cerrada",
+		en = "That shop is closed",
+		pt = "Essa loja está fechada",
+	},
+
+	["event.hud_posada"] = { es = "¡POSADA!", en = "POSADA!", pt = "POSADA!" },
+	["event.hud_posada_in"] = { es = "POSADA en {time}", en = "POSADA in {time}", pt = "POSADA em {time}" },
+	["event.hud_newyear"] = { es = "¡AÑO NUEVO!", en = "NEW YEAR!", pt = "ANO NOVO!" },
+	["event.hud_newyear_in"] = { es = "AÑO NUEVO en {time}", en = "NEW YEAR in {time}", pt = "ANO NOVO em {time}" },
+	["event.hud_rosca"] = { es = "¡LA ROSCA!", en = "ROSCA!", pt = "A ROSCA!" },
+	["event.hud_rosca_in"] = { es = "ROSCA en {time}", en = "ROSCA in {time}", pt = "ROSCA em {time}" },
+	["event.announce_fiesta"] = {
+		es = "¡FIESTA! Llueven piñatas en la plaza.",
+		en = "PARTY! Piñatas are raining on the plaza.",
+		pt = "FESTA! Está chovendo piñata na praça.",
+	},
+	["event.announce_posada"] = {
+		es = "¡POSADA! La plaza se llena de piñatas.",
+		en = "POSADA! The plaza fills up with piñatas.",
+		pt = "POSADA! A praça enche de piñatas.",
+	},
+	["event.announce_newyear"] = {
+		es = "¡Medianoche! Fuegos de confeti.",
+		en = "Midnight! Confetti fireworks.",
+		pt = "Meia-noite! Fogos de confete.",
+	},
+	["event.announce_rosca"] = {
+		es = "¡La Rosca! La piñata gigante de Reyes.",
+		en = "Rosca! The Giant Piñata of Three Kings.",
+		pt = "A Rosca! A piñata gigante de Reis.",
+	},
+	["event.announce_giant"] = {
+		es = "¡La Piñata Gigante se abrió!",
+		en = "The Giant Piñata burst open!",
+		pt = "A Piñata Gigante abriu!",
+	},
+	["event.announce_giant_xmas"] = {
+		es = "¡El Renito gigante se abrió!",
+		en = "Giant Renito burst open!",
+		pt = "O Renito gigante abriu!",
+	},
+	["event.posada_title"] = { es = "Posada", en = "Posada", pt = "Posada" },
+	["event.posada_rain"] = {
+		es = "Desfile de faroles. Quedan {time}.",
+		en = "Lantern parade. {time} left.",
+		pt = "Desfile de lamparinas. Faltam {time}.",
+	},
+	["event.posada_giant"] = {
+		es = "Piñata Gigante Navideña",
+		en = "Holiday Giant Piñata",
+		pt = "Piñata Gigante de Natal",
+	},
+	["event.newyear_title"] = { es = "Año Nuevo", en = "New Year", pt = "Ano Novo" },
+	["event.newyear_rain"] = {
+		es = "Fuegos de confeti. Quedan {time}.",
+		en = "Confetti fireworks. {time} left.",
+		pt = "Fogos de confete. Faltam {time}.",
+	},
+	["event.rosca_title"] = { es = "La Rosca", en = "The Rosca", pt = "A Rosca" },
+	["event.rosca_giant"] = { es = "Rosca de Reyes", en = "Three Kings Rosca", pt = "Rosca de Reis" },
+	["event.rosca_rain"] = {
+		es = "Última posada. Quedan {time}.",
+		en = "Last posada. {time} left.",
+		pt = "Última posada. Faltam {time}.",
+	},
+	["event.shop_pinata"] = {
+		es = "Produce {n}/s. Se queda en la Re-Fiesta.",
+		en = "Makes {n}/s. Stays through Re-Party.",
+		pt = "Produz {n}/s. Fica na Re-Festa.",
+	},
+	["event.hat_title"] = { es = "Gorro navideño", en = "Holiday hat", pt = "Gorro de Natal" },
+	["event.shop_hat"] = {
+		es = "Gorro de la posada. El modelo nuevo llega después; ya queda guardado en tu perfil.",
+		en = "Posada hat. The new model comes later; it's already saved on your profile.",
+		pt = "Gorro da posada. O modelo novo chega depois; ele já fica salvo no seu perfil.",
+	},
+	["event.hug_title"] = { es = "Emote Abrazo", en = "Hug emote", pt = "Emote Abraço" },
+	["event.shop_hug"] = {
+		es = "Emote Abrazo. La animación llega después; ya queda guardado.",
+		en = "Hug emote. The animation comes later; it's already saved.",
+		pt = "Emote Abraço. A animação chega depois; ele já fica salvo.",
+	},
+	["event.bastones_n"] = { es = "{n} Bastones", en = "{n} candy canes", pt = "{n} bengalas" },
+	["event.quest_buy"] = { es = "Compra 2 piñatas", en = "Buy 2 piñatas", pt = "Compre 2 piñatas" },
+	["event.quest_bonk"] = { es = "Batea a 2", en = "Bonk 2 players", pt = "Bata em 2" },
+	["event.quest_collect"] = { es = "Junta 2 veces", en = "Collect 2 times", pt = "Junte 2 vezes" },
+	["event.advent_title"] = { es = "Adviento, día {n}", en = "Advent, day {n}", pt = "Advento, dia {n}" },
+	["event.advent_body"] = { es = "Hoy: {n} Bastones", en = "Today: {n} candy canes", pt = "Hoje: {n} bengalas" },
+	["event.advent_renito"] = {
+		es = "El 24: Renito si no faltaste más de 3 días.",
+		en = "On the 24th: Renito if you missed 3 days or fewer.",
+		pt = "No dia 24: Renito se você faltou no máximo 3 dias.",
+	},
+	["event.advent_miss"] = {
+		es = "Faltaste {n} días. Hoy hay Bastones.",
+		en = "You missed {n} days. Today pays candy canes.",
+		pt = "Você faltou {n} dias. Hoje saem bengalas.",
+	},
+	["event.advent_closed"] = {
+		es = "El adviento no está abierto.",
+		en = "Advent isn't open.",
+		pt = "O advento não está aberto.",
+	},
+	["event.gift_title"] = { es = "Regalar", en = "Gift", pt = "Presentear" },
+	["event.gift_body"] = {
+		es = "Una piñata de tu base, una vez por día.",
+		en = "One piñata from your base, once a day.",
+		pt = "Uma piñata da sua base, uma vez por dia.",
+	},
+	["event.gift_need"] = {
+		es = "Poné un Piñatito en la base para regalarlo.",
+		en = "Place a Piñatito at home to gift it.",
+		pt = "Coloca um Piñatito na base para presentear.",
+	},
+	["event.gift_closed"] = {
+		es = "Los regalos son el 24 y el 25.",
+		en = "Gifts are on the 24th and 25th.",
+		pt = "Os presentes são nos dias 24 e 25.",
+	},
+	["event.gift_limit"] = {
+		es = "Ya regalaste hoy.",
+		en = "You already gifted today.",
+		pt = "Você já presenteou hoje.",
+	},
+	["event.gift_alone"] = {
+		es = "No hay nadie más en la plaza.",
+		en = "Nobody else is in the plaza.",
+		pt = "Não tem mais ninguém na praça.",
+	},
+	["event.gift_sent"] = { es = "Regalo enviado", en = "Gift sent", pt = "Presente enviado" },
+	["event.gift_got"] = {
+		es = "{name} te regaló un Piñatito",
+		en = "{name} gifted you a Piñatito",
+		pt = "{name} te deu um Piñatito",
+	},
+	["event.settled"] = {
+		es = "Tus Bastones se volvieron {n} Dulces.",
+		en = "Your candy canes turned into {n} Candy.",
+		pt = "Suas bengalas viraram {n} Doces.",
+	},
 }
 
 local Catalog = {

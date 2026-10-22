@@ -12,6 +12,8 @@ local specs = {
 	"./economy.spec",
 	"./receipts.spec",
 	"./daily.spec",
+	"./event_calendar.spec",
+	"./translations.spec",
 }
 
 local failed = 0

@@ -15,6 +15,7 @@ local Server = script.Parent.Parent
 local Records = require(Server:WaitForChild("Data"):WaitForChild("Records"))
 local AntiCheatService = require(script.Parent:WaitForChild("AntiCheatService"))
 local Juice = require(Server:WaitForChild("World"):WaitForChild("Juice"))
+local Labels = require(Server:WaitForChild("World"):WaitForChild("Labels"))
 local BaseService = require(script.Parent:WaitForChild("BaseService"))
 
 local LockService = {}
@@ -189,8 +190,7 @@ function LockService.init(_services: { [string]: any })
 	for _, plot in world.plots do
 		local prompt = Instance.new("ProximityPrompt")
 		prompt.Name = "LockPrompt"
-		prompt.ActionText = "Candado"
-		prompt.ObjectText = "Puerta"
+		Labels.prompt(prompt, "prompt.lock", "prompt.door")
 		prompt.HoldDuration = 0.2
 		prompt.MaxActivationDistance = 12
 		prompt.RequiresLineOfSight = false

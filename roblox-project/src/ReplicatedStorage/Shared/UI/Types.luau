@@ -61,6 +61,12 @@ export type GameState = {
 	ftueCompleted: boolean,
 	multiplier: number,
 	batUpgrade: number,
+	eventActive: boolean?,
+	eventShop: boolean?,
+	eventGift: boolean?,
+	fiestaVariant: string?,
+	league: string?,
+	cosmetics: { [string]: boolean }?,
 }
 
 export type ShopEntry = {
@@ -70,6 +76,7 @@ export type ShopEntry = {
 	titleArgs: { [string]: string }?,
 	bodyArgs: { [string]: string }?,
 	priceCandy: number?,
+	priceBastones: number?,
 	priceRobux: number?,
 	action: string,
 	owned: boolean,

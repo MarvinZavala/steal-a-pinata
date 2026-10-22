@@ -3,7 +3,7 @@
 -- No muta la tabla de entrada: si el perfil está corrupto devuelve nil y el servidor no lo pisa.
 local Migrations = {}
 
-local VERSION = 3
+local VERSION = 4
 Migrations.VERSION = VERSION
 
 export type OwnedPinata = {
@@ -85,6 +85,14 @@ export type PlayerData = {
 	BatUpgrade: number,
 	RewardedBoostUntil: number,
 	RewardedDay: number,
+	-- Adviento: bit 0 = 11 dic. Las misiones de evento se reinician por día UTC.
+	AdventMask: number,
+	EventQuestMask: number,
+	EventQuestDay: number,
+	-- Día UTC del último regalo entre amigos (0 = nunca).
+	GiftDay: number,
+	-- Los Bastones ya se convirtieron en Dulces después del 7 de enero.
+	BastonesSettled: boolean,
 }
 
 export type Defaults = {
@@ -222,6 +230,11 @@ function Migrations.blank(defaults: Defaults): PlayerData
 		BatUpgrade = 0,
 		RewardedBoostUntil = 0,
 		RewardedDay = 0,
+		AdventMask = 0,
+		EventQuestMask = 0,
+		EventQuestDay = 0,
+		GiftDay = 0,
+		BastonesSettled = false,
 	}
 end
 
@@ -699,6 +712,22 @@ function Migrations.migrate(raw: any, defaults: Defaults): (PlayerData?, string?
 	if rewardedDay == nil then
 		return fail(rewardedErr or "bad_number")
 	end
+	local adventMask, adventErr = takeInt(raw.AdventMask, 0, defaults.maxCurrency)
+	if adventMask == nil then
+		return fail(adventErr or "bad_number")
+	end
+	local eventQuestMask, eventQuestErr = takeInt(raw.EventQuestMask, 0, defaults.maxCurrency)
+	if eventQuestMask == nil then
+		return fail(eventQuestErr or "bad_number")
+	end
+	local eventQuestDay, eventQuestDayErr = takeInt(raw.EventQuestDay, 0, defaults.maxCurrency)
+	if eventQuestDay == nil then
+		return fail(eventQuestDayErr or "bad_number")
+	end
+	local giftDay, giftDayErr = takeInt(raw.GiftDay, 0, defaults.maxCurrency)
+	if giftDay == nil then
+		return fail(giftDayErr or "bad_number")
+	end
 
 	-- v1 no tenía compras ni Bonks ni LastResetUnix: readStats/readDaily ya rellenan 0 si faltan.
 	-- Esas claves solo se aceptan como fuente si el perfil ya declara v2 (o si venían en v1 y son válidas).
@@ -739,6 +768,12 @@ function Migrations.migrate(raw: any, defaults: Defaults): (PlayerData?, string?
 	data.BatUpgrade = batUpgrade
 	data.RewardedBoostUntil = boostUntil
 	data.RewardedDay = rewardedDay
+	data.AdventMask = adventMask
+	data.EventQuestMask = eventQuestMask
+	data.EventQuestDay = eventQuestDay
+	data.GiftDay = giftDay
+	-- Ausente o cualquier cosa que no sea true queda en false. No rechaza el perfil.
+	data.BastonesSettled = raw.BastonesSettled == true
 	return data, nil
 end
 

@@ -33,12 +33,16 @@ local Security = {
 		RequestFTUEAction = { Capacity = 4, LeakPerSec = 1 },
 		RequestClaimDaily = { Capacity = 2, LeakPerSec = 0.2 },
 		RequestClaimQuest = { Capacity = 3, LeakPerSec = 1 },
+		RequestClaimAdvent = { Capacity = 2, LeakPerSec = 0.2 },
+		RequestEventBuy = { Capacity = 3, LeakPerSec = 1 },
+		RequestGift = { Capacity = 2, LeakPerSec = 0.2 },
 		RequestRewarded = { Capacity = 2, LeakPerSec = 0.2 },
 		Honeypot = { Capacity = 1, LeakPerSec = 0.2 },
 		Default = { Capacity = 5, LeakPerSec = 2 },
 	},
 	Upgrades = { "Pedestal", "VaultCap", "ReFiesta", "Bat" },
-	Quests = { "1", "2", "3" },
+	Quests = { "1", "2", "3", "e1", "e2", "e3" },
+	EventSkus = { "tamalito", "jengibrin", "gorro_navidad", "abrazo" },
 	-- Pasos del embudo §10.1 y acciones que la UI pide. El servidor no vuelve a loguear el funnel.
 	FtueSteps = {
 		"1_spawn",

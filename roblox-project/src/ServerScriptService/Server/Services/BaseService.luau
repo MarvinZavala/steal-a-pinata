@@ -10,7 +10,9 @@ local Economy = require(Shared:WaitForChild("Config"):WaitForChild("Economy"))
 local Layout = require(Shared:WaitForChild("Config"):WaitForChild("WorldLayout"))
 local Tuning = require(Shared:WaitForChild("Config"):WaitForChild("Tuning"))
 local Pinatas = require(Shared:WaitForChild("Config"):WaitForChild("Pinatas"))
+local Security = require(Shared:WaitForChild("Config"):WaitForChild("Security"))
 local Remotes = require(Shared:WaitForChild("Net"):WaitForChild("Remotes"))
+local EventCalendar = require(Shared:WaitForChild("Gameplay"):WaitForChild("EventCalendar"))
 local Format = require(Shared:WaitForChild("Util"):WaitForChild("Format"))
 local AssignPlots = require(Shared:WaitForChild("Gameplay"):WaitForChild("AssignPlots"))
 
@@ -19,6 +21,7 @@ local Records = require(Server:WaitForChild("Data"):WaitForChild("Records"))
 local Lifecycle = require(Server:WaitForChild("Adapters"):WaitForChild("Lifecycle"))
 local Validators = require(Server:WaitForChild("Services"):WaitForChild("AntiCheat"):WaitForChild("Validators"))
 local PlaceBuilder = require(Server:WaitForChild("World"):WaitForChild("PlaceBuilder"))
+local Labels = require(Server:WaitForChild("World"):WaitForChild("Labels"))
 local PinataVisual = require(Server:WaitForChild("World"):WaitForChild("PinataVisual"))
 local Movement = require(Server:WaitForChild("World"):WaitForChild("Movement"))
 local Transit = require(Server:WaitForChild("World"):WaitForChild("Transit"))
@@ -179,7 +182,10 @@ function BaseService.pushState(player: Player)
 	local perSec = Records.production(data)
 	local plot = BaseService.plotOf(player.UserId)
 	if plot ~= nil then
-		plot.generatorLabel.Text = string.format("DULCERÍA\n%s\n+%s/s", Format(data.VaultCandy), Format(perSec))
+		Labels.line(plot.generatorLabel, "world.vault", {
+			n = Format(data.VaultCandy),
+			rate = Format(perSec),
+		})
 	end
 	Records.refreshLeaderstats(player)
 	local carrying: any = false
@@ -243,6 +249,7 @@ function BaseService.pushState(player: Player)
 			batPack = data.Passes.BatPack == true,
 		},
 		batSkin = if data.Cosmetics.bat_oro == true then "gold" else "wood",
+		cosmetics = data.Cosmetics,
 		batUpgrade = data.BatUpgrade,
 		ftueCompleted = data.FtueCompleted == true,
 		myLockRemaining = lockRemaining,
@@ -394,7 +401,8 @@ function BaseService.acceptPurchase(
 	pinataId: string,
 	mutation: string?,
 	model: Model,
-	price: number?
+	price: number?,
+	currency: string?
 ): (boolean, string)
 	local data = Records.get(player)
 	local plot = BaseService.plotOf(player.UserId)
@@ -411,13 +419,14 @@ function BaseService.acceptPurchase(
 	end
 	-- nil o <= 0 es gratis (Secretas, y el Michi dorado de la intro). El llamador pasa el precio del slot.
 	local charge = if price ~= nil and price > 0 then price else nil
-	if charge ~= nil and not Records.trySpendDulces(player, charge) then
+	local purse = if currency == "Bastones" then "Bastones" else "Dulces"
+	if charge ~= nil and not Records.trySpend(player, purse, charge) then
 		return false, "funds"
 	end
 	local granted, instanceId = Records.grantPinata(player, pinataId, mutation)
 	if not granted or instanceId == nil then
 		if charge ~= nil then
-			Records.grantDulces(player, charge)
+			Records.grantCurrency(player, purse, charge)
 		end
 		return false, "funds"
 	end
@@ -517,6 +526,26 @@ local function assign(player: Player)
 		return
 	end
 	Records.applyOffline(data)
+	local phaseOverride = workspace:GetAttribute("ForcePosadasPhase")
+	local settled, gained = EventCalendar.applySettle(
+		data,
+		os.time(),
+		EventCalendar.isForced(workspace:GetAttribute("ForcePosadas")),
+		Security.MaxCurrency,
+		if type(phaseOverride) == "string" then phaseOverride else nil
+	)
+	if settled and gained > 0 then
+		local amount = gained
+		task.delay(2, function()
+			if player.Parent ~= nil then
+				Remotes.get("Feedback"):FireClient(player, "TOAST", {
+					key = "event.settled",
+					kind = "good",
+					args = { n = tostring(amount) },
+				})
+			end
+		end)
+	end
 	if game:GetService("RunService"):IsStudio() and not playtestGranted[player.UserId] then
 		playtestGranted[player.UserId] = true
 		if data.Dulces == 0 and #data.Inventory == 0 then
@@ -534,6 +563,7 @@ local function assign(player: Player)
 	end
 	plot.ownerUserId = player.UserId
 	plot.model:SetAttribute("OwnerUserId", player.UserId)
+	plot.sign:SetAttribute("LKey", nil)
 	plot.sign.Text = player.DisplayName
 	player.RespawnLocation = plot.spawn
 	restore(player, plot)
@@ -582,8 +612,8 @@ local function release(player: Player)
 	end
 	plot.ownerUserId = nil
 	plot.model:SetAttribute("OwnerUserId", 0)
-	plot.sign.Text = "LIBRE"
-	plot.generatorLabel.Text = "DULCERÍA"
+	Labels.line(plot.sign, "world.free")
+	Labels.line(plot.generatorLabel, "shop.kiosk_dulceria")
 	player.RespawnLocation = nil
 	local lockService = servicesRef.LockService
 	if type(lockService) == "table" and type(lockService.clear) == "function" then

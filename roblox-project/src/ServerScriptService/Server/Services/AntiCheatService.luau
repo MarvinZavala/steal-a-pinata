@@ -19,6 +19,7 @@ local PlotSolids = require(Shared:WaitForChild("Gameplay"):WaitForChild("PlotSol
 local Suspicion = require(Shared:WaitForChild("Gameplay"):WaitForChild("Suspicion"))
 local Payload = require(Shared:WaitForChild("Net"):WaitForChild("Payload"))
 local Remotes = require(Shared:WaitForChild("Net"):WaitForChild("Remotes"))
+local Text = require(Shared:WaitForChild("Locale"):WaitForChild("Text"))
 
 local Server = script.Parent.Parent
 local Logger = require(script.Parent:WaitForChild("AntiCheat"):WaitForChild("Logger"))
@@ -200,7 +201,11 @@ function AntiCheatService.reportStrike(player: Player, kind: string): boolean
 	if memory.response == "kick" and DebugView.kickEnabled() and kicked[player] ~= true then
 		kicked[player] = true
 		pcall(function()
-			player:Kick("Cerramos esta sesión por actividad imposible. Podés volver a entrar.")
+			local locale = "es"
+			pcall(function()
+				locale = player.LocaleId
+			end)
+			player:Kick(Text.line("kick.anticheat", locale))
 		end)
 	end
 	publishReport()

@@ -37,6 +37,13 @@ local state: { [string]: any } = {
 	multiplier = 1,
 	batUpgrade = 0,
 	fiestaPhase = "idle",
+	fiestaVariant = "fiesta",
+	eventActive = false,
+	eventShop = false,
+	eventGift = false,
+	giftTargets = {},
+	cosmetics = {},
+	league = "",
 	fiestaLeft = 0,
 	giantHp = 0,
 	giantMax = 0,
@@ -209,6 +216,39 @@ function UIState.patch(partial: any)
 	end
 	if typeof(partial.fiestaPhase) == "string" then
 		state.fiestaPhase = partial.fiestaPhase
+	end
+	if typeof(partial.fiestaVariant) == "string" then
+		state.fiestaVariant = partial.fiestaVariant
+	end
+	if typeof(partial.eventActive) == "boolean" then
+		state.eventActive = partial.eventActive
+	end
+	if typeof(partial.eventShop) == "boolean" then
+		state.eventShop = partial.eventShop
+	end
+	if typeof(partial.eventGift) == "boolean" then
+		state.eventGift = partial.eventGift
+	end
+	if typeof(partial.league) == "string" then
+		state.league = partial.league
+	end
+	if typeof(partial.giftTargets) == "table" then
+		local targets = {}
+		for _, item in partial.giftTargets do
+			if typeof(item) == "table" and typeof(item.userId) == "number" and typeof(item.name) == "string" then
+				table.insert(targets, { userId = item.userId, name = string.sub(item.name, 1, 24) })
+			end
+		end
+		state.giftTargets = targets
+	end
+	if typeof(partial.cosmetics) == "table" then
+		local bag = {}
+		for key, value in partial.cosmetics do
+			if typeof(key) == "string" and value == true then
+				bag[key] = true
+			end
+		end
+		state.cosmetics = bag
 	end
 	if typeof(partial.daily) == "table" then
 		state.daily = partial.daily

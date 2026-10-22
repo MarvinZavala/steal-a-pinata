@@ -25,6 +25,7 @@ local VFXController = require(script.Controllers.VFXController)
 task.spawn(Remotes.init)
 
 Locale.install()
+Locale.watchWorld()
 UIRoot.mount()
 UIKit.bindEffects()
 UIGuide.mount()

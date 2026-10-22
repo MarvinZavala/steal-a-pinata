@@ -39,6 +39,7 @@ local KIOSK_COLOR = {
 	bates = "wood",
 	cajas = "grape",
 	vip = "gold",
+	navidad = "xmas",
 }
 
 local function fillFor(name: string): Color3
@@ -51,6 +52,8 @@ local function fillFor(name: string): Color3
 		return Theme.color.grape
 	elseif key == "gold" then
 		return Theme.color.gold
+	elseif key == "xmas" then
+		return Theme.color.hot_magenta
 	end
 	return Theme.color.fiesta_pink
 end
@@ -104,6 +107,11 @@ local function onEntry(entry: any)
 	if entry.enabled ~= true then
 		if entry.badgeKey == "common.soon" or entry.action == "pass" or entry.action == "product" then
 			Toast.push("info", Locale.t("toast.soon"))
+		elseif typeof(entry.priceBastones) == "number" then
+			local have = UIState.get().bastones
+			if typeof(have) ~= "number" or have < entry.priceBastones then
+				Toast.push("bad", Locale.t("deny.poor_bastones"))
+			end
 		elseif typeof(entry.priceCandy) == "number" and UIState.get().candy < entry.priceCandy then
 			Toast.push("bad", Locale.t("deny.poor"))
 		end
@@ -115,6 +123,29 @@ local function onEntry(entry: any)
 			applyLocalUpgrade(st, entry.id)
 		end)
 		UIBridge.upgrade(entry.id)
+		ShopController.refresh()
+	elseif entry.action == "event" then
+		local price = if typeof(entry.priceBastones) == "number" then entry.priceBastones else 0
+		local have = UIState.get().bastones
+		local balance = if typeof(have) == "number" then have else 0
+		if price > 0 and balance < price then
+			Toast.push("bad", Locale.t("deny.poor_bastones"))
+			return
+		end
+		if not UIBridge.isAuthoritative() then
+			UIState.mutate(function(st)
+				st.bastones = math.max(0, balance - price)
+				if entry.id == "gorro_navidad" or entry.id == "abrazo" then
+					local bag = st.cosmetics
+					if typeof(bag) ~= "table" then
+						bag = {}
+						st.cosmetics = bag
+					end
+					bag[entry.id] = true
+				end
+			end)
+		end
+		UIBridge.eventBuy(entry.id)
 		ShopController.refresh()
 	elseif entry.action == "fuse" then
 		local pinataId = string.split(entry.id, ":")[2]
@@ -242,7 +273,7 @@ local function renderPicker()
 	blurb.Text = Locale.t("preview.note")
 	header.BackgroundColor3 = Theme.color.fiesta_pink
 	local m = Metrics.get()
-	for index, name in ShopCatalog.kiosks() do
+	for index, name in ShopCatalog.kiosks(UIState.get()) do
 		local color = fillFor(name)
 		local wrap, _hit, caption = UIKit.button(list, {
 			name = "Kiosk" .. name,
@@ -335,6 +366,9 @@ local function renderKiosk(name: string)
 		elseif typeof(entry.priceRobux) == "number" then
 			priceText = Locale.t("shop.robux", { n = tostring(entry.priceRobux) })
 			buttonColor = Theme.color.lime
+		elseif typeof(entry.priceBastones) == "number" then
+			priceText = Locale.t("shop.price_bastones", { n = Format(entry.priceBastones) })
+			buttonColor = Theme.color.gold
 		elseif typeof(entry.priceCandy) == "number" then
 			priceText = Format(entry.priceCandy)
 			buttonColor = Theme.color.fiesta_pink

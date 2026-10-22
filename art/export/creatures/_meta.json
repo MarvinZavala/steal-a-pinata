@@ -283,5 +283,17 @@
    "caracol_turbo": 12108,
    "caracol_turbo_Neon": 192
   }
+ },
+ "cactus_abrazos": {
+  "name": "cactus_abrazos",
+  "size_studs": [
+   3.62,
+   4.06,
+   2.38
+  ],
+  "tris": {
+   "cactus_abrazos": 16006,
+   "cactus_abrazos_Neon": 184
+  }
  }
 }

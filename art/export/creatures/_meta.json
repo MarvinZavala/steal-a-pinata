@@ -210,5 +210,17 @@
    "cochinito_quincena": 16212,
    "cochinito_quincena_Neon": 84
   }
+ },
+ "lic_dos_peces": {
+  "name": "lic_dos_peces",
+  "size_studs": [
+   5.35,
+   3.81,
+   1.74
+  ],
+  "tris": {
+   "lic_dos_peces": 16038,
+   "lic_dos_peces_Neon": 20
+  }
  }
 }

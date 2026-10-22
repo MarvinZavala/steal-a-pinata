@@ -71,12 +71,12 @@
  "renito": {
   "name": "renito",
   "size_studs": [
-   2.56,
-   4.52,
-   2.42
+   2.79,
+   4.54,
+   2.67
   ],
   "tris": {
-   "renito": 7632,
+   "renito": 11656,
    "renito_Neon": 196
   }
  },

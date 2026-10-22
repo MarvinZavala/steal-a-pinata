@@ -203,12 +203,12 @@
  "cochinito_quincena": {
   "name": "cochinito_quincena",
   "size_studs": [
-   3.71,
+   3.84,
    4.39,
    4.98
   ],
   "tris": {
-   "cochinito_quincena": 16212,
+   "cochinito_quincena": 16484,
    "cochinito_quincena_Neon": 84
   }
  },

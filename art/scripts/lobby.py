@@ -544,7 +544,7 @@ def fabrica():
         P.append(box(f"tcap{s}", (6.8, 7.8, .9), loc=(x, 0, 18.55), col="sun_yellow", bevel=.2))
         P.append(lathe(f"chim{s}", [(1.4, 18.9), (1.2, 22.5), (1.55, 22.8), (1.55, 23.6), (1.0, 23.6)], 16, "ink_soft", loc=(x + s * 1.2, 2.4, 0)))
         for j, (dz, rr, col) in enumerate(((25.0, 1.3, "bubblegum"), (26.9, 1.6, "lavender"), (29.0, 1.9, "mint"))):
-            P.append(lump(f"puff{s}{j}", rr, (x + s * (1.6 + j * .7), 2.6 + j * 1.3, dz), col, seed=j + (s + 1) * 5, sub=2, amp=.12))
+            P.append(lump(f"puff{s}{j}", rr, (x + s * (2.6 + j * 1.5), 3.0 + j * 1.6, dz - 1.0), col, seed=j + (s + 1) * 5, sub=2, amp=.12))
         P.append(gear(f"gear{s}", 2.3, 10, .6, (x, -3.55, 10.5), (90, 0, 0), "gold"))
         P.append(cyl(f"gearh{s}", .8, .8, .7, loc=(x, -3.6, 10.5), rot=(90, 0, 0), col="ink_soft", seg=12, bevel=.1))
         P.append(star_prism(f"tstar{s}", 5, 1.2, .55, .5, loc=(x, -3.6, 15.7), rot=(90, 0, 0), col="sun_yellow", bevel=.1))
@@ -870,9 +870,9 @@ def finalize_scene(mode):
     lp = nt.nodes.new("ShaderNodeLightPath"); bgc = nt.nodes.new("ShaderNodeBackground"); mix = nt.nodes.new("ShaderNodeMixShader")
     tc = nt.nodes.new("ShaderNodeTexCoord"); sep = nt.nodes.new("ShaderNodeSeparateXYZ"); nt.links.new(tc.outputs["Generated"], sep.inputs[0])
     ramp = nt.nodes.new("ShaderNodeValToRGB"); nt.links.new(sep.outputs[2], ramp.inputs[0])
-    ramp.color_ramp.elements[0].position = .0; ramp.color_ramp.elements[0].color = (*hex2lin("#B4E6FF"), 1)
-    ramp.color_ramp.elements[1].position = .35; ramp.color_ramp.elements[1].color = (*hex2lin("#3D96FF"), 1)
-    nt.links.new(ramp.outputs[0], bgc.inputs[0]); bgc.inputs[1].default_value = 1.05
+    ramp.color_ramp.elements[0].position = .0; ramp.color_ramp.elements[0].color = (*hex2lin("#86D0FF"), 1)
+    ramp.color_ramp.elements[1].position = .2; ramp.color_ramp.elements[1].color = (*hex2lin("#2A7CF5"), 1)
+    nt.links.new(ramp.outputs[0], bgc.inputs[0]); bgc.inputs[1].default_value = .95
     out = nt.nodes["World Output"]
     nt.links.new(lp.outputs["Is Camera Ray"], mix.inputs[0]); nt.links.new(bgl.outputs[0], mix.inputs[1]); nt.links.new(bgc.outputs[0], mix.inputs[2])
     nt.links.new(mix.outputs[0], out.inputs[0])

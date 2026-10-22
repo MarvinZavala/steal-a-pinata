@@ -40,6 +40,19 @@ local Assets = {
 		tamalito = { Body = PLACEHOLDER, Size = { 3, 3.2, 3 } },
 		jengibrin = { Body = PLACEHOLDER, Size = { 3, 3.2, 3 } },
 		renito = { Body = PLACEHOLDER, Neon = PLACEHOLDER, Size = { 2.56, 4.52, 2.42 } },
+		-- Temporada Meme 1. Size = art/export/creatures/_meta.json. Las seis traen malla _Neon.
+		-- TODO: reemplazar rbxassetid://0 al subir art/export/creatures/michi_aplausos.fbx
+		michi_aplausos = { Body = PLACEHOLDER, Neon = PLACEHOLDER, Size = { 2.98, 4.06, 3.16 } },
+		-- TODO: reemplazar rbxassetid://0 al subir art/export/creatures/seis_siete.fbx
+		seis_siete = { Body = PLACEHOLDER, Neon = PLACEHOLDER, Size = { 6.99, 3.53, 2.03 } },
+		-- TODO: reemplazar rbxassetid://0 al subir art/export/creatures/manzanin_iq.fbx
+		manzanin_iq = { Body = PLACEHOLDER, Neon = PLACEHOLDER, Size = { 4.36, 3.83, 3.93 } },
+		-- TODO: reemplazar rbxassetid://0 al subir art/export/creatures/mapache_nel.fbx
+		mapache_nel = { Body = PLACEHOLDER, Neon = PLACEHOLDER, Size = { 4.37, 6.02, 6.89 } },
+		-- TODO: reemplazar rbxassetid://0 al subir art/export/creatures/fichadito.fbx
+		fichadito = { Body = PLACEHOLDER, Neon = PLACEHOLDER, Size = { 4.4, 4.94, 2.47 } },
+		-- TODO: reemplazar rbxassetid://0 al subir art/export/creatures/gemelos_pupusa.fbx
+		gemelos_pupusa = { Body = PLACEHOLDER, Neon = PLACEHOLDER, Size = { 7.75, 4.56, 1.59 } },
 	} :: { [string]: MeshRef },
 }
 

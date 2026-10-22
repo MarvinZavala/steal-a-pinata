@@ -10,7 +10,8 @@ local Pinatas = require(ReplicatedStorage.Shared.Config.Pinatas)
 local Assets = require(ReplicatedStorage.Shared.Config.Assets)
 local Rarities = require(ReplicatedStorage.Shared.Config.Rarities)
 
-local EXPECTED_MODELED = 9
+-- 9 de fase 1 + 6 de Temporada Meme 1 (bloque al final de Pinatas.luau).
+local EXPECTED_MODELED = 15
 
 local PinataRegistry = {}
 
@@ -284,7 +285,7 @@ end
 function PinataRegistry.start()
 	local ok, err = PinataRegistry.smokeModeled()
 	if ok then
-		print("[WP-03] smoke ok: 9 piñatas instanciadas")
+		print(`[WP-03] smoke ok: {EXPECTED_MODELED} piñatas instanciadas`)
 	elseif RunService:IsStudio() then
 		error("[WP-03] smoke FAIL: " .. tostring(err), 0)
 	else

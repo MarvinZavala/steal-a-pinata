@@ -574,5 +574,131 @@
    0.96875,
    0.78125
   ]
+ },
+ "wall_rose": {
+  "hex": "#F79BBE",
+  "roughness": 0.8,
+  "metalness": 0,
+  "uv": [
+   0.03125,
+   0.71875
+  ]
+ },
+ "wall_ochre": {
+  "hex": "#F9C34E",
+  "roughness": 0.8,
+  "metalness": 0,
+  "uv": [
+   0.09375,
+   0.71875
+  ]
+ },
+ "wall_aqua": {
+  "hex": "#5AD2CB",
+  "roughness": 0.8,
+  "metalness": 0,
+  "uv": [
+   0.15625,
+   0.71875
+  ]
+ },
+ "wall_lilac": {
+  "hex": "#A88AF2",
+  "roughness": 0.8,
+  "metalness": 0,
+  "uv": [
+   0.21875,
+   0.71875
+  ]
+ },
+ "iron": {
+  "hex": "#2B2238",
+  "roughness": 0.4,
+  "metalness": 0.6,
+  "uv": [
+   0.28125,
+   0.71875
+  ]
+ },
+ "tile_blue": {
+  "hex": "#1F4FC9",
+  "roughness": 0.2,
+  "metalness": 0,
+  "uv": [
+   0.34375,
+   0.71875
+  ]
+ },
+ "leaf": {
+  "hex": "#3DBB4C",
+  "roughness": 0.7,
+  "metalness": 0,
+  "uv": [
+   0.40625,
+   0.71875
+  ]
+ },
+ "leaf_dark": {
+  "hex": "#23893A",
+  "roughness": 0.75,
+  "metalness": 0,
+  "uv": [
+   0.46875,
+   0.71875
+  ]
+ },
+ "bark": {
+  "hex": "#6B4128",
+  "roughness": 0.85,
+  "metalness": 0,
+  "uv": [
+   0.53125,
+   0.71875
+  ]
+ },
+ "flame": {
+  "hex": "#FF5A1F",
+  "roughness": 0.65,
+  "metalness": 0,
+  "uv": [
+   0.59375,
+   0.71875
+  ]
+ },
+ "water": {
+  "hex": "#25C7E0",
+  "roughness": 0.05,
+  "metalness": 0,
+  "uv": [
+   0.65625,
+   0.71875
+  ]
+ },
+ "trim": {
+  "hex": "#FFF4E0",
+  "roughness": 0.65,
+  "metalness": 0,
+  "uv": [
+   0.71875,
+   0.71875
+  ]
+ },
+ "roof_tile": {
+  "hex": "#C9562E",
+  "roughness": 0.7,
+  "metalness": 0,
+  "uv": [
+   0.78125,
+   0.71875
+  ]
+ },
+ "velvet": {
+  "hex": "#B0124F",
+  "roughness": 0.8,
+  "metalness": 0,
+  "uv": [
+   0.84375,
+   0.71875
+  ]
  }
 }

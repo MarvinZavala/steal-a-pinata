@@ -30,6 +30,12 @@ local EXPECTED = {
 	"tamalito",
 	"jengibrin",
 	"renito",
+	"michi_aplausos",
+	"seis_siete",
+	"manzanin_iq",
+	"mapache_nel",
+	"fichadito",
+	"gemelos_pupusa",
 }
 
 local MODELED: { [string]: boolean } = {
@@ -42,6 +48,12 @@ local MODELED: { [string]: boolean } = {
 	torogoz = true,
 	sombra = true,
 	renito = true,
+	michi_aplausos = true,
+	seis_siete = true,
+	manzanin_iq = true,
+	mapache_nel = true,
+	fichadito = true,
+	gemelos_pupusa = true,
 }
 
 local NEON: { [string]: boolean } = {
@@ -52,6 +64,12 @@ local NEON: { [string]: boolean } = {
 	renito = true,
 	izalco = true,
 	pixelin = true,
+	michi_aplausos = true,
+	seis_siete = true,
+	manzanin_iq = true,
+	mapache_nel = true,
+	fichadito = true,
+	gemelos_pupusa = true,
 }
 
 local RARITIES: { [string]: boolean } = {
@@ -65,7 +83,7 @@ local RARITIES: { [string]: boolean } = {
 	Event = true,
 }
 
-H.check("hay 23 piñatitos y 9 modeladas", function()
+H.check("hay 29 piñatitos y 15 modeladas", function()
 	local seen: { [string]: boolean } = {}
 	local count = 0
 	local modeled = 0
@@ -97,13 +115,26 @@ H.check("hay 23 piñatitos y 9 modeladas", function()
 			H.eq(mesh.Neon, nil, id)
 		end
 	end
-	H.eq(count, 23)
-	H.eq(modeled, 9)
+	H.eq(count, 29)
+	H.eq(modeled, 15)
 	for _, id in EXPECTED do
 		H.truthy(seen[id] == true, id)
 	end
 	H.eq(Pinatas.sombra.Price, nil)
 	H.eq(Pinatas.pixelin.Price, nil)
+	H.eq(Pinatas.michi_aplausos.Rarity, "Legendary")
+	H.eq(Pinatas.michi_aplausos.CandyPerSec, 2750)
+	H.eq(Pinatas.michi_aplausos.Price, 650000)
+	H.eq(Pinatas.seis_siete.CandyPerSec, 6767)
+	H.eq(Pinatas.seis_siete.Price, 1676767)
+	H.eq(Pinatas.manzanin_iq.Rarity, "Mythic")
+	H.eq(Pinatas.manzanin_iq.Price, 5200000)
+	H.eq(Pinatas.mapache_nel.CandyPerSec, 16500)
+	H.eq(Pinatas.mapache_nel.Price, 7000000)
+	H.eq(Pinatas.fichadito.Price, nil)
+	H.eq(Pinatas.gemelos_pupusa.Price, nil)
+	H.eq(Pinatas.gemelos_pupusa.CandyPerSec, 150000)
+	H.eq(Pinatas.michi_aplausos.Set, "Memes")
 end)
 
 H.check("pesos de rareza suman 100", function()

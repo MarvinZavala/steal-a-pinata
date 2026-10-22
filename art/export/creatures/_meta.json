@@ -24,12 +24,12 @@
  "michi": {
   "name": "michi",
   "size_studs": [
-   2.91,
-   3.96,
-   2.29
+   2.94,
+   4.1,
+   2.43
   ],
   "tris": {
-   "michi": 7696
+   "michi": 13184
   }
  },
  "cohetin": {

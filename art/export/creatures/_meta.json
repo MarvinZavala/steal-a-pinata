@@ -106,12 +106,12 @@
  "gemelos_pupusa": {
   "name": "gemelos_pupusa",
   "size_studs": [
-   8.3,
+   7.75,
    4.56,
-   1.58
+   1.59
   ],
   "tris": {
-   "gemelos_pupusa": 18716,
+   "gemelos_pupusa": 19052,
    "gemelos_pupusa_Neon": 84
   }
  },

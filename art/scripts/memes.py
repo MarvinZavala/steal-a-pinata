@@ -13,7 +13,7 @@ from mathutils import Vector, Matrix, Euler
 def V(*a): return Vector(a)
 
 # ------------------------------------------------------------------ shared bits
-def glove(name, wrist, direction, s=1.0, col="eye_white", palm_up=False, spread=1.0, cuff=None):
+def glove(name, wrist, direction, s=1.0, col="eye_white", palm_up=False, spread=1.0, cuff=None, curl=()):
     """Cartoon 4-finger glove. direction = from wrist towards fingertips."""
     d = Vector(direction).normalized()
     side = d.cross(V(0, 0, 1)); side = side.normalized() if side.length > 1e-3 else V(1, 0, 0)
@@ -27,6 +27,7 @@ def glove(name, wrist, direction, s=1.0, col="eye_white", palm_up=False, spread=
         u = (k - 1.5) * .17 * s * spread
         base = palm + side * u + d * .22 * s
         tip = base + d * (.34 - .05 * abs(k - 1.5)) * s + side * u * .3
+        if k in curl: tip = base + d * .08 * s - up * .14 * s
         P.append(tube(name + f"fg{k}", [base, base.lerp(tip, .5) + up * .03 * s, tip], radius=.085 * s, col=col, seg=8, taper=[1, 1, .9]))
         P.append(sphere(name + f"ft{k}", (.085 * s,) * 3, loc=tip, col=col, seg=8, ring=6))
     tb = palm + side * .3 * s + up * .05 * s
@@ -141,7 +142,8 @@ def pupusa_twin(cx, tilt, cap_col, cap_side, shoe_col, seed, arm_over):
     # outer arm: peace sign up high; inner arm over the twin's shoulder
     sh_out = w(-cap_side * 1.0, -.1, cz + .2); hand_out = w(-cap_side * 1.75, -.35, cz + 1.1)
     P += limb(f"armo{seed}", sh_out, hand_out, .17, .15, 2, ["mango", "wood"], seed=seed + 7, seg=12)
-    P += glove(f"go{seed}", hand_out, (hand_out - sh_out), s=.9, col="eye_white", spread=1.3)
+    dd = (hand_out - sh_out).normalized()
+    P += glove(f"go{seed}", hand_out - dd * .42, dd, s=.95, col="eye_white", spread=1.5, cuff="eye_white", curl=(0, 1))
     sh_in = w(cap_side * 1.0, -.05 + arm_over * .25, cz + .45); hand_in = w(cap_side * 1.95, -.15 + arm_over * .5, cz + 1.0)
     P += limb(f"armi{seed}", sh_in, hand_in, .17, .15, 2, ["mango", "wood"], seed=seed + 9, seg=12)
     P.append(sphere(f"gi{seed}", (.27, .27, .22), loc=hand_in, col="eye_white", seg=12, ring=8))

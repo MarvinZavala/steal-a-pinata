@@ -75,7 +75,7 @@
   "folder": "creatures",
   "file": "aguacaton",
   "mesh": "aguacaton",
-  "tris": 14730
+  "tris": 16606
  },
  {
   "folder": "creatures",
@@ -87,7 +87,7 @@
   "folder": "creatures",
   "file": "aurazoso",
   "mesh": "aurazoso",
-  "tris": 8256
+  "tris": 9058
  },
  {
   "folder": "creatures",
@@ -129,7 +129,7 @@
   "folder": "creatures",
   "file": "chancla_teledirigida",
   "mesh": "chancla_teledirigida",
-  "tris": 6192
+  "tris": 6572
  },
  {
   "folder": "creatures",
@@ -141,7 +141,7 @@
   "folder": "creatures",
   "file": "cochinito_quincena",
   "mesh": "cochinito_quincena",
-  "tris": 16212
+  "tris": 16484
  },
  {
   "folder": "creatures",
@@ -183,13 +183,13 @@
   "folder": "creatures",
   "file": "fantasmita_bu",
   "mesh": "fantasmita_bu",
-  "tris": 10244
+  "tris": 11532
  },
  {
   "folder": "creatures",
   "file": "fantasmita_bu",
   "mesh": "fantasmita_bu_Neon",
-  "tris": 4072
+  "tris": 2280
  },
  {
   "folder": "creatures",
@@ -231,7 +231,7 @@
   "folder": "creatures",
   "file": "lic_dos_peces",
   "mesh": "lic_dos_peces",
-  "tris": 16038
+  "tris": 16782
  },
  {
   "folder": "creatures",

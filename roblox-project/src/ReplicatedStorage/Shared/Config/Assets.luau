@@ -59,15 +59,15 @@ local Assets = {
 		-- TODO: reemplazar rbxassetid://0 al subir art/export/creatures/fantasmita_bu.fbx
 		fantasmita_bu = { Body = PLACEHOLDER, Neon = PLACEHOLDER, Size = { 4.43, 4.24, 3.08 } },
 		-- TODO: reemplazar rbxassetid://0 al subir art/export/creatures/cochinito_quincena.fbx
-		cochinito_quincena = { Body = PLACEHOLDER, Neon = PLACEHOLDER, Size = { 3.71, 4.39, 4.98 } },
+		cochinito_quincena = { Body = PLACEHOLDER, Neon = PLACEHOLDER, Size = { 3.84, 4.39, 4.98 } },
 		-- TODO: reemplazar rbxassetid://0 al subir art/export/creatures/lic_dos_peces.fbx
 		lic_dos_peces = { Body = PLACEHOLDER, Neon = PLACEHOLDER, Size = { 5.35, 3.81, 1.74 } },
 		-- TODO: reemplazar rbxassetid://0 al subir art/export/creatures/pinovela.fbx
 		pinovela = { Body = PLACEHOLDER, Neon = PLACEHOLDER, Size = { 4.11, 4.38, 2.48 } },
 		-- TODO: reemplazar rbxassetid://0 al subir art/export/creatures/chancla_teledirigida.fbx
-		chancla_teledirigida = { Body = PLACEHOLDER, Neon = PLACEHOLDER, Size = { 5.28, 4.54, 2.46 } },
+		chancla_teledirigida = { Body = PLACEHOLDER, Neon = PLACEHOLDER, Size = { 5.28, 4.6, 2.85 } },
 		-- TODO: reemplazar rbxassetid://0 al subir art/export/creatures/aurazoso.fbx
-		aurazoso = { Body = PLACEHOLDER, Neon = PLACEHOLDER, Size = { 3.91, 4.79, 3.4 } },
+		aurazoso = { Body = PLACEHOLDER, Neon = PLACEHOLDER, Size = { 4.05, 4.95, 3.4 } },
 		-- TODO: reemplazar rbxassetid://0 al subir art/export/creatures/abuelita_en_vivo.fbx
 		abuelita_en_vivo = { Body = PLACEHOLDER, Neon = PLACEHOLDER, Size = { 4.36, 5.03, 2.96 } },
 		-- Colección Random (fase 3). Las cuatro traen malla _Neon.
@@ -76,7 +76,7 @@ local Assets = {
 		-- TODO: reemplazar rbxassetid://0 al subir art/export/creatures/cactus_abrazos.fbx
 		cactus_abrazos = { Body = PLACEHOLDER, Neon = PLACEHOLDER, Size = { 3.62, 4.06, 2.38 } },
 		-- TODO: reemplazar rbxassetid://0 al subir art/export/creatures/aguacaton.fbx
-		aguacaton = { Body = PLACEHOLDER, Neon = PLACEHOLDER, Size = { 3.74, 4.2, 2.6 } },
+		aguacaton = { Body = PLACEHOLDER, Neon = PLACEHOLDER, Size = { 3.74, 4.2, 2.61 } },
 		-- TODO: reemplazar rbxassetid://0 al subir art/export/creatures/pulpo_dj.fbx
 		pulpo_dj = { Body = PLACEHOLDER, Neon = PLACEHOLDER, Size = { 4.96, 5.74, 4.16 } },
 	} :: { [string]: MeshRef },

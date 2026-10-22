@@ -10,7 +10,9 @@ if workspace.StreamingEnabled ~= true then
 end
 
 local ORDER = {
+	"PinataRegistry", -- WP-03
 	"DataService", -- WP-02
+	"AntiCheatService", -- WP-10a
 	"BaseService", -- WP-04
 	"ConveyorService", -- WP-05
 	"StealService", -- WP-06

@@ -1,1 +1,8 @@
 std = "roblox"
+
+# ProfileStore es un módulo de terceros vendorizado; no se reescribe para pasar el lint.
+exclude = ["src/ServerScriptService/Server/Vendor/**"]
+
+[rules]
+# Los tests corren en Lune con require("ruta"). El std de Roblox tipa require() como Instance.
+incorrect_standard_library_use = "allow"

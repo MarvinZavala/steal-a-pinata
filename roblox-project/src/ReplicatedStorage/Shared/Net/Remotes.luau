@@ -4,19 +4,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
-local NAMES = {
-	-- Cliente -> Servidor (intenciones)
-	"RequestBuy", -- (conveyorSlotId: number)
-	"RequestSteal", -- (ownerUserId: number, pedestalIndex: number)
-	"RequestSwing", -- ()
-	"RequestLock", -- ()
-	"RequestUpgrade", -- (upgradeId: string)
-	"RequestFuse", -- (pinataId: string)
-	-- Servidor -> Cliente (estado / feedback)
-	"StateChanged", -- (patch: table)
-	"Feedback", -- (kind: string, payload: table)  -- BONK, ROBBED, PURCHASE, etc.
-	"Announce", -- (text: string, rarity: string)
-}
+local Payload = require(script.Parent.Payload)
 
 local Remotes = {}
 
@@ -26,22 +14,31 @@ function Remotes.get(name: string): RemoteEvent
 		folder = ReplicatedStorage:FindFirstChild("Remotes") or Instance.new("Folder")
 		folder.Name = "Remotes"
 		folder.Parent = ReplicatedStorage
-		local r = folder:FindFirstChild(name)
-		if not r then
-			r = Instance.new("RemoteEvent")
-			r.Name = name
-			r.Parent = folder
+		local remote = folder:FindFirstChild(name)
+		if not remote then
+			remote = Instance.new("RemoteEvent")
+			remote.Name = name
+			remote.Parent = folder
 		end
-		return r :: RemoteEvent
+		return remote :: RemoteEvent
 	end
 	folder = ReplicatedStorage:WaitForChild("Remotes")
 	return folder:WaitForChild(name) :: RemoteEvent
 end
 
 function Remotes.init()
-	for _, n in NAMES do
-		Remotes.get(n)
+	for _, name in Payload.names() do
+		Remotes.get(name)
 	end
+end
+
+-- Única puerta del cliente. Rechaza señuelos y remotes de servidor → cliente.
+function Remotes.fireServer(name: string, ...: any)
+	local spec = Payload.spec(name)
+	if spec == nil or spec.Honeypot or spec.Direction ~= "C2S" then
+		error(`[Remotes] {name} no es una intención del cliente`, 2)
+	end
+	Remotes.get(name):FireServer(...)
 end
 
 return Remotes

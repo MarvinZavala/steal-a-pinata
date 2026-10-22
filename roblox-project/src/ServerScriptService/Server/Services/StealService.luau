@@ -8,8 +8,10 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Economy = require(Shared:WaitForChild("Config"):WaitForChild("Economy"))
+local FairPlay = require(Shared:WaitForChild("Config"):WaitForChild("FairPlay"))
 local Rarities = require(Shared:WaitForChild("Config"):WaitForChild("Rarities"))
 local Tuning = require(Shared:WaitForChild("Config"):WaitForChild("Tuning"))
+local CarryIntegrity = require(Shared:WaitForChild("Gameplay"):WaitForChild("CarryIntegrity"))
 local StealRules = require(Shared:WaitForChild("Gameplay"):WaitForChild("StealRules"))
 
 local Server = script.Parent.Parent
@@ -36,6 +38,7 @@ type Carry = {
 	hitsRequired: number,
 	pinataId: string,
 	mutation: string?,
+	generation: number,
 }
 
 type Loose = {
@@ -54,6 +57,7 @@ local StealService = {}
 local carried: { [Player]: Carry } = {}
 local lastSteal: { [Player]: number } = {}
 local loose: { Loose } = {}
+local ledger = CarryIntegrity.empty()
 
 local function hitsRequired(model: Model): number
 	local rarity = model:GetAttribute("Rarity")
@@ -129,6 +133,18 @@ local function markStolen(model: Model, on: boolean)
 	end
 end
 
+local function leagueService(): any
+	return require(script.Parent:WaitForChild("LeagueService"))
+end
+
+local function outranks(player: Player, victimUserId: number): boolean
+	local league = leagueService()
+	if type(league) ~= "table" or type(league.outranks) ~= "function" then
+		return false
+	end
+	return league.outranks(player, victimUserId) == true
+end
+
 local function beginCarry(
 	player: Player,
 	model: Model,
@@ -140,6 +156,17 @@ local function beginCarry(
 	if root == nil then
 		return false
 	end
+	if AntiCheatService.carryLocked(player) then
+		return false
+	end
+	local nextLedger, opened, why, generation =
+		CarryIntegrity.begin(ledger, owned.InstanceId, ownerUserId, player.UserId)
+	if not opened then
+		AntiCheatService.reportStrike(player, "carry_dupe")
+		warn("[WP-10b] carga rechazada", player.Name, owned.InstanceId, why)
+		return false
+	end
+	ledger = nextLedger
 	local oldPrompt = model:FindFirstChild("StealPrompt", true)
 	if oldPrompt ~= nil then
 		oldPrompt:Destroy()
@@ -156,6 +183,7 @@ local function beginCarry(
 		hitsRequired = hitsRequired(model),
 		pinataId = owned.PinataId,
 		mutation = Records.mutationOf(owned),
+		generation = generation,
 	}
 	player:SetAttribute("Carrying", true)
 	if Movement.mode(player) ~= "stun" then
@@ -227,6 +255,9 @@ local function recentAgainst(userId: number): number
 end
 
 function StealService.trySteal(player: Player, ownerUserId: number, pedestalIndex: number)
+	if AntiCheatService.carryLocked(player) then
+		return
+	end
 	if type(ownerUserId) ~= "number" or type(pedestalIndex) ~= "number" then
 		return
 	end
@@ -260,6 +291,7 @@ function StealService.grabLoose(player: Player, item: Loose)
 		alreadyCarrying = carried[player] ~= nil,
 		thiefIsRookie = thiefRookie(player),
 		victimIsRookie = victimRookie(item.ownerUserId),
+		thiefOutranksVictim = outranks(player, item.ownerUserId),
 		cooldownReady = os.clock() - (lastSteal[player] or 0) >= Economy.Steal.CooldownSec,
 		recentStealsOnVictim = recentAgainst(item.ownerUserId),
 		maxStealsPerWindow = Economy.Steal.MaxPerVictimPer5Min,
@@ -300,6 +332,7 @@ function StealService.grabSeated(player: Player, ownerUserId: number, pedestalIn
 		alreadyCarrying = carried[player] ~= nil,
 		thiefIsRookie = thiefRookie(player),
 		victimIsRookie = victimRookie(ownerUserId),
+		thiefOutranksVictim = outranks(player, ownerUserId),
 		cooldownReady = os.clock() - (lastSteal[player] or 0) >= Economy.Steal.CooldownSec,
 		recentStealsOnVictim = recentAgainst(ownerUserId),
 		maxStealsPerWindow = Economy.Steal.MaxPerVictimPer5Min,
@@ -341,12 +374,41 @@ function StealService.deliver(player: Player)
 	if carry == nil then
 		return
 	end
-	if os.clock() - carry.since < Tuning.MinCarrySec then
+	if AntiCheatService.carryLocked(player) then
+		StealService.drop(player)
 		return
 	end
-	if not BaseService.inOwnZone(player) then
+	local root = Validators.rootOf(player)
+	local modelPos = carry.model:GetPivot().Position
+	local offset = if root ~= nil then (root.Position - modelPos).Magnitude else math.huge
+	local crosses = false
+	if root ~= nil then
+		crosses = AntiCheatService.segmentBlocked(root.Position, modelPos)
+	end
+	local allowed, why = CarryIntegrity.canDeliver({
+		inside = BaseService.inOwnZone(player),
+		modelOffset = offset,
+		maxOffset = FairPlay.MaxCarrySeparation,
+		age = os.clock() - carry.since,
+		minAge = Tuning.MinCarrySec,
+		crossesSolid = crosses,
+	})
+	if not allowed then
+		if why == "wall" then
+			AntiCheatService.reportStrike(player, "carry_wall")
+		elseif why == "far" then
+			AntiCheatService.reportStrike(player, "carry_far")
+		end
 		return
 	end
+	local nextLedger, committed, reason = CarryIntegrity.deliver(ledger, carry.uid, carry.generation, player.UserId)
+	if not committed then
+		AntiCheatService.reportStrike(player, "carry_dupe")
+		warn("[WP-10b] entrega duplicada", player.Name, carry.uid, reason)
+		StealService.drop(player)
+		return
+	end
+	ledger = nextLedger
 	carried[player] = nil
 	player:SetAttribute("Carrying", false)
 	if Movement.mode(player) ~= "stun" then
@@ -358,6 +420,7 @@ function StealService.deliver(player: Player)
 	PinataVisual.unweld(carry.model)
 	markStolen(carry.model, false)
 	local function refundToOwner()
+		ledger = CarryIntegrity.restore(ledger, carry.uid, carry.ownerUserId)
 		local owned = findOwned(carry.ownerUserId, carry.uid)
 		if owned ~= nil then
 			Transit.set(owned.InstanceId, false)
@@ -385,7 +448,6 @@ function StealService.deliver(player: Player)
 		return
 	end
 	BaseService.receive(player.UserId, owned, carry.model, true, nil)
-	local root = Validators.rootOf(player)
 	local at = if root ~= nil then root.Position else carry.model:GetPivot().Position
 	Juice.confetti(at, Tuning.Sfx.Deliver)
 	Juice.feedback("DELIVER", at)
@@ -435,12 +497,22 @@ function StealService.drop(player: Player)
 	if carry == nil then
 		return
 	end
+	local root = Validators.rootOf(player)
+	local position = carry.model:GetPivot().Position
+	if root ~= nil and AntiCheatService.segmentBlocked(root.Position, position) then
+		AntiCheatService.reportStrike(player, "carry_wall")
+		local safe = AntiCheatService.lastGoodVector(player)
+		if safe ~= nil then
+			position = safe
+		end
+	end
+	local nextLedger = CarryIntegrity.abort(ledger, carry.uid, carry.generation)
+	ledger = nextLedger
 	carried[player] = nil
 	player:SetAttribute("Carrying", false)
 	if Movement.mode(player) ~= "stun" then
 		Movement.setMode(player, "normal")
 	end
-	local position = carry.model:GetPivot().Position
 	carry.model.Parent = worldFolder()
 	PinataVisual.unweld(carry.model)
 	markStolen(carry.model, false)
@@ -512,16 +584,27 @@ function StealService.start()
 			task.wait(0.15)
 			local ready: { Player } = {}
 			for player, carry in carried do
-				if os.clock() - carry.since >= Tuning.MinCarrySec and BaseService.inOwnZone(player) then
+				local locked = AntiCheatService.carryLocked(player)
+				local home = os.clock() - carry.since >= Tuning.MinCarrySec and BaseService.inOwnZone(player)
+				if locked or home then
 					table.insert(ready, player)
 				end
 			end
 			for _, player in ready do
-				StealService.deliver(player)
+				if AntiCheatService.carryLocked(player) then
+					StealService.drop(player)
+				else
+					StealService.deliver(player)
+				end
 			end
 		end
 	end)
 	local function hook(player: Player)
+		local returnedLedger, returned = CarryIntegrity.rejoin(ledger, player.UserId)
+		ledger = returnedLedger
+		if #returned > 0 then
+			warn("[WP-10b] rejoin devuelve", player.UserId, table.concat(returned, ","))
+		end
 		player.CharacterAdded:Connect(function(character)
 			local humanoid = character:WaitForChild("Humanoid", 8)
 			if humanoid ~= nil and humanoid:IsA("Humanoid") then

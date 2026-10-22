@@ -90,3 +90,13 @@ game.ReplicatedStorage.Remotes.RequestGrantCurrency:FireServer(10 ^ 9)
 En el output del **servidor** tienen que verse warns `[AC]` de `rate:`, `payload:` y `honeypot:`. No tiene que haber `Script error` ni un error rojo del server. Los Dulces no se mueven: no hay handler que los toque, y un payload con `Dulces` se rechaza.
 
 A los 15 flags de la sesión el jugador queda restringido (se ignoran sus intenciones). No hay ban. Al salir, el conteo se borra. La posición imposible se loguea; la distancia al objetivo la van a usar Robo y Bate (`AntiCheatService.authorize(player, action, posicionDelServidor)`) cuando existan esos sistemas.
+
+## WP-10b y WP-16
+
+El guion de Studio, la vista de admin y el checklist están en [FAIRPLAY.md](FAIRPLAY.md). Desde `roblox-project/`:
+
+```bash
+lune run tests/run
+```
+
+`fairplay.spec` cubre velocidad, knockback, noclip, carga, autoclick, puntaje, ligas, escudo y offline.

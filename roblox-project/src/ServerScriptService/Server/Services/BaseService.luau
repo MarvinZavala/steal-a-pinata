@@ -246,6 +246,15 @@ function BaseService.pushState(player: Player)
 			payload.settings = settings
 		end
 	end
+	-- WP-16 / WP-10b. La UI de hoy no pinta estas claves; quedan en el parche para el HUD.
+	local league = servicesRef.LeagueService
+	if type(league) == "table" and type(league.decorate) == "function" then
+		league.decorate(player, payload)
+	end
+	local fairPlay = servicesRef.AntiCheatService
+	if type(fairPlay) == "table" and type(fairPlay.decorate) == "function" then
+		fairPlay.decorate(player, payload)
+	end
 	Remotes.get("StateChanged"):FireClient(player, payload)
 end
 

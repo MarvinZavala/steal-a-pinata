@@ -49,3 +49,7 @@ El slack de ping es el de `Validators.pingSlack`. Un intento a ≥ 200 studs se 
 - `Shared/Types/Profile.luau` (esquema v1 paralelo)
 
 `Adapters/Lifecycle.luau` se queda: ordena el drop del robo antes de liberar la base. El `EndSession` lo hace `DataService` en `PlayerRemoving`, que corre después.
+
+## WP-10b y WP-16
+
+El movimiento, la custodia del robo, el puntaje y las ligas están en `FAIRPLAY.md`. El cliente no recibe el puntaje. El parche `StateChanged` suma `league`, `leaguePower`, `serverLeague`, `carryLocked` y `carryLockLeft` (la UI puede ignorarlos). El escudo sigue siendo `RookieSeconds` en el perfil; el server lo refleja en `rookieShieldRemaining`.

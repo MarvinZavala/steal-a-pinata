@@ -13,6 +13,7 @@ local Movement = {}
 
 local modeOf: { [Player]: string } = {}
 local tokenOf: { [Player]: {} } = {}
+local impulseAt: { [Player]: number } = {}
 
 local function desiredSpeed(mode: string): number
 	return MoveMath.speed(mode, Tuning.WalkSpeed, Tuning.CarrySpeed)
@@ -47,9 +48,18 @@ function Movement.mode(player: Player): string
 	return modeOf[player] or "normal"
 end
 
+function Movement.impulseAge(player: Player, now: number): number?
+	local at = impulseAt[player]
+	if at == nil then
+		return nil
+	end
+	return now - at
+end
+
 function Movement.forget(player: Player)
 	modeOf[player] = nil
 	tokenOf[player] = nil
+	impulseAt[player] = nil
 end
 
 function Movement.watch(player: Player, character: Model)
@@ -130,6 +140,7 @@ function Movement.knock(player: Player, direction: Vector3, stunSec: number, res
 	end
 	local token = {}
 	tokenOf[player] = token
+	impulseAt[player] = os.clock()
 	Movement.setMode(player, "stun")
 	humanoid.PlatformStand = true
 	humanoid:SetStateEnabled(Enum.HumanoidStateType.GettingUp, false)

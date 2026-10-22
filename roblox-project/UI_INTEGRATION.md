@@ -51,6 +51,18 @@ El servidor manda las dos formas de cada número para que el HUD viejo y el nuev
 
 El primer `StateChanged` apaga el presenter offline y esconde el botón de juntar. Antes de eso, y solo si no hay plaza, Studio predice el FTUE (Michi dorado, +250, Burrito). Esas predicciones no pisan un estado autoritativo. El cliente, por las dudas, copia `vault` → `vaultStored`, `perSec` → `candyPerSec` y `rookieLeft` → `rookieShieldRemaining` si falta la clave nueva.
 
+## Parche extra (WP-10b / WP-16)
+
+El servidor también manda estas claves. `UIState.patch` hoy no las copia: el HUD no las pinta hasta que las lea. No incluyen el puntaje de sospecha.
+
+- `league`: `"Confeti"` | `"Serpentina"` | `"Fuego"`
+- `leaguePower`: Dulces/s de la base
+- `serverLeague`: `"Confeti"` | `"Serpentina"` | `"Fuego"` | `"Mixto"` | `"Privado"`
+- `carryLocked`: boolean
+- `carryLockLeft`: segundos
+
+Los mismos datos (sin el candado de carga) están en atributos del jugador: `League`, `LeaguePower`, `ServerLeague`, `RookieLeft`. El detalle está en `FAIRPLAY.md`.
+
 ## `Feedback`
 
 `BONK`, `ROBBED`, `PURCHASE` / `PURCHASED`, `COLLECT` (`payload.amount`), `RETURNED`, `DENIED` (`payload.key` = `poor`, `shield`, … o una clave del catálogo), `ANNOUNCE` (también llega por el remote `Announce`), `TOAST` (`payload.key` o `payload.text`).

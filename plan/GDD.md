@@ -169,7 +169,7 @@ Es un álbum de colección por set (Clásicas, Comida, Fauna, Folklore, Navidad)
 **Escala:** casi todas miden de ~2.7 a 5 studs de alto (Mapache Nel, con escoba y globo de texto, llega a ~6), más o menos del tamaño de un avatar (~5 studs), así se leen bien cargadas en la espalda. Los tamaños exactos están en `art/export/creatures/_meta.json`.
 
 ### 5.1 Reglas de roster
-- **Temporada Meme 1** (🆕, set *Memes*): 6 piñatas originales que riffean tendencias de octubre 2026. La investigación, las fuentes y el chiste de cada una están en [`TRENDS_MEMES.md`](TRENDS_MEMES.md). Line-up: `art/renders/lineup_memes.png`. Copiamos el **formato** del meme, nunca un personaje, una cara real ni un audio. Se rotan por temporada.
+- **Temporada Meme 1** (🆕, set *Memes*): 6 piñatas originales que riffean tendencias de octubre 2026. La investigación, las fuentes y el chiste de cada una están en [`TRENDS_MEMES.md`](TRENDS_MEMES.md). Line-up: `art/renders/lineup_memes.png`. Copiamos el **formato** del meme, nunca un personaje, una cara real ni un audio. Se rotan por temporada. En `Pinatas.luau` van en un bloque aparte al final de la tabla (solo se agregaron líneas, para no chocar con el código de gameplay). `pixelin` sigue en la config pero el GDD lo saca del roster: borralo cuando se haga el merge.
 - Cada rareza tiene **una silueta reconocible a 30 m**. Las comunes son redondas y simples. Las épicas en adelante tienen alas, cuernos o tentáculos. Las míticas y secretas llevan partes neón (`*_Neon` MeshPart con Material Neon).
 - **1 piñata nueva por semana** en vivo (de las ⏳), anunciada el viernes y lanzada el sábado, que es el día de mayor tráfico [F7].
 

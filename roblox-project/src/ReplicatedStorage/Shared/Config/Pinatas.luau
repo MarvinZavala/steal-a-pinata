@@ -1,5 +1,5 @@
 --!strict
--- Roster fase 1 (GDD §5): 28 piñatas, incl. Temporada Meme 1 (Set = "Memes"). Price = nil -> no se vende en la Pasarela (Secretas).
+-- Roster fase 1 (GDD §5). Price = nil -> no se vende en la Pasarela (Secretas).
 -- Modeled = true -> existe en art/export/creatures/<id>.fbx y en ServerStorage/Pinatas/<id>.
 export type PinataDef = {
 	Name: string,
@@ -28,18 +28,20 @@ local Pinatas: { [string]: PinataDef } = {
 	dragon = { Name = "Dragón Chile", Rarity = "Epic", CandyPerSec = 700, Price = 110000, Currency = "Dulces", Set = "Folklore", Modeled = true },
 	cadejo = { Name = "Cadejo", Rarity = "Legendary", CandyPerSec = 2000, Price = 450000, Currency = "Dulces", Set = "Folklore", Modeled = false },
 	toro = { Name = "Toro de Oro", Rarity = "Legendary", CandyPerSec = 3500, Price = 900000, Currency = "Dulces", Set = "Classics", Modeled = true },
-	michi_aplausos = { Name = "Michi Aplausos", Rarity = "Legendary", CandyPerSec = 2750, Price = 650000, Currency = "Dulces", Set = "Memes", Modeled = true },
-	seis_siete = { Name = "Seis-Siete", Rarity = "Legendary", CandyPerSec = 6767, Price = 1676767, Currency = "Dulces", Set = "Memes", Modeled = true },
 	izalco = { Name = "Volcán Izalco", Rarity = "Mythic", CandyPerSec = 12000, Price = 4500000, Currency = "Dulces", Set = "Folklore", Modeled = false },
-	manzanin_iq = { Name = "Manzanín IQ", Rarity = "Mythic", CandyPerSec = 13000, Price = 5200000, Currency = "Dulces", Set = "Memes", Modeled = true },
-	mapache_nel = { Name = "Mapache Nel", Rarity = "Mythic", CandyPerSec = 16500, Price = 7000000, Currency = "Dulces", Set = "Memes", Modeled = true },
 	torogoz = { Name = "Torogoz Cósmico", Rarity = "Mythic", CandyPerSec = 20000, Price = 9000000, Currency = "Dulces", Set = "Folklore", Modeled = true },
 	sombra = { Name = "Sombra", Rarity = "Secret", CandyPerSec = 75000, Price = nil, Currency = "Dulces", Set = "Secrets", Modeled = true },
-	fichadito = { Name = "Fichadito", Rarity = "Secret", CandyPerSec = 100000, Price = nil, Currency = "Dulces", Set = "Memes", Modeled = true },
-	gemelos_pupusa = { Name = "Los Gemelos Pupusa", Rarity = "Secret", CandyPerSec = 150000, Price = nil, Currency = "Dulces", Set = "Memes", Modeled = true },
+	pixelin = { Name = "Pixelín", Rarity = "Secret", CandyPerSec = 120000, Price = nil, Currency = "Dulces", Set = "Secrets", Modeled = false },
 	tamalito = { Name = "Tamalito", Rarity = "Event", CandyPerSec = 400, Price = 2500, Currency = "Bastones", Set = "Christmas", Modeled = false },
 	jengibrin = { Name = "Jengibrín", Rarity = "Event", CandyPerSec = 1500, Price = 9000, Currency = "Bastones", Set = "Christmas", Modeled = false },
 	renito = { Name = "Renito", Rarity = "Event", CandyPerSec = 5000, Price = 25000, Currency = "Bastones", Set = "Christmas", Modeled = true },
+	-- Temporada Meme 1 (GDD §5.1, plan/TRENDS_MEMES.md). Bloque aparte para que el merge sea fácil.
+	michi_aplausos = { Name = "Michi Aplausos", Rarity = "Legendary", CandyPerSec = 2750, Price = 650000, Currency = "Dulces", Set = "Memes", Modeled = true },
+	seis_siete = { Name = "Seis-Siete", Rarity = "Legendary", CandyPerSec = 6767, Price = 1676767, Currency = "Dulces", Set = "Memes", Modeled = true },
+	manzanin_iq = { Name = "Manzanín IQ", Rarity = "Mythic", CandyPerSec = 13000, Price = 5200000, Currency = "Dulces", Set = "Memes", Modeled = true },
+	mapache_nel = { Name = "Mapache Nel", Rarity = "Mythic", CandyPerSec = 16500, Price = 7000000, Currency = "Dulces", Set = "Memes", Modeled = true },
+	fichadito = { Name = "Fichadito", Rarity = "Secret", CandyPerSec = 100000, Price = nil, Currency = "Dulces", Set = "Memes", Modeled = true },
+	gemelos_pupusa = { Name = "Los Gemelos Pupusa", Rarity = "Secret", CandyPerSec = 150000, Price = nil, Currency = "Dulces", Set = "Memes", Modeled = true },
 }
 
 return Pinatas

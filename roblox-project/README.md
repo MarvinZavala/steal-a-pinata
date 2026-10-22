@@ -51,7 +51,7 @@ src/
 ## Estado
 | Pieza | Estado |
 |---|---|
-| Config de 28 piñatas (incl. Temporada Meme 1), rarezas, economía, monetización y eventos | ✅ datos de diseño (balancear) |
+| Config de 23 piñatas, rarezas, economía, monetización y eventos | ✅ datos de diseño (balancear) |
 | Remotes, RateLimiter, Validators, Logger | ✅ listos para usar |
 | Servicios y controladores | ⏳ stubs con TODO(WP-xx) |
 | IDs de pases, productos y texturas | ⏳ en 0 hasta crearlos en el Creator Dashboard |

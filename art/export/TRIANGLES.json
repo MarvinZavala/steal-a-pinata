@@ -91,9 +91,69 @@
  },
  {
   "folder": "creatures",
+  "file": "fichadito",
+  "mesh": "fichadito",
+  "tris": 14964
+ },
+ {
+  "folder": "creatures",
+  "file": "fichadito",
+  "mesh": "fichadito_Neon",
+  "tris": 140
+ },
+ {
+  "folder": "creatures",
+  "file": "gemelos_pupusa",
+  "mesh": "gemelos_pupusa",
+  "tris": 19052
+ },
+ {
+  "folder": "creatures",
+  "file": "gemelos_pupusa",
+  "mesh": "gemelos_pupusa_Neon",
+  "tris": 84
+ },
+ {
+  "folder": "creatures",
+  "file": "manzanin_iq",
+  "mesh": "manzanin_iq",
+  "tris": 9318
+ },
+ {
+  "folder": "creatures",
+  "file": "manzanin_iq",
+  "mesh": "manzanin_iq_Neon",
+  "tris": 480
+ },
+ {
+  "folder": "creatures",
+  "file": "mapache_nel",
+  "mesh": "mapache_nel",
+  "tris": 12056
+ },
+ {
+  "folder": "creatures",
+  "file": "mapache_nel",
+  "mesh": "mapache_nel_Neon",
+  "tris": 296
+ },
+ {
+  "folder": "creatures",
   "file": "michi",
   "mesh": "michi",
   "tris": 7696
+ },
+ {
+  "folder": "creatures",
+  "file": "michi_aplausos",
+  "mesh": "michi_aplausos",
+  "tris": 10772
+ },
+ {
+  "folder": "creatures",
+  "file": "michi_aplausos",
+  "mesh": "michi_aplausos_Neon",
+  "tris": 96
  },
  {
   "folder": "creatures",
@@ -106,6 +166,18 @@
   "file": "renito",
   "mesh": "renito_Neon",
   "tris": 196
+ },
+ {
+  "folder": "creatures",
+  "file": "seis_siete",
+  "mesh": "seis_siete",
+  "tris": 14712
+ },
+ {
+  "folder": "creatures",
+  "file": "seis_siete",
+  "mesh": "seis_siete_Neon",
+  "tris": 64
  },
  {
   "folder": "creatures",
@@ -145,39 +217,183 @@
  },
  {
   "folder": "lobby",
+  "file": "lobby_bench",
+  "mesh": "lobby_bench",
+  "tris": 1872
+ },
+ {
+  "folder": "lobby",
+  "file": "lobby_candy_cart",
+  "mesh": "lobby_candy_cart",
+  "tris": 4132
+ },
+ {
+  "folder": "lobby",
+  "file": "lobby_fabrica_gate",
+  "mesh": "lobby_fabrica_gate",
+  "tris": 7788
+ },
+ {
+  "folder": "lobby",
+  "file": "lobby_fabrica_gate",
+  "mesh": "lobby_fabrica_gate_Neon",
+  "tris": 1280
+ },
+ {
+  "folder": "lobby",
+  "file": "lobby_fabrica_gate",
+  "mesh": "lobby_fabrica_gate_Sign",
+  "tris": 17237
+ },
+ {
+  "folder": "lobby",
+  "file": "lobby_flamboyan",
+  "mesh": "lobby_flamboyan",
+  "tris": 1696
+ },
+ {
+  "folder": "lobby",
   "file": "lobby_fountain",
   "mesh": "lobby_fountain",
-  "tris": 3688
+  "tris": 9764
+ },
+ {
+  "folder": "lobby",
+  "file": "lobby_fountain",
+  "mesh": "lobby_fountain_Water",
+  "tris": 2228
  },
  {
   "folder": "lobby",
   "file": "lobby_fountain",
   "mesh": "lobby_fountain_Neon",
-  "tris": 832
- },
- {
-  "folder": "lobby",
-  "file": "lobby_kiosk",
-  "mesh": "lobby_kiosk",
-  "tris": 3088
+  "tris": 640
  },
  {
   "folder": "lobby",
   "file": "lobby_lamp",
   "mesh": "lobby_lamp",
-  "tris": 584
+  "tris": 824
  },
  {
   "folder": "lobby",
   "file": "lobby_lamp",
   "mesh": "lobby_lamp_Neon",
-  "tris": 196
+  "tris": 140
+ },
+ {
+  "folder": "lobby",
+  "file": "lobby_light_pole",
+  "mesh": "lobby_light_pole",
+  "tris": 512
  },
  {
   "folder": "lobby",
   "file": "lobby_palm",
   "mesh": "lobby_palm",
-  "tris": 2080
+  "tris": 4398
+ },
+ {
+  "folder": "lobby",
+  "file": "lobby_papel_garland",
+  "mesh": "lobby_papel_garland",
+  "tris": 306
+ },
+ {
+  "folder": "lobby",
+  "file": "lobby_papel_garland",
+  "mesh": "lobby_papel_garland_Flags",
+  "tris": 176
+ },
+ {
+  "folder": "lobby",
+  "file": "lobby_planter",
+  "mesh": "lobby_planter",
+  "tris": 2696
+ },
+ {
+  "folder": "lobby",
+  "file": "lobby_shop_bates",
+  "mesh": "lobby_shop_bates",
+  "tris": 18188
+ },
+ {
+  "folder": "lobby",
+  "file": "lobby_shop_bates",
+  "mesh": "lobby_shop_bates_Neon",
+  "tris": 744
+ },
+ {
+  "folder": "lobby",
+  "file": "lobby_shop_bates",
+  "mesh": "lobby_shop_bates_Sign",
+  "tris": 7656
+ },
+ {
+  "folder": "lobby",
+  "file": "lobby_shop_cajas",
+  "mesh": "lobby_shop_cajas",
+  "tris": 20552
+ },
+ {
+  "folder": "lobby",
+  "file": "lobby_shop_cajas",
+  "mesh": "lobby_shop_cajas_Neon",
+  "tris": 744
+ },
+ {
+  "folder": "lobby",
+  "file": "lobby_shop_cajas",
+  "mesh": "lobby_shop_cajas_Sign",
+  "tris": 7325
+ },
+ {
+  "folder": "lobby",
+  "file": "lobby_shop_dulceria",
+  "mesh": "lobby_shop_dulceria",
+  "tris": 19620
+ },
+ {
+  "folder": "lobby",
+  "file": "lobby_shop_dulceria",
+  "mesh": "lobby_shop_dulceria_Neon",
+  "tris": 744
+ },
+ {
+  "folder": "lobby",
+  "file": "lobby_shop_dulceria",
+  "mesh": "lobby_shop_dulceria_Sign",
+  "tris": 9434
+ },
+ {
+  "folder": "lobby",
+  "file": "lobby_shop_vip",
+  "mesh": "lobby_shop_vip",
+  "tris": 18520
+ },
+ {
+  "folder": "lobby",
+  "file": "lobby_shop_vip",
+  "mesh": "lobby_shop_vip_Neon",
+  "tris": 1344
+ },
+ {
+  "folder": "lobby",
+  "file": "lobby_shop_vip",
+  "mesh": "lobby_shop_vip_Sign",
+  "tris": 2960
+ },
+ {
+  "folder": "lobby",
+  "file": "lobby_string_lights",
+  "mesh": "lobby_string_lights",
+  "tris": 546
+ },
+ {
+  "folder": "lobby",
+  "file": "lobby_string_lights",
+  "mesh": "lobby_string_lights_Neon",
+  "tris": 768
  },
  {
   "folder": "props",
@@ -207,7 +423,7 @@
   "folder": "props",
   "file": "candy_pile",
   "mesh": "candy_pile",
-  "tris": 12618
+  "tris": 4562
  },
  {
   "folder": "props",

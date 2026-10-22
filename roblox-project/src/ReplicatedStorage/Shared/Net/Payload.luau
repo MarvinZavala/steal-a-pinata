@@ -16,6 +16,7 @@ export type ArgKind =
 	| "locale"
 	| "unit"
 	| "flag"
+	| "quest"
 
 export type RemoteSpec = {
 	Direction: Direction,
@@ -52,6 +53,9 @@ local SPECS: { [string]: RemoteSpec } = {
 	RequestSettings = { Direction = "C2S", Honeypot = false, Args = { "locale", "unit", "unit", "flag", "flag" } },
 	RequestFTUEStep = { Direction = "C2S", Honeypot = false, Args = { "ftueStep" } },
 	RequestFTUEAction = { Direction = "C2S", Honeypot = false, Args = { "ftueAction" } },
+	RequestClaimDaily = { Direction = "C2S", Honeypot = false, Args = {} },
+	RequestClaimQuest = { Direction = "C2S", Honeypot = false, Args = { "quest" } },
+	RequestRewarded = { Direction = "C2S", Honeypot = false, Args = {} },
 	OpenShop = { Direction = "S2C", Honeypot = false, Args = {} },
 	-- Señuelos. El cliente legítimo no los dispara (Remotes.fireServer los rechaza).
 	RequestGrantCurrency = { Direction = "C2S", Honeypot = true, Args = {} },
@@ -248,6 +252,11 @@ function Payload.validate(name: string, args: any, security: any, pinatas: any):
 		elseif kind == "flag" then
 			if type(value) ~= "boolean" then
 				return false, "type"
+			end
+		elseif kind == "quest" then
+			local ok, reason = checkString(value, bounds.String.MaxLen, allowList(security.Quests))
+			if not ok then
+				return false, reason
 			end
 		else
 			return false, "spec"

@@ -25,6 +25,7 @@ local StealService = require(script.Parent:WaitForChild("StealService"))
 local CombatService = {}
 
 local lastSwing: { [Player]: number } = {}
+local eventService: any = nil
 local template: Tool? = nil
 
 local function makeTemplate(): Tool
@@ -120,6 +121,9 @@ function CombatService.trySwing(player: Player)
 	end
 	lastSwing[player] = os.clock()
 	Juice.sound(root.Position, Tuning.Sfx.Swing)
+	if type(eventService) == "table" and type(eventService.onSwing) == "function" then
+		eventService.onSwing(player, root.Position)
+	end
 	if best == nil or bestPosition == nil then
 		if nearest < math.huge and BatRules.shouldLog(nearest, Economy.Bat.MaxDistance, "range") then
 			Logger.flag(player, "RequestSwing.range", { distance = nearest })
@@ -141,16 +145,18 @@ function CombatService.trySwing(player: Player)
 	end
 	local target = best
 	local direction = bestPosition - root.Position
+	local attacker = Records.get(player)
+	local scale = 1
+	if attacker ~= nil then
+		scale = Economy.pushScale(attacker.ReFiestas, attacker.BatUpgrade)
+		attacker.Stats.Bonks += 1
+	end
 	Movement.knock(target, direction, Economy.Bat.StunSec, function(): string
 		if StealService.isCarrying(target) then
 			return "carry"
 		end
 		return "normal"
-	end)
-	local targetData = Records.get(target)
-	if targetData ~= nil then
-		targetData.Stats.Bonks += 1
-	end
+	end, scale)
 	local carry = StealService.peek(target)
 	if carry ~= nil then
 		carry.hitsTaken += 1
@@ -172,7 +178,8 @@ function CombatService.trySwing(player: Player)
 	Juice.feedback("BONK", bestPosition)
 end
 
-function CombatService.init(_services: { [string]: any })
+function CombatService.init(services: { [string]: any })
+	eventService = services.EventService
 	template = makeTemplate()
 	AntiCheatService.register("RequestSwing", function(player, _args)
 		CombatService.trySwing(player)

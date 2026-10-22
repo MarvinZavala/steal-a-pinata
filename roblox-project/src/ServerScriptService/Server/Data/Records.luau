@@ -12,6 +12,7 @@ local Migrations = require(Shared:WaitForChild("Data"):WaitForChild("Migrations"
 local Wallet = require(Shared:WaitForChild("Data"):WaitForChild("Wallet"))
 local CandyMath = require(Shared:WaitForChild("Gameplay"):WaitForChild("CandyMath"))
 local OfflineEarnings = require(Shared:WaitForChild("Gameplay"):WaitForChild("OfflineEarnings"))
+local SetBonus = require(Shared:WaitForChild("Gameplay"):WaitForChild("SetBonus"))
 local StealRules = require(Shared:WaitForChild("Gameplay"):WaitForChild("StealRules"))
 
 local Server = script.Parent.Parent
@@ -75,6 +76,15 @@ function Records.mutationOf(item: OwnedPinata): string?
 	return item.Mutation
 end
 
+function Records.multiplier(data: PlayerData): number
+	local passes = data.Passes
+	local hasVip = passes.Vip == true
+	-- El anuncio y el pase suman el mismo +1. No se apilan.
+	local has2x = passes.DoubleCandy == true or data.RewardedBoostUntil > os.time()
+	local sets = SetBonus.count(data.Dex, Pinatas)
+	return Economy.totalMultiplier(data.ReFiestas, has2x, hasVip, sets)
+end
+
 function Records.production(data: PlayerData): number
 	local entries: { CandyMath.Entry } = {}
 	for _, owned in data.Inventory do
@@ -88,9 +98,7 @@ function Records.production(data: PlayerData): number
 			end
 		end
 	end
-	-- 2x, VIP y sets entran con WP-11. Hoy el perfil solo tiene Re-Fiestas.
-	local mult = Economy.totalMultiplier(data.ReFiestas, false, false, 0)
-	return CandyMath.perSecond(entries, mult, mutationTable())
+	return CandyMath.perSecond(entries, Records.multiplier(data), mutationTable())
 end
 
 function Records.capAmount(data: PlayerData): number

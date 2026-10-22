@@ -264,13 +264,24 @@ local function buildPlot(index: number, spot: { x: number, z: number, faceX: num
 	local sign = caption(signPart, "Owner", "LIBRE", Vector3.new(0, 0, 0), 200)
 
 	local pedestals: { Pedestal } = {}
-	for indexPed = 1, Layout.PedestalRows * 2 do
+	for indexPed = 1, 12 do
 		local x, z = Layout.pedestalLocal(indexPed)
-		local pad =
-			part("Pedestal" .. tostring(indexPed), Vector3.new(4.2, 1.2, 4.2), cf * CFrame.new(x, 1.7, z), CREAM, model)
+		local lift = Layout.pedestalHeight(indexPed)
+		local pad = part(
+			"Pedestal" .. tostring(indexPed),
+			Vector3.new(4.2, 1.2, 4.2),
+			cf * CFrame.new(x, 1.7 + lift, z),
+			CREAM,
+			model
+		)
 		pad:SetAttribute("Index", indexPed)
-		local anchor =
-			part("Anchor" .. tostring(indexPed), Vector3.new(1, 0.2, 1), cf * CFrame.new(x, 2.4, z), CREAM, model)
+		local anchor = part(
+			"Anchor" .. tostring(indexPed),
+			Vector3.new(1, 0.2, 1),
+			cf * CFrame.new(x, 2.4 + lift, z),
+			CREAM,
+			model
+		)
 		anchor.Transparency = 1
 		anchor.CanCollide = false
 		anchor.CanQuery = false
@@ -394,6 +405,12 @@ function PlaceBuilder.build(): World
 		local x = math.cos(angle) * 33
 		local z = math.sin(angle) * 33
 		local kiosk = part(label, Vector3.new(10, 8, 10), CFrame.new(x, 4, z), color, folder)
+		local kioskId = if label == "DULCERÍA"
+			then "dulceria"
+			elseif label == "BATES" then "bates"
+			elseif label == "CAJAS" then "cajas"
+			else "vip"
+		kiosk:SetAttribute("KioskId", kioskId)
 		caption(kiosk, label .. "Sign", label, Vector3.new(0, 6, 0), 160)
 	end
 

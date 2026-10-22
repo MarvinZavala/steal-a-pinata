@@ -14,5 +14,7 @@ for a in json.load(open("/tmp/lineup_memes_anchors.json")):
     txt(x, y + 6, a["name"].upper(), fn, "white")
     txt(x, y + 58, a["rarity"], fr, RC[a["rarity"]], 5)
     txt(x, y + 100, JOKE[a["key"]], fj, "white", 4)
-txt(W / 2, 34, "TEMPORADA MEME 1", ft, "#FFE14D", 9)
-im = im.crop((0, 0, W, int(H * .86))); im.save(R + "lineup_memes.png"); print("ok")
+TOP = 200
+txt(W / 2, TOP + 24, "TEMPORADA MEME 1", ft, "#FFE14D", 9)
+ymax = max((1 - a["v"]) * H for a in json.load(open("/tmp/lineup_memes_anchors.json"))) + 150
+im = im.crop((0, TOP, W, min(H, int(ymax)))); im.save(R + "lineup_memes.png"); print("ok")

@@ -35,14 +35,14 @@ def run():
     for o in bpy.context.scene.objects:
         if o.type == 'MESH': o.location.x -= total / 2
     placed = [(k, n, r, cx - total / 2) for k, n, r, cx in placed]
-    setup_render((2600, 1100), 128)
+    setup_render((2600, 1150), 128)
     bpy.context.scene.view_settings.view_transform = "AgX"; bpy.context.scene.view_settings.look = "AgX - Punchy"
-    bd = backdrop("#C2187A", "#FF8FD8", size=200)
+    bd = backdrop("#5B1F9E", "#D9479F", size=200)
     lights(scale=3.2, center=(0, 0, 2.5))
     cd = bpy.data.cameras.new("Cam"); cd.lens = 50; cam = bpy.data.objects.new("Cam", cd); link(cam); bpy.context.scene.camera = cam
     fov_h = 2 * math.atan(36 / 2 / 50)
-    dist = (total / 2 + 1.0) / math.tan(fov_h / 2)
-    cam.location = (0, -dist, 4.6); tgt = Vector((0, 0, 3.0))
+    dist = (total / 2 + 2.2) / math.tan(fov_h / 2)
+    cam.location = (0, -dist, 4.4); tgt = Vector((0, 0, 3.4))
     cam.rotation_euler = (tgt - cam.location).to_track_quat('-Z', 'Y').to_euler()
     bpy.ops.wm.save_as_mainfile(filepath=f"{BLEND}/lineup_memes.blend")
     render(f"{REND}/lineup_memes_raw.png")

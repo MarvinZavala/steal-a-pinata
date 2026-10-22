@@ -44,5 +44,18 @@
    "lobby_lamp": 584,
    "lobby_lamp_Neon": 196
   }
+ },
+ "lobby_shop_dulceria": {
+  "name": "lobby_shop_dulceria",
+  "size_studs": [
+   25.0,
+   35.73,
+   19.25
+  ],
+  "tris": {
+   "lobby_shop_dulceria": 30056,
+   "lobby_shop_dulceria_Neon": 744,
+   "lobby_shop_dulceria_Sign": 18420
+  }
  }
 }

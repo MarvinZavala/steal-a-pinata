@@ -4,11 +4,11 @@ from plib import *
 from mathutils import Vector, Matrix
 FONT = "/usr/share/fonts/truetype/sand-box/google/Luckiest Guy/LuckiestGuy-Regular.ttf"
 
-def text_mesh(name, body, size=1.0, extrude=.12, col="sun_yellow", loc=(0,0,0), rot=(90,0,0), bevel=.02):
+def text_mesh(name, body, size=1.0, extrude=.12, col="sun_yellow", loc=(0,0,0), rot=(90,0,0), bevel=.02, res=2, bres=0):
     cu = bpy.data.curves.new(name, 'FONT'); cu.body = body
     cu.font = bpy.data.fonts.load(FONT, check_existing=True)
     cu.size = size; cu.extrude = extrude; cu.bevel_depth = bevel; cu.bevel_resolution = 1
-    cu.align_x = 'CENTER'; cu.align_y = 'CENTER'; cu.resolution_u = 2; cu.bevel_resolution = 0
+    cu.align_x = 'CENTER'; cu.align_y = 'CENTER'; cu.resolution_u = res; cu.bevel_resolution = bres
     o = bpy.data.objects.new(name, cu); link(o)
     xform(o, loc, rot)
     bpy.context.view_layer.objects.active = o
@@ -91,9 +91,9 @@ def caja():
 # ------------------------------------------------------------------ candy pile
 def candy_one(name, loc, rot, col, scale=1.0):
     out = []
-    b = sphere(name + "_b", (.32 * scale, .22 * scale, .22 * scale), loc=loc, rot=rot, col=col, seg=10, ring=6); out.append(b)
+    b = sphere(name + "_b", (.32 * scale, .22 * scale, .22 * scale), loc=loc, rot=rot, col=col, seg=8, ring=5); out.append(b)
     for s in (-1, 1):
-        w = cyl(name + f"_w{s}", .03 * scale, .2 * scale, .25 * scale, col=col, seg=8)
+        w = cyl(name + f"_w{s}", .03 * scale, .2 * scale, .25 * scale, col=col, seg=6)
         w.data.transform(Matrix.Translation((s * .28 * scale, 0, 0)) @ Matrix.Rotation(math.radians(90 * s), 4, 'Y'))
         xform(w, loc, rot); out.append(w)
     return out
@@ -105,26 +105,26 @@ def candy_pile():
     bm = bmesh.new(); bm.from_mesh(P[0].data)
     bmesh.ops.bisect_plane(bm, geom=bm.verts[:] + bm.edges[:] + bm.faces[:], plane_co=(0, 0, 0), plane_no=(0, 0, -1), clear_outer=True)
     bmesh.ops.contextual_create(bm, geom=[e for e in bm.edges if e.is_boundary]); bm.to_mesh(P[0].data); bm.free()
-    for i in range(58):
+    for i in range(30):
         a = rnd.random() * math.tau; r = math.sqrt(rnd.random())
         x, y = 1.8 * r * math.cos(a), 1.5 * r * math.sin(a)
         z = .62 * math.sqrt(max(0, 1 - r * r)) + .06 + rnd.random() * .08
-        P += candy_one(f"c{i}", (x, y, z), (rnd.uniform(-30, 30), rnd.uniform(-30, 30), rnd.uniform(0, 360)), cols[i % len(cols)], scale=rnd.uniform(.85, 1.15))
+        P += candy_one(f"c{i}", (x, y, z), (rnd.uniform(-30, 30), rnd.uniform(-30, 30), rnd.uniform(0, 360)), cols[i % len(cols)], scale=rnd.uniform(1.15, 1.45))
     for i in range(8):
         a = rnd.random() * math.tau; r = .3 + .9 * rnd.random()
         x, y = 1.6 * r * math.cos(a), 1.3 * r * math.sin(a); z = .7 * math.sqrt(max(0, 1 - r * r)) + .1
-        P.append(cyl(f"coin{i}", .22, .22, .06, loc=(x, y, z), rot=(rnd.uniform(-40, 40), rnd.uniform(-40, 40), 0), col="gold", seg=14, bevel=.015))
+        P.append(cyl(f"coin{i}", .22, .22, .06, loc=(x, y, z), rot=(rnd.uniform(-40, 40), rnd.uniform(-40, 40), 0), col="gold", seg=10))
     # lollipops
     for i, (x, y, c1, c2, lean) in enumerate([(-.6, .2, "candy_red", "eye_white", -12), (.5, -.1, "candy_teal", "sun_yellow", 15), (.1, .7, "candy_violet", "fiesta_pink", 5)]):
         h = 1.6 + .3 * i
         st = cyl(f"stick{i}", .05, .05, h, loc=(x, y, .3), rot=(lean, lean * .5, 0), col="eye_white", seg=6); P.append(st)
         top = Matrix.Translation((x, y, .3)) @ Euler((math.radians(lean), math.radians(lean * .5), 0)).to_matrix().to_4x4() @ Matrix.Translation((0, 0, h))
-        disc = cyl(f"pop{i}", .5, .5, .16, col=c1, seg=24, bevel=.06, base=False); disc.data.transform(top @ Matrix.Rotation(math.radians(90), 4, 'X')); P.append(disc)
+        disc = cyl(f"pop{i}", .5, .5, .16, col=c1, seg=18, bevel=.05, bseg=1, base=False); disc.data.transform(top @ Matrix.Rotation(math.radians(90), 4, 'X')); P.append(disc)
         sw = []
-        for t in range(40):
-            ang = t * .45; rr = .05 + t * .0105
+        for t in range(22):
+            ang = t * .82; rr = .05 + t * .019
             sw.append(top @ Matrix.Rotation(math.radians(90), 4, 'X') @ Vector((rr * math.cos(ang), rr * math.sin(ang), .085)))
-        P.append(tube(f"swirl{i}", sw, radius=.04, col=c2, seg=5))
+        P.append(tube(f"swirl{i}", sw, radius=.045, col=c2, seg=4))
     return P, []
 
 # ------------------------------------------------------------------ papel picado banner

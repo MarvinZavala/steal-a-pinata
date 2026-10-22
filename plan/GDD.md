@@ -128,7 +128,7 @@ Es un álbum de colección por set (Clásicas, Comida, Fauna, Folklore, Navidad)
 
 ---
 
-## 5. Roster de Piñatitos (23 en fase 1)
+## 5. Roster de Piñatitos (28 en fase 1)
 
 ✅ = modelada en Blender y exportada (`art/export/creatures/`). ⏳ = planeada (brief de arte incluido).
 **Dulces/s** = producción base sin multiplicadores. **Precio** = costo en la Pasarela (en Dulces).
@@ -153,17 +153,23 @@ Es un álbum de colección por set (Clásicas, Comida, Fauna, Folklore, Navidad)
 | 14 | **Dragón Chile** | Épica | ✅ | Dragón rojo chile con alas jade de abanico, colmillitos y ojos fieros pero tiernos | 700 | 110,000 | Folklore |
 | 15 | **Cadejo** | Legendaria | ⏳ | Perro-espíritu blanco del folklore centroamericano (el bueno) con ojos neón celeste y cadenita de papel | 2,000 | 450,000 | Folklore |
 | 16 | **Toro de Oro** | Legendaria | ✅ | Toro dorado metálico, gordito, con corona, cuernos grandes, argolla y medallón | 3,500 | 900,000 | Clásicas |
-| 17 | **Volcán Izalco** | Mítica | ⏳ | Volcán con cara (el "Faro del Pacífico"), lava neón naranja que burbujea y humo de algodón | 12,000 | 4.5M | Folklore |
-| 18 | **Torogoz Cósmico** | Mítica | ✅ | Torogoz (ave nacional de El Salvador) en versión galaxia, cola de raqueta neón y parado en una nube | 20,000 | 9M | Folklore |
-| 19 | **Sombra** | Secreta | ✅ | Erizo-estrella de sombra con un solo ojo gigante, puntas neón y sonrisa dentona | 75,000 | — (solo Pasarela 0.01% / Fiesta) | Secretas |
-| 20 | **Pixelín** | Secreta | ⏳ | Piñata "glitch": cubitos de flecos que parpadean entre colores, con ojos de píxel | 120,000 | — | Secretas |
-| 21 | **Tamalito** | Evento Navidad | ⏳ | Tamal envuelto en hoja de plátano con moñito rojo y cachetes de masa | 400 | 2,500 Bastones | Navidad |
-| 22 | **Jengibrín** | Evento Navidad | ⏳ | Galleta de jengibre de flecos canela, botones de dulce y glaseado blanco | 1,500 | 9,000 Bastones | Navidad |
-| 23 | **Renito** | Evento Navidad | ✅ | Reno gordito con gorro de Santa, bufanda, nariz neón y bastón de caramelo | 5,000 | 25,000 Bastones | Navidad |
+| 17 | **Michi Aplausos** 🆕 | Legendaria | ✅ | Gato negro de flecos con **manos humanas** de guante blanco y una sonrisa demasiado humana, aplaudiendo lento. Riff de *Black Cat Clapping*: aplaude cada vez que a alguien le falla un robo | 2,750 | 650,000 | Memes |
+| 18 | **Seis-Siete** 🆕 | Legendaria | ✅ | Un "6" y un "7" de flecos haciendo la balanza con las palmas arriba. Riff de *6 7*: produce **6,767**/s y cuesta **1,676,767** | 6,767 | 1,676,767 | Memes |
+| 19 | **Volcán Izalco** | Mítica | ⏳ | Volcán con cara (el "Faro del Pacífico"), lava neón naranja que burbujea y humo de algodón | 12,000 | 4.5M | Folklore |
+| 20 | **Manzanín IQ** 🆕 | Mítica | ✅ | Manzana bizca con la lengua afuera, manzanitas orbitando en un anillo neón y un letrero "IQ: 3". Riff del test de las manzanas girando | 13,000 | 5.2M | Memes |
+| 21 | **Mapache Nel** 🆕 | Mítica | ✅ | Mapache embistiendo con la escoba como lanza y un globo neón "¡NEL!". Riff del mapache *Hell Nah Cuh*: el guardia de seguridad de tu base | 16,500 | 7M | Memes |
+| 22 | **Torogoz Cósmico** | Mítica | ✅ | Torogoz (ave nacional de El Salvador) en versión galaxia, cola de raqueta neón y parado en una nube | 20,000 | 9M | Folklore |
+| 23 | **Sombra** | Secreta | ✅ | Erizo-estrella de sombra con un solo ojo gigante, puntas neón y sonrisa dentona | 75,000 | — (solo Pasarela 0.01% / Fiesta) | Secretas |
+| 24 | **Fichadito** 🆕 | Secreta | ✅ | El bebé piñata más tierno, con gorrito y chupón, posando para su **ficha policial** con cara de criminal veterano (y flash neón). Riff de *How Kids See Us* | 100,000 | — | Memes |
+| 25 | **Los Gemelos Pupusa** 🆕 | Secreta | ✅ | Dos pupusas gemelas abrazadas con gorras de lado, cadenas de oro y grillz, rebotando y diciendo "¡gracias bebé!" cada vez que recolectás. Riff de *Thank You Baby* + formato dúo. Reemplaza a Pixelín | 150,000 | — | Memes |
+| 26 | **Tamalito** | Evento Navidad | ⏳ | Tamal envuelto en hoja de plátano con moñito rojo y cachetes de masa | 400 | 2,500 Bastones | Navidad |
+| 27 | **Jengibrín** | Evento Navidad | ⏳ | Galleta de jengibre de flecos canela, botones de dulce y glaseado blanco | 1,500 | 9,000 Bastones | Navidad |
+| 28 | **Renito** | Evento Navidad | ✅ | Reno gordito con gorro de Santa, bufanda, nariz neón y bastón de caramelo | 5,000 | 25,000 Bastones | Navidad |
 
 **Escala:** todas miden de ~2.7 a 4.5 studs de alto, más o menos del tamaño de un avatar (~5 studs), así se leen bien cargadas en la espalda. Los tamaños exactos están en `art/export/creatures/_meta.json`.
 
 ### 5.1 Reglas de roster
+- **Temporada Meme 1** (🆕, set *Memes*): 6 piñatas originales que riffean tendencias de octubre 2026. La investigación, las fuentes y el chiste de cada una están en [`TRENDS_MEMES.md`](TRENDS_MEMES.md). Line-up: `art/renders/lineup_memes.png`. Copiamos el **formato** del meme, nunca un personaje, una cara real ni un audio. Se rotan por temporada.
 - Cada rareza tiene **una silueta reconocible a 30 m**. Las comunes son redondas y simples. Las épicas en adelante tienen alas, cuernos o tentáculos. Las míticas y secretas llevan partes neón (`*_Neon` MeshPart con Material Neon).
 - **1 piñata nueva por semana** en vivo (de las ⏳), anunciada el viernes y lanzada el sábado, que es el día de mayor tráfico [F7].
 
@@ -343,7 +349,7 @@ Cada **Work Package (WP)** se puede asignar a un agente de código o a una perso
 |---|---|---|---|---|
 | **WP-01** | Tooling | — | Rojo 7, Wally, StyLua, Selene, CI de lint en GitHub Actions | `rojo serve` sincroniza; `selene src` y `stylua --check src` pasan en CI; README actualizado |
 | **WP-02** | Datos (ProfileStore) | WP-01 | `DataService` con esquema v1, migraciones y mock en Studio | Guardar, salir, entrar y los datos siguen iguales. 2 servers simultáneos = no hay dupe (test con session lock). Autosave + `EndSession` al salir |
-| **WP-03** | Registro de piñatas + import | WP-01 | `Shared/Config/Pinatas.luau` (23 entradas) y modelos en `ServerStorage/Pinatas` con Attributes | Cada modelo tiene PrimaryPart en la base, `Rarity`, `PinataId` y `_Neon` en Material Neon. Script de test que instancia las 9 y no tira errores |
+| **WP-03** | Registro de piñatas + import | WP-01 | `Shared/Config/Pinatas.luau` (28 entradas) y modelos en `ServerStorage/Pinatas` con Attributes | Cada modelo tiene PrimaryPart en la base, `Rarity`, `PinataId` y `_Neon` en Material Neon. Script de test que instancia las 15 modeladas y no tira errores |
 | **WP-04** | Bases | WP-02, WP-03 | `BaseService`: asignación, pedestales, Dulcería, producción y recolección | 8 jugadores reciben base distinta; al salir la base se libera; Dulces/s exactos (±1%) en 10 min; tope de la Dulcería respetado |
 | **WP-05** | Pasarela | WP-03 | `ConveyorService`: spawn ponderado, movimiento (tween o AlignPosition en el server) y prompt de compra | 10K spawns simulados dentro de ±0.5% de los pesos; una compra sin Dulces se rechaza; la piñata camina al pedestal libre |
 | **WP-06** | Robo y carga | WP-04 | `StealService` | Las validaciones de la sección 7 tienen test unitario; el carrier va a 11 studs/s; soltar en base propia transfiere la propiedad; un exploit de remote a 200 studs se rechaza y se loguea |

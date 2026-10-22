@@ -1,15 +1,4 @@
 {
- "lobby_kiosk": {
-  "name": "lobby_kiosk",
-  "size_studs": [
-   12.27,
-   11.28,
-   12.45
-  ],
-  "tris": {
-   "lobby_kiosk": 3088
-  }
- },
  "lobby_fountain": {
   "name": "lobby_fountain",
   "size_studs": [

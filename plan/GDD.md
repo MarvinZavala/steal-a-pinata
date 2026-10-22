@@ -1,7 +1,7 @@
 # Steal a Piñata! — Game Design Document (Fase 1)
 
 > Versión 0.1 · 22 oct 2026 · Autor: Marvin Zavala (con apoyo de Grok Bot)
-> Estado: **pre-producción terminada.** Ya están listos el arte base de la fase 1 (9 piñatas, base, props, lobby en block-out y key art) y el esqueleto Rojo. Siguiente paso: programar (sección 13).
+> Estado: **pre-producción terminada.** Ya están listos el arte de la fase 1 (9 piñatas, base, props, key art), el arte de la fase 2 (**Plaza v2** con 16 módulos y **Temporada Meme 1** con 6 piñatas nuevas) y el esqueleto Rojo. Siguiente paso: programar (sección 13).
 >
 > **Regla del documento:** todo número de mercado lleva su fuente (sección 17). Los números de diseño (precios en Dulces, probabilidades, tiempos) **son valores iniciales míos para balancear con telemetría**. No son datos.
 
@@ -166,7 +166,7 @@ Es un álbum de colección por set (Clásicas, Comida, Fauna, Folklore, Navidad)
 | 27 | **Jengibrín** | Evento Navidad | ⏳ | Galleta de jengibre de flecos canela, botones de dulce y glaseado blanco | 1,500 | 9,000 Bastones | Navidad |
 | 28 | **Renito** | Evento Navidad | ✅ | Reno gordito con gorro de Santa, bufanda, nariz neón y bastón de caramelo | 5,000 | 25,000 Bastones | Navidad |
 
-**Escala:** todas miden de ~2.7 a 4.5 studs de alto, más o menos del tamaño de un avatar (~5 studs), así se leen bien cargadas en la espalda. Los tamaños exactos están en `art/export/creatures/_meta.json`.
+**Escala:** casi todas miden de ~2.7 a 5 studs de alto (Mapache Nel, con escoba y globo de texto, llega a ~6), más o menos del tamaño de un avatar (~5 studs), así se leen bien cargadas en la espalda. Los tamaños exactos están en `art/export/creatures/_meta.json`.
 
 ### 5.1 Reglas de roster
 - **Temporada Meme 1** (🆕, set *Memes*): 6 piñatas originales que riffean tendencias de octubre 2026. La investigación, las fuentes y el chiste de cada una están en [`TRENDS_MEMES.md`](TRENDS_MEMES.md). Line-up: `art/renders/lineup_memes.png`. Copiamos el **formato** del meme, nunca un personaje, una cara real ni un audio. Se rotan por temporada.
@@ -321,12 +321,12 @@ La piñata ya es parte de las posadas navideñas en México y Centroamérica. El
 ![lobby](../art/renders/lobby_hub.png)
 
 - **Centro:** fuente con estatua de **Estrellita** gigante, donde aparece la Piñata Gigante de la Fiesta.
-- **Arco trasero, 4 kioscos:** **DULCERÍA** (mejoras), **BATES** (bates y skins), **CAJAS** (cosméticos y Fusión) y **VIP** (pases y kiosco VIP).
-- **Frente:** **La Pasarela**, una alfombra de 156 studs con cuerdas de terciopelo. Las piñatas salen del arco **FÁBRICA**.
-- **Lados:** 6 bases (3 por lado) con la puerta hacia la plaza. Se pueden ampliar a 8 (norte).
-- **Ambiente:** papel picado en anillo, faroles, palmeras y colinas de fondo.
-- Layout de referencia: `art/renders/lobby_hub_topdown.png`. Los módulos reutilizables (kiosco, fuente, palmera y farol) están en `art/export/lobby/`.
-- **Distancias de diseño:** de una base a la Pasarela hay unos 60 a 90 studs, o sea unos 4 a 6 s caminando a 16 studs/s. Cargando a 11 studs/s son unos 6 a 8 s, tiempo suficiente para que te persigan.
+- **Calle de tiendas (fondo):** 4 casas coloniales de dos pisos con toldo, letrero y vitrina: **DULCERÍA** (mejoras), **BATES** (bates y skins), **CAJAS** (cosméticos y Fusión) y **VIP** (pases). Las de los extremos giran 12° hacia la fuente.
+- **Frente:** **La Pasarela**, una alfombra de 96 studs (4 tramos de 24) con cuerdas de terciopelo. Las piñatas salen del arco **FÁBRICA**, a la izquierda.
+- **Lados:** 6 bases (3 por lado). Dos bulevares de adoquín de 11 studs bordean la plaza y cada base tiene su ramal hasta la puerta. Se pueden ampliar a 8 (norte).
+- **Ambiente:** piso de barro biselado con mosaico del sol, jardineras, bancas, faroles coloniales, postes con guirnaldas de focos y papel picado, carritos de dulces, palmeras, flamboyanes, colinas y un volcán estilo Izalco en el horizonte. Vista de calle: `art/renders/lobby_hub_street.png`.
+- Layout de referencia: `art/renders/lobby_hub_topdown.png`. Los 16 módulos reutilizables (tiendas, fuente, FÁBRICA, mobiliario, árboles, guirnaldas y Pasarela) están en `art/export/lobby/` y cómo montarlos en `art/IMPORT_GUIDE.md` §5.1.
+- **Distancias de diseño (medidas en `lobby.py`):** de la puerta de una base al extremo más cercano de la Pasarela hay unos 45 studs (fila del frente), 95 (fila del medio) y 150 (fila del fondo). Caminando a 16 studs/s son unos 3, 6 y 9 s; cargando a 11 studs/s, unos 4, 9 y 14 s. Las bases del fondo quedan más seguras pero más lejos: hay que balancearlo (p. ej. asignar primero las del frente a jugadores nuevos).
 
 ---
 

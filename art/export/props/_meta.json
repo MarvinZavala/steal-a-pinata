@@ -25,12 +25,12 @@
  "candy_pile": {
   "name": "candy_pile",
   "size_studs": [
-   4.12,
-   3.28,
-   3.87
+   4.21,
+   3.35,
+   4.13
   ],
   "tris": {
-   "candy_pile": 12618
+   "candy_pile": 4562
   }
  },
  "papel_picado_banner": {

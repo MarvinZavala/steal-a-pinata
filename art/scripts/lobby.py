@@ -140,6 +140,7 @@ def shop_icon(kind, z):
             t_ = torus(f"ic_loop{s}", .9, .3, col="sun_yellow", seg=16, mseg=6)
             t_.data.transform(Tr(0, .2, z + 4.9) @ R(12) @ Tr(s * .9, 0, .3) @ R(90, 'X')); P.append(t_)
         P.append(sphere("ic_knot", (.55, .55, .5), loc=(0, .2, z + 4.7), col="sun_yellow", seg=12, ring=6))
+        # res=3 keeps the glyph readable. relax_question_mark() then planar-dissolves it at 5°.
         P.append(text_mesh("ic_q", "?", 2.4, .3, "snow", loc=(0, -1.95, z + 1.8), rot=(90, 0, 12), bevel=0, res=3, bres=0))
     elif kind == "crown":
         P.append(lathe("ic_band", [(2.2, 0), (2.4, .2), (2.4, 1.4), (2.2, 1.6), (2.0, 1.4), (2.0, .2)], 36, "gold", loc=(0, .5, z), closed=True))
@@ -632,9 +633,76 @@ def materialize(groups, name, M_=Matrix.Identity(4), export_mode=False):
         out.append(o)
     return out
 
+def relax_question_mark(obj, angle_deg=5.0):
+    """Planar-dissolve the caja '?' only. The glyph is two loose parts under 1.5 studs;
+    the facade, roof and gift box are left alone. Keeps the body under 19K tris."""
+    bpy.context.view_layer.objects.active = obj
+    for o in list(bpy.context.selected_objects):
+        o.select_set(False)
+    obj.select_set(True)
+    before = {tuple(round(c, 5) for c in v.co) for v in obj.data.vertices}
+    bpy.ops.object.mode_set(mode="EDIT")
+    bpy.ops.mesh.select_all(action="SELECT")
+    bpy.ops.mesh.separate(type="LOOSE")
+    bpy.ops.object.mode_set(mode="OBJECT")
+    parts = [o for o in bpy.context.selected_objects if o.type == "MESH"]
+    if obj not in parts:
+        parts.append(obj)
+
+    def tris(o):
+        return sum(max(len(p.vertices) - 2, 0) for p in o.data.polygons)
+
+    def is_glyph(o):
+        if tris(o) < 400:
+            return False
+        mn = Vector((1e9,) * 3); mx = Vector((-1e9,) * 3)
+        for v in o.data.vertices:
+            w = o.matrix_world @ v.co
+            mn = Vector(map(min, mn, w)); mx = Vector(map(max, mx, w))
+        if max(mx - mn) > 1.5:
+            return False
+        ca = o.data.color_attributes.get("Col") if o.data.color_attributes else None
+        if ca is None or len(ca.data) == 0:
+            return False
+        c = ca.data[0].color
+        return c[0] > 0.85 and c[2] > 0.9
+
+    for o in parts:
+        if not is_glyph(o):
+            continue
+        mod = o.modifiers.new("dec", "DECIMATE")
+        mod.decimate_type = "DISSOLVE"
+        mod.angle_limit = math.radians(angle_deg)
+        mod.delimit = {"SHARP"}
+        bpy.context.view_layer.objects.active = o
+        for x in list(bpy.context.selected_objects):
+            x.select_set(False)
+        o.select_set(True)
+        bpy.ops.object.modifier_apply(modifier="dec")
+        try:
+            bpy.ops.object.shade_smooth_by_angle(angle=math.radians(40))
+        except Exception:
+            pass
+    for x in list(bpy.context.selected_objects):
+        x.select_set(False)
+    for o in parts:
+        o.select_set(True)
+    bpy.context.view_layer.objects.active = obj
+    bpy.ops.object.join()
+    obj.name = "lobby_shop_cajas"
+    # Vertices outside the glyph must not move. The glyph itself loses interior verts.
+    kept = {tuple(round(c, 5) for c in v.co) for v in obj.data.vertices}
+    if not kept.issubset(before):
+        raise RuntimeError("relax_question_mark movió vértices que no eran del '?'")
+    return obj
+
 def build_module(name, render_it=True):
     reset(); write_palette_textures()
     objs = materialize(MODULES[name](), name, export_mode=True)
+    if name == "lobby_shop_cajas":
+        for o in objs:
+            if o.name == name:
+                relax_question_mark(o)
     size = base_origin(objs, keep_xy=name.startswith("lobby_shop") or name == "lobby_fabrica_gate")
     info = export(objs, name, "lobby")
     bpy.ops.wm.save_as_mainfile(filepath=f"{BLEND}/{name}.blend")

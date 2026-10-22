@@ -123,7 +123,7 @@ En Studio: clic derecho en el MeshPart → **Update** / reimportar con el mismo 
 | Colores corridos o mezclados | Una textura de paleta distinta, o con compresión agresiva | Usá exactamente `palette_color.png` (1024×1024 PNG) |
 | Tamaño ×100 | Scale Unit | Paso 1.4 |
 | Mira hacia atrás | Convención de ejes | Rotar el Model 180° en Y (una vez, igual para todas) |
-| "Mesh resolution higher than max" | Más de 20K tris en una malla | Revisá `export/TRIANGLES.md`. En la fase 2, `lobby_shop_cajas` queda en 20,552 (552 sobre el límite); el resto pasa, incluido `candy_pile` en 4,562 |
+| "Mesh resolution higher than max" | Más de 20K tris en una malla | Revisá `export/TRIANGLES.md`. Ninguna malla de la fase 2 pasa de 20K (`lobby_shop_cajas` quedó en 18,956; `candy_pile` en 4,562) |
 | Banderines opacos con fondo negro | Falta el AlphaMode | `AlphaMode = Transparency` |
 
 ---
@@ -131,7 +131,7 @@ En Studio: clic derecho en el MeshPart → **Update** / reimportar con el mismo 
 ## 9. Conteo de triángulos (verificado)
 Límite de Roblox: **20,000 triángulos por malla** [Specs]. La tabla viva la genera `scripts/tri_report.py` desde los .obj y queda en `export/TRIANGLES.md` (no se duplica acá, para que no se quede en el kiosco v1).
 
-Al integrar la fase 2 el reporte dice **73 MeshParts, máximo 20,552, 1 sobre el límite**: `lobby_shop_cajas`. `candy_pile` quedó en **4,562**.
+Al integrar la fase 2 el reporte dice **73 MeshParts, máximo 19,620, 0 sobre el límite**. `lobby_shop_cajas` quedó en **18,956** (disuelto planar a 5° solo en el "?" del ícono). `candy_pile` quedó en **4,562**.
 
 ---
 **Referencias:** [Importer docs] https://create.roblox.com/docs/en-us/studio/importer.md · [Specs] https://create.roblox.com/docs/art/modeling/specifications · AlphaMode: https://create.roblox.com/docs/reference/engine/enums/AlphaMode · 3D Import Queue: https://devforum.roblox.com/t/full-release-3d-import-queue/3784554

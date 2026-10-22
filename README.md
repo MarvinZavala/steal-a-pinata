@@ -8,7 +8,7 @@
 | Temporada Meme 1 (tendencias, chiste, rareza) | `plan/TRENDS_MEMES.md` |
 | Dirección de arte | `art/ART_DIRECTION.md` |
 | Cómo importar a Roblox Studio | `art/IMPORT_GUIDE.md` |
-| Triángulos por malla | `art/export/TRIANGLES.md` (`candy_pile` 4,562; `lobby_shop_cajas` 20,552, sobre el límite de 20K) |
+| Triángulos por malla | `art/export/TRIANGLES.md` (`candy_pile` 4,562; `lobby_shop_cajas` 18,956) |
 | Assets para Roblox (.fbx + .obj) | `art/export/{creatures,base,props,lobby}/` |
 | Texturas (paleta, papel picado, logo, pisos de plaza) | `art/textures/` y `art/textures/plaza/` |
 | Fuentes Blender (.blend) | `art/blend/` |

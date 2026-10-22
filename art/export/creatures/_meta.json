@@ -222,5 +222,17 @@
    "lic_dos_peces": 16038,
    "lic_dos_peces_Neon": 20
   }
+ },
+ "pinovela": {
+  "name": "pinovela",
+  "size_studs": [
+   4.11,
+   4.38,
+   2.48
+  ],
+  "tris": {
+   "pinovela": 12660,
+   "pinovela_Neon": 412
+  }
  }
 }

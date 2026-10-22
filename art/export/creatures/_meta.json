@@ -198,5 +198,17 @@
    "fantasmita_bu": 10244,
    "fantasmita_bu_Neon": 4072
   }
+ },
+ "cochinito_quincena": {
+  "name": "cochinito_quincena",
+  "size_studs": [
+   3.71,
+   4.39,
+   4.98
+  ],
+  "tris": {
+   "cochinito_quincena": 16212,
+   "cochinito_quincena_Neon": 84
+  }
  }
 }

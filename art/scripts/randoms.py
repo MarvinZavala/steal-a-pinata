@@ -171,8 +171,16 @@ def aguacaton():
     prof = lambda z: max(1.18 * max(0.0, 1 - ((z - 1.25) / 1.25) ** 2) ** .5, .8 * max(0.0, 1 - ((z - 2.55) / .95) ** 2) ** .5)
     H = 3.5
     body = fringe_body("body", prof, H, 7, ["leaf_dark", "dark_green", "leaf_dark", "leaf_dark", "dark_green", "leaf_dark", "dark_green"],
-                       matrix=M((0, 0, .35)), seg=30, flare=.08, tooth=.06, seed=1201, sy=.9)
+                       matrix=M((0, 0, .35)), seg=30, flare=.08, tooth=.06, seed=1201, sy=.9, z_to=2.5, core_col="dark_green")
     P += body
+    # smooth rounded avocado top (no fringe cone up there -> no 'hat'), pebbly skin spots
+    dome = sphere("dome", (.84, .76, 1.02), loc=(0, 0, 2.86), col="dark_green", seg=28, ring=16); P.append(dome)
+    dt = bvh_of([dome]); rnd = random.Random(1205)
+    for k in range(16):
+        a = rnd.uniform(0, 2 * math.pi); z = rnd.uniform(2.9, 3.7)
+        if math.sin(a) < -.55: continue
+        d = V(math.cos(a), math.sin(a), .4).normalized()
+        P += decal(f"skin{k}", dt, V(0, 0, z) + d * 3, fwd=d, r=(.06, .05), col="leaf_dark", th=.025)
     # cut face: flesh (lime ring + pale centre) and the PIT = six-pack
     fl = plate("flesh", V(0, 0, 1.55), r=(1.02, .36, 1.12), col="lime", fwd_off=.82); P.append(fl)
     fl2 = plate("flesh2", V(0, 0, 1.5), r=(.84, .3, .92), col="mint", fwd_off=.93); P.append(fl2)
@@ -185,7 +193,7 @@ def aguacaton():
     P.append(box("abline", (.035, .05, 1.0), loc=(0, -1.37, 1.32), col="chocolate", bevel=.01))
     for k in range(2):
         P.append(box(f"abh{k}", (.75, .05, .03), loc=(0, -1.35, 1.5 - .36 * k), col="chocolate", bevel=.01))
-    P.append(sphere("pithl", (.12, .03, .2), loc=(-.32, -1.36, 1.7), col="wood", seg=10, ring=6))
+    P.append(sphere("pithl", (.07, .02, .12), loc=(-.38, -1.33, 1.72), col="chocolate", seg=8, ring=5))
     # face on the upper flesh: confident wink, smirk, brows, sweat drop, sweatband
     hc = V(0, 0, 2.8)
     tree = bvh_of([up])
@@ -197,9 +205,19 @@ def aguacaton():
     for s_ in (-1, 1):
         P += blush2(f"bl{s_}", tree, hc + V(.42 * s_, -3, -.15), size=.09)
     G.append(sphere("sweat", (.07, .05, .1), loc=hc + V(-.62, -.55, .3), col="neon_cyan", seg=10, ring=6))
-    P.append(torus("band", .82, .12, loc=(0, 0, 3.12), rot=(-6, 0, 0), col="candy_red", seg=32, mseg=8))
-    P.append(torus("bandst", .85, .035, loc=(0, -.01, 3.12), rot=(-6, 0, 0), col="eye_white", seg=32, mseg=4))
-    P.append(cyl("stem", .1, .07, .3, loc=(0, 0, 3.78), col="wood_dark", seg=10))
+    # sweatband across the forehead (follows the face) + knot tails on the side
+    bt = bvh_of([up, dome]); bp = []
+    for k in range(11):
+        x = -.78 + 1.56 * k / 10
+        p, n = hit(bt, V(x, -3, 3.2 - .05 * x), V(0, 1, 0))
+        if p is not None: bp.append(p + n * .07)
+    P.append(tube("band", bp, radius=.11, col="candy_red", seg=10))
+    P.append(tube("bandst", [q + V(0, -.1, 0) for q in bp[1:-1]], radius=.035, col="eye_white", seg=6))
+    kn = bp[-1] + V(.08, .1, 0)
+    P.append(sphere("knot", (.12, .12, .12), loc=kn, col="candy_red", seg=12, ring=8))
+    for j, dz in enumerate((-.1, .05)):
+        P.append(ribbon(f"tail{j}", [kn, kn + V(.25, .15, dz - .1), kn + V(.45, .3, dz - .3)], width=.14, normal=(0, -1, .2), col="candy_red", thick=.04))
+    P.append(cyl("stem", .1, .07, .3, loc=(0, 0, 3.8), col="wood_dark", seg=10))
     P.append(ribbon("leaf1", [V(0, 0, 3.98), V(.25, -.05, 4.12), V(.5, 0, 4.05)], width=.18, normal=(0, -.3, 1), col="leaf", thick=.04))
     # double bicep flex
     for s_ in (-1, 1):

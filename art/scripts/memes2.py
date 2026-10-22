@@ -379,36 +379,36 @@ def chancla_teledirigida():
     Riff on the chancla / 'Confío en mi latina' challenge (still viral in 2026: abuela chanclazos, mamá vs abuela)."""
     P = []; G = []
     tilt = 18
-    Mc = Matrix.Translation((0, 0, 2.55)) @ Matrix.Rotation(math.radians(12), 4, 'Z') @ Matrix.Rotation(math.radians(-tilt), 4, 'Y') @ Matrix.Rotation(math.radians(-30), 4, 'X')
+    Mc = Matrix.Translation((0, 0, 2.55)) @ Matrix.Rotation(math.radians(30), 4, 'Z') @ Matrix.Rotation(math.radians(-tilt), 4, 'Y') @ Matrix.Rotation(math.radians(-30), 4, 'X')
     pts = foot_pts(3.4, 2.05)
-    layers = [("sky", .3, 0.0), ("eye_white", .18, .26), ("fiesta_pink", .24, .46)]   # foam sole layers (back->front)
+    layers = [("cobalt", .28, 0.0), ("eye_white", .2, .25), ("sun_yellow", .14, .42), ("sky", .22, .6)]   # foam sole layers (back->front)
     for k, (col, th, y) in enumerate(layers):
         P.append(slab(f"sole{k}", pts, thick=th, col=col, bevel=.06, bseg=2, matrix=Mc @ Matrix.Translation((0, -y, 0)) @ Matrix.Rotation(math.radians(90), 4, 'X')))
-    front = -.6
+    front = -.73
     W = lambda x, z: Mc @ V(x, front, z)
     fpt = W(0, .15)
-    sole_front = [o for o in P if o.name == "sole2"]
+    sole_front = [o for o in P if o.name == "sole3"]
     tree = bvh_of(sole_front)
     f = (Mc.to_3x3() @ V(0, -1, 0)).normalized()
     # straps (Y) from the toe post
     post = W(0, .95)
-    P.append(sphere("post", (.16, .16, .16), loc=post + f * .08, col="turquoise", seg=12, ring=8))
+    P.append(sphere("post", (.16, .16, .16), loc=post + f * .08, col="mango", seg=12, ring=8))
     for s_ in (-1, 1):
-        P.append(tube(f"strap{s_}", [post + f * .1, W(.42 * s_, .45) + f * .5, W(.78 * s_, -.35) + f * .42, W(.92 * s_, -.95) + f * .05], radius=.15, col="turquoise", seg=12, taper=[.8, 1.15, 1.15, 1.0]))
-        P.append(sphere(f"rivet{s_}", (.1, .1, .1), loc=W(.92 * s_, -.95) + f * .05, col="candy_teal", seg=10, ring=6))
+        P.append(tube(f"strap{s_}", [post + f * .1, W(.42 * s_, .45) + f * .5, W(.78 * s_, -.35) + f * .42, W(.92 * s_, -.95) + f * .05], radius=.16, col="sun_yellow", seg=12, taper=[.8, 1.15, 1.15, 1.0]))
+        P.append(sphere(f"rivet{s_}", (.1, .1, .1), loc=W(.92 * s_, -.95) + f * .05, col="eye_white", seg=10, ring=6))
     # face (lower half): fierce knowing eyes + smirk
-    P += eyes2("e", tree, fpt + f * 3 + V(0, 0, 0), fwd=f, dx=.28, dz=-.42, size=.25, iris="chili", lid="fiesta_pink", open_=.62, tilt=-16,
+    P += eyes2("e", tree, fpt + f * 3 + V(0, 0, 0), fwd=f, dx=.28, dz=-.42, size=.25, iris="chili", lid="sky", open_=.62, tilt=-16,
                brow=True, brow_h=1.45, brow_tilt=-22, brow_arch=.05, brow_col="ink")
     for s_ in (-1, 1):
         P += blush2(f"bl{s_}", tree, Mc @ V(.5 * s_, 0, -.78) + f * 3, fwd=f, size=.13)
     P += mouth2("m", tree, Mc @ V(.05, 0, -1.0) + f * 3, fwd=f, w=.42, h=.12, smile=1.5, col="ink", tongue=False, teeth=3)
     # neon sniper reticle in front + speed trail behind
     rc = V(-1.55, -1.1, 3.1)
-    r = torus("ret", .42, .04, col="neon_pink", seg=32, mseg=5); r.matrix_world = Matrix.Translation(rc) @ Matrix.Rotation(math.radians(90), 4, 'X'); G.append(r)
+    r = torus("ret", .42, .04, col="neon_green", seg=32, mseg=5); r.matrix_world = Matrix.Translation(rc) @ Matrix.Rotation(math.radians(90), 4, 'X'); G.append(r)
     for a in (0, 90, 180, 270):
         d = V(math.cos(math.radians(a)), 0, math.sin(math.radians(a)))
-        G.append(tube(f"rl{a}", [rc + d * .25, rc + d * .62], radius=.035, col="neon_pink", seg=5))
-    G.append(sphere("retdot", (.06, .04, .06), loc=rc, col="neon_pink", seg=8, ring=5))
+        G.append(tube(f"rl{a}", [rc + d * .25, rc + d * .62], radius=.035, col="neon_green", seg=5))
+    G.append(sphere("retdot", (.06, .04, .06), loc=rc, col="neon_green", seg=8, ring=5))
     for k in range(3):
         o = V(0, 0, .35 * (k - 1))
         pts3 = [Mc @ V(1.1, .4, 1.0) + o, V(1.9 + .1 * k, .7, 3.2) + o, V(2.6 + .1 * k, .9, 2.9) + o, V(3.1, 1.0, 2.2) + o]
@@ -571,7 +571,7 @@ MEMES2 = {"garrobita_terenga": garrobita_terenga, "fantasmita_bu": fantasmita_bu
 MEME2_RARITY = {"garrobita_terenga": "epic", "fantasmita_bu": "epic", "cochinito_quincena": "legendary", "lic_dos_peces": "legendary",
                 "pinovela": "mythic", "chancla_teledirigida": "mythic", "aurazoso": "secret", "abuelita_en_vivo": "secret"}
 MEME2_CAM = {"garrobita_terenga": (20, 10), "fantasmita_bu": (18, 10), "cochinito_quincena": (-30, 12), "lic_dos_peces": (10, 8),
-             "pinovela": (18, 10), "chancla_teledirigida": (12, 10), "aurazoso": (20, 10), "abuelita_en_vivo": (16, 10)}
+             "pinovela": (18, 10), "chancla_teledirigida": (0, 10), "aurazoso": (20, 10), "abuelita_en_vivo": (16, 10)}
 C.CREATURES.update(MEMES2); C.RARITY.update(MEME2_RARITY); C.CAM.update(MEME2_CAM)
 
 if __name__ == "__main__":

@@ -240,11 +240,11 @@
   "name": "chancla_teledirigida",
   "size_studs": [
    5.28,
-   4.54,
-   2.46
+   4.6,
+   2.85
   ],
   "tris": {
-   "chancla_teledirigida": 6192,
+   "chancla_teledirigida": 6572,
    "chancla_teledirigida_Neon": 624
   }
  },

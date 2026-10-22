@@ -68,7 +68,7 @@ Hacé lo mismo con el otro jugador. Si no, `RequestSteal` responde `rookie`.
 
 `rojo serve`, Play. Los kioscos de la plaza (DULCERÍA, BATES, CAJAS, VIP) abren la tienda. Mientras los Id del config sigan en 0, un botón de Robux dice **Pronto** y no llama a `MarketplaceService`.
 
-- Dulcería: comprá un pedestal (el 5º sale 500). El pad se aclara. Subí el tope. La Re-Fiesta pide la rareza y los Dulces del nivel (`Economy.refiestaOffer`). Con una Épica y 500.000, la primera reinicia Dulces y piñatas normales y deja Secretas y de Evento.
+- Dulcería: comprá un pedestal (el 5º sale 500). El pad se aclara. Subí el tope. La Re-Fiesta pide la rareza y los Dulces del nivel (`Economy.refiestaOffer`). Con una Épica y 5.500.000, la primera reinicia Dulces y piñatas normales y deja Secretas y de Evento.
 - Cajas: con 3 de la misma especie, fusioná. Sale 1 Dorada (a veces Arcoíris).
 - Bates: la mejora de Dulces empuja más. El pase de skins no cambia el golpe.
 - VIP: los pases y productos muestran el precio de `Config/Monetization.luau`. Servidor privado es una nota (50 R$/mes, se configura en la página del juego). Suscripción y video quedan en **Pronto** hasta tener id y API.

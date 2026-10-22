@@ -14,16 +14,18 @@ local Economy = {
 	OfflineRate = 0.5,
 	OfflineCapHours = 8,
 	ReFiestaMultiplierStep = 0.5,
-	-- Nivel 1 es el ejemplo del GDD (1 Épica y 500K). Después escala.
+	-- El GDD pone 500K como ejemplo. En la simulación (semilla 20261022) eso caía ~al minuto 41.
+	-- ×11 lleva la primera Re-Fiesta a la hora 2–3 sin tocar precios de Rara/Épica.
+	-- Los niveles siguientes van en la misma proporción.
 	ReFiestaTiers = {
-		{ Candy = 500000, Rarity = "Epic", Count = 1 },
-		{ Candy = 2500000, Rarity = "Legendary", Count = 1 },
-		{ Candy = 12000000, Rarity = "Mythic", Count = 1 },
-		{ Candy = 40000000, Rarity = "Legendary", Count = 2 },
-		{ Candy = 120000000, Rarity = "Mythic", Count = 1 },
+		{ Candy = 5500000, Rarity = "Epic", Count = 1 },
+		{ Candy = 27500000, Rarity = "Legendary", Count = 1 },
+		{ Candy = 132000000, Rarity = "Mythic", Count = 1 },
+		{ Candy = 440000000, Rarity = "Legendary", Count = 2 },
+		{ Candy = 1320000000, Rarity = "Mythic", Count = 1 },
 	},
 	ReFiestaCandyGrowth = 3.2,
-	ReFiestaCandy = 500000, -- el kiosco viejo lee este número; el nivel 1 coincide
+	ReFiestaCandy = 5500000, -- el kiosco viejo lee este número; el nivel 1 coincide
 	Walk = { Normal = 16, Carrying = 11 },
 	Buy = { MaxDistance = 12 }, -- GDD §3.1, prompt de la Pasarela
 	Conveyor = { SpawnEverySec = 4, CrossSeconds = 40, LuckBoostMultiplier = 2, AnnounceLeadSec = 5 },

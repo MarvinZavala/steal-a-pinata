@@ -3,6 +3,8 @@
 -- Un segundo de juego = un paso. La Fiesta cae cada 30 min de juego activo.
 -- Las compras siguen una política: llenar slots con lo que pague, fusionar al llenarse,
 -- ahorrar para la Re-Fiesta cuando ya tiene la rareza, y no vender (no se puede).
+-- Los pedestales se compran igual mientras el nido no está completo: son baratos
+-- al lado de la Re-Fiesta y el GDD los pone cerca del minuto 30.
 
 local Economy = if typeof(script) == "Instance"
 	then require(script.Parent.Parent.Config.Economy)
@@ -330,7 +332,9 @@ local function tryPedestal(state: State, needed: boolean)
 	end
 	local price = Economy.pedestalPrice(state.pedestals + 1)
 	local reserve = savingForRebirth(state)
-	if reserve > 0 and state.candy - price < reserve then
+	-- El nido solo se protege cuando ya está armado. Mientras se junta, un pedestal
+	-- de cientos de Dulces no debe esperar a la Re-Fiesta (el GDD los pone cerca del min 30).
+	if reserve > 0 and state.candy >= reserve and state.candy - price < reserve then
 		return
 	end
 	if state.candy < price then

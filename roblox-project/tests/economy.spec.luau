@@ -26,7 +26,7 @@ H.check("los pedestales crecen ×2.2 y el tope respeta la Re-Fiesta", function()
 	H.eq(Economy.pedestalCap(3, true), 12)
 	H.eq(Economy.vaultCost(2), 2500)
 	H.eq(Economy.vaultCost(4), 80000)
-	H.eq(Economy.refiestaOffer(1).Candy, 500000)
+	H.eq(Economy.refiestaOffer(1).Candy, 5500000)
 	H.eq(Economy.refiestaOffer(1).Rarity, "Epic")
 	H.truthy(Economy.refiestaOffer(6).Candy > Economy.refiestaOffer(5).Candy)
 end)
@@ -34,7 +34,7 @@ end)
 H.check("la Re-Fiesta se lleva los Dulces y deja Secretas y de Evento", function()
 	local data = Migrations.migrate({
 		SchemaVersion = 2,
-		Dulces = 500000,
+		Dulces = 5500000,
 		PedestalsOwned = 8,
 		VaultCandy = 40,
 		Inventory = {

@@ -87,7 +87,7 @@ En Studio (o con el attribute `UIPreview`) aparece el botón Preview, o escribí
 
 ## Precios provisionales
 
-Si `Economy` no trae `VaultUpgradeCost` ni `ReFiestaCandy`, la Dulcería usa 2500 / 15000 / 80000 y 500000. El día que aparezcan en `Economy`, se leen solos. Los pases con `Id == 0` muestran «Pronto» y no abren el prompt de Robux.
+Si `Economy` no trae `VaultUpgradeCost` ni `ReFiestaCandy`, la Dulcería usa 2500 / 15000 / 80000 y 500000. Con el módulo actual la Re-Fiesta 1 lee `refiestaOffer` (5.500.000 y 1 Épica). Los pases con `Id == 0` muestran «Pronto» y no abren el prompt de Robux.
 
 ## Cómo probarlo en Studio
 

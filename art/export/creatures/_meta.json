@@ -48,11 +48,12 @@
   "name": "dragon",
   "size_studs": [
    4.43,
-   4.06,
-   3.66
+   4.11,
+   3.75
   ],
   "tris": {
-   "dragon": 8108
+   "dragon": 13940,
+   "dragon_Neon": 128
   }
  },
  "toro": {

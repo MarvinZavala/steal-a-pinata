@@ -246,5 +246,17 @@
    "chancla_teledirigida": 6192,
    "chancla_teledirigida_Neon": 624
   }
+ },
+ "aurazoso": {
+  "name": "aurazoso",
+  "size_studs": [
+   3.91,
+   4.79,
+   3.4
+  ],
+  "tris": {
+   "aurazoso": 8256,
+   "aurazoso_Neon": 2380
+  }
  }
 }

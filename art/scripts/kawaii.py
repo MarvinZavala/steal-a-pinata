@@ -69,7 +69,7 @@ def eye2(name, tree, origin, fwd=(0, -1, 0), size=.3, iris="sky", look=(0, 0), l
     sx, sy = s * .92, s * 1.08 * squash
     c = p + n * push
     w = sphere(name + "_scl", (sx, sy, s * .45), col="eye_white", seg=20, ring=10); place(w, c, t1, t2, n); P.append(w)
-    lk = t1 * look[0] * s * .32 + t2 * look[1] * s * .3
+    lk = t1 * look[0] * s * .34 + t2 * look[1] * s * .32
     ir = sphere(name + "_iris", (s * .66, s * .74 * squash, s * .2), col=iris, seg=16, ring=8); place(ir, c + n * s * .3 + lk, t1, t2, n); P.append(ir)
     pu = sphere(name + "_pup", (s * .36, s * .42 * squash, s * .12), col=pupil, seg=12, ring=6); place(pu, c + n * s * .4 + lk * 1.1, t1, t2, n); P.append(pu)
     if hl:

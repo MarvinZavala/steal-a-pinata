@@ -174,5 +174,17 @@
    "manzanin_iq": 9318,
    "manzanin_iq_Neon": 480
   }
+ },
+ "garrobita_terenga": {
+  "name": "garrobita_terenga",
+  "size_studs": [
+   3.48,
+   4.43,
+   3.02
+  ],
+  "tris": {
+   "garrobita_terenga": 12748,
+   "garrobita_terenga_Neon": 144
+  }
  }
 }

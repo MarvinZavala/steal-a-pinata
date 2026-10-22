@@ -271,5 +271,17 @@
    "abuelita_en_vivo": 14358,
    "abuelita_en_vivo_Neon": 1224
   }
+ },
+ "caracol_turbo": {
+  "name": "caracol_turbo",
+  "size_studs": [
+   2.15,
+   3.81,
+   6.0
+  ],
+  "tris": {
+   "caracol_turbo": 12108,
+   "caracol_turbo_Neon": 192
+  }
  }
 }

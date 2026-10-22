@@ -15,7 +15,7 @@ SETS = {
     "random": dict(out="lineup_random", res=(2600, 1150), bg=("#0F6E8C", "#43D9B8"), order=[
         ("caracol_turbo", "Caracol Turbo", "ÉPICO"), ("cactus_abrazos", "Cactus Abrazos", "LEGENDARIO"),
         ("aguacaton", "Aguacatón", "MÍTICO"), ("pulpo_dj", "Pulpo DJ", "SECRETO")],
-        rot={"caracol_turbo": 40}),
+        rot={"caracol_turbo": -38}),
 }
 PEDCOL = {"COMÚN": "donkey_grey", "POCO COMÚN": "lime", "RARO": "sky", "ÉPICO": "grape", "LEGENDARIO": "gold", "EVENTO NAVIDAD": "xmas_red", "MÍTICO": "fiesta_pink", "SECRETO": "ink"}
 GLOW = {"ÉPICO": "neon_pink", "LEGENDARIO": "neon_gold", "EVENTO NAVIDAD": "neon_green", "MÍTICO": "neon_pink", "SECRETO": "neon_cyan"}

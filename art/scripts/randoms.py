@@ -70,7 +70,7 @@ def caracol_turbo():
         rp, rn = hit(stree, sc + V(3 * s_, -.1, .0), V(-s_, 0, 0))
         disc = cyl(f"round{s_}", .32, .32, .04, col="eye_white", seg=24); disc.matrix_world = M(rp + rn * .06, rn); P.append(disc)
         t = text_mesh(f"num{s_}", "7", size=.42, extrude=.03, col="ink", rot=(0, 0, 0), bevel=0, res=3)
-        t.matrix_world = M(rp + rn * .09, rn, roll=0 if s_ > 0 else 180); P.append(t)
+        t.matrix_world = M(rp + rn * .09, rn); P.append(t)   # roll 0: upright on both sides
     # spoiler
     for x in (-.5, .5):
         P.append(box(f"strut{x}", (.08, .12, .55), loc=sc + V(x, .95, .95), rot=(-20, 0, 0), col="ink", bevel=.02))

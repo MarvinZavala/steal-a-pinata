@@ -2,49 +2,168 @@
  "lobby_fountain": {
   "name": "lobby_fountain",
   "size_studs": [
-   25.47,
-   10.1,
-   25.47
+   31.78,
+   14.62,
+   31.78
   ],
   "tris": {
-   "lobby_fountain": 3688,
-   "lobby_fountain_Neon": 832
+   "lobby_fountain": 9764,
+   "lobby_fountain_Water": 2228,
+   "lobby_fountain_Neon": 640
   }
  },
  "lobby_palm": {
   "name": "lobby_palm",
   "size_studs": [
-   8.74,
-   8.87,
-   8.96
+   14.11,
+   11.29,
+   13.43
   ],
   "tris": {
-   "lobby_palm": 2080
+   "lobby_palm": 4398
   }
  },
  "lobby_lamp": {
   "name": "lobby_lamp",
   "size_studs": [
-   1.77,
-   10.2,
-   1.77
+   6.07,
+   11.9,
+   2.0
   ],
   "tris": {
-   "lobby_lamp": 584,
-   "lobby_lamp_Neon": 196
+   "lobby_lamp": 824,
+   "lobby_lamp_Neon": 140
   }
  },
  "lobby_shop_dulceria": {
   "name": "lobby_shop_dulceria",
   "size_studs": [
    25.0,
-   35.73,
+   34.13,
    19.25
   ],
   "tris": {
-   "lobby_shop_dulceria": 30056,
+   "lobby_shop_dulceria": 19620,
    "lobby_shop_dulceria_Neon": 744,
-   "lobby_shop_dulceria_Sign": 18420
+   "lobby_shop_dulceria_Sign": 9434
+  }
+ },
+ "lobby_shop_bates": {
+  "name": "lobby_shop_bates",
+  "size_studs": [
+   25.0,
+   34.05,
+   19.25
+  ],
+  "tris": {
+   "lobby_shop_bates": 18188,
+   "lobby_shop_bates_Neon": 744,
+   "lobby_shop_bates_Sign": 7656
+  }
+ },
+ "lobby_shop_cajas": {
+  "name": "lobby_shop_cajas",
+  "size_studs": [
+   25.0,
+   34.1,
+   19.25
+  ],
+  "tris": {
+   "lobby_shop_cajas": 20552,
+   "lobby_shop_cajas_Neon": 744,
+   "lobby_shop_cajas_Sign": 7325
+  }
+ },
+ "lobby_shop_vip": {
+  "name": "lobby_shop_vip",
+  "size_studs": [
+   25.0,
+   31.67,
+   19.25
+  ],
+  "tris": {
+   "lobby_shop_vip": 18520,
+   "lobby_shop_vip_Neon": 1344,
+   "lobby_shop_vip_Sign": 2960
+  }
+ },
+ "lobby_bench": {
+  "name": "lobby_bench",
+  "size_studs": [
+   6.6,
+   3.74,
+   2.9
+  ],
+  "tris": {
+   "lobby_bench": 1872
+  }
+ },
+ "lobby_planter": {
+  "name": "lobby_planter",
+  "size_studs": [
+   8.4,
+   3.77,
+   8.4
+  ],
+  "tris": {
+   "lobby_planter": 2696
+  }
+ },
+ "lobby_light_pole": {
+  "name": "lobby_light_pole",
+  "size_studs": [
+   2.76,
+   13.0,
+   1.57
+  ],
+  "tris": {
+   "lobby_light_pole": 512
+  }
+ },
+ "lobby_string_lights": {
+  "name": "lobby_string_lights",
+  "size_studs": [
+   24.03,
+   2.6,
+   0.38
+  ],
+  "tris": {
+   "lobby_string_lights": 546,
+   "lobby_string_lights_Neon": 768
+  }
+ },
+ "lobby_papel_garland": {
+  "name": "lobby_papel_garland",
+  "size_studs": [
+   24.03,
+   3.96,
+   0.4
+  ],
+  "tris": {
+   "lobby_papel_garland": 306,
+   "lobby_papel_garland_Flags": 176
+  }
+ },
+ "lobby_flamboyan": {
+  "name": "lobby_flamboyan",
+  "size_studs": [
+   14.55,
+   13.24,
+   17.97
+  ],
+  "tris": {
+   "lobby_flamboyan": 1696
+  }
+ },
+ "lobby_candy_cart": {
+  "name": "lobby_candy_cart",
+  "size_studs": [
+   11.16,
+   11.17,
+   8.0
+  ],
+  "tris": {
+   "lobby_candy_cart": 4132
   }
  }
 }

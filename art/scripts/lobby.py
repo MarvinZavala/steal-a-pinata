@@ -79,18 +79,18 @@ def flower(name, loc, col, s=1.0, center="sun_yellow"):
 
 def jar(name, loc, col, h=.8, r=.34):
     x, y, z = loc
-    return [cyl(name + "g", r, r, h, loc=(x, y, z), col=col, seg=10),
-            cyl(name + "l", r * .8, r * .8, .16, loc=(x, y, z + h), col="gold", seg=10)]
+    return [cyl(name + "g", r, r, h, loc=(x, y, z), col=col, seg=8),
+            cyl(name + "l", r * .8, r * .8, .16, loc=(x, y, z + h), col="gold", seg=8)]
 
 def potted_bush(name, loc, s=1.0, cols=("fiesta_pink", "sun_yellow")):
     x, y, z = loc; P = []
-    P.append(lathe(name + "pot", [(.55 * s, 0), (.75 * s, .2 * s), (.85 * s, 1.1 * s), (.95 * s, 1.25 * s), (.95 * s, 1.4 * s), (.75 * s, 1.4 * s)], 16, "terracotta", loc=(x, y, z)))
+    P.append(lathe(name + "pot", [(.55 * s, 0), (.75 * s, .2 * s), (.85 * s, 1.1 * s), (.95 * s, 1.25 * s), (.95 * s, 1.4 * s), (.75 * s, 1.4 * s)], 12, "terracotta", loc=(x, y, z)))
     P.append(lump(name + "b", .95 * s, (x, y, z + 1.95 * s), "leaf", seed=len(name), sub=2, amp=.16))
     rnd = random.Random(len(name))
     for k in range(6):
         a = rnd.uniform(0, 6.28); e = rnd.uniform(.2, 1.1)
         p = Vector((x, y, z + 1.95 * s)) + .95 * s * Vector((math.cos(a) * math.cos(e), math.sin(a) * math.cos(e), math.sin(e)))
-        P.append(sphere(name + f"f{k}", (.2 * s,) * 3, loc=p, col=cols[k % len(cols)], seg=8, ring=5))
+        P.append(sphere(name + f"f{k}", (.2 * s,) * 3, loc=p, col=cols[k % len(cols)], seg=6, ring=4))
     return P
 
 # ======================================================================= SHOPS
@@ -107,6 +107,10 @@ SHOPS = {
 SW, SD, H1, SH = 23.0, 14.0, 11.0, 19.0          # shop width, depth, ground floor height, cornice height
 DW, SPR = 4.4, 5.0                                 # door half width, arch spring
 
+def sbox(*a, **k):
+    """Shop boxes: single-segment chamfer (reads the same at plaza distance, ~60% fewer tris)."""
+    k.setdefault("bseg", 1); return box(*a, **k)
+
 def shop_icon(kind, z):
     P = []; G = []
     if kind == "lollipop":
@@ -116,8 +120,8 @@ def shop_icon(kind, z):
         M = Tr(0, -.2, z + 5.6) @ R(90, 'X')
         d = cyl("ic_disc", 2.4, 2.4, .8, col="candy_red", seg=40, bevel=.25, bseg=3, base=False); d.data.transform(M); P.append(d)
         for side in (1, -1):
-            sw = [M @ Vector(((.2 + t * .042) * math.cos(t * .42), (.2 + t * .042) * math.sin(t * .42), .42 * side)) for t in range(52)]
-            P.append(tube(f"ic_swirl{side}", sw, radius=.2, col="snow", seg=8))
+            sw = [M @ Vector(((.2 + t * .07) * math.cos(t * .7), (.2 + t * .07) * math.sin(t * .7), .42 * side)) for t in range(32)]
+            P.append(tube(f"ic_swirl{side}", sw, radius=.2, col="snow", seg=6))
         P.append(torus("ic_bow", .5, .22, loc=(0, -.2, z + 3.4), rot=(90, 0, 0), col="sun_yellow", seg=14, mseg=6))
     elif kind == "bats":
         for s in (-1, 1):
@@ -128,15 +132,15 @@ def shop_icon(kind, z):
                 t_ = torus(f"ic_tape{s}{zz}", .34, .07, col="candy_red", seg=14, mseg=4); t_.data.transform(M @ Tr(0, 0, zz)); P.append(t_)
         P.append(star_prism("ic_star", 5, 1.2, .55, .5, loc=(0, -.9, z + 3.0), rot=(90, 0, 0), col="sun_yellow", bevel=.1))
     elif kind == "caja":
-        P.append(box("ic_box", (4.2, 4.2, 3.6), loc=(0, .2, z + 1.8), rot=(0, 0, 12), col="grape", bevel=.25, bseg=2))
-        P.append(box("ic_lid", (4.7, 4.7, 1.0), loc=(0, .2, z + 3.9), rot=(0, 0, 12), col="fiesta_pink", bevel=.25, bseg=2))
+        P.append(sbox("ic_box", (4.2, 4.2, 3.6), loc=(0, .2, z + 1.8), rot=(0, 0, 12), col="grape", bevel=.25, bseg=2))
+        P.append(sbox("ic_lid", (4.7, 4.7, 1.0), loc=(0, .2, z + 3.9), rot=(0, 0, 12), col="fiesta_pink", bevel=.25, bseg=2))
         for a in (12, 102):
-            P.append(box(f"ic_rib{a}", (4.8, .7, 4.9), loc=(0, .2, z + 2.2), rot=(0, 0, a), col="sun_yellow", bevel=.1))
+            P.append(sbox(f"ic_rib{a}", (4.8, .7, 4.9), loc=(0, .2, z + 2.2), rot=(0, 0, a), col="sun_yellow", bevel=.1))
         for s in (-1, 1):
             t_ = torus(f"ic_loop{s}", .9, .3, col="sun_yellow", seg=16, mseg=6)
             t_.data.transform(Tr(0, .2, z + 4.9) @ R(12) @ Tr(s * .9, 0, .3) @ R(90, 'X')); P.append(t_)
         P.append(sphere("ic_knot", (.55, .55, .5), loc=(0, .2, z + 4.7), col="sun_yellow", seg=12, ring=6))
-        P.append(text_mesh("ic_q", "?", 2.4, .3, "snow", loc=(0, -1.95, z + 1.8), rot=(90, 0, 12), bevel=.03, res=5, bres=1))
+        P.append(text_mesh("ic_q", "?", 2.4, .3, "snow", loc=(0, -1.95, z + 1.8), rot=(90, 0, 12), bevel=0, res=3, bres=0))
     elif kind == "crown":
         P.append(lathe("ic_band", [(2.2, 0), (2.4, .2), (2.4, 1.4), (2.2, 1.6), (2.0, 1.4), (2.0, .2)], 36, "gold", loc=(0, .5, z), closed=True))
         for k in range(6):
@@ -155,35 +159,35 @@ def shop(key):
     # --- masses: front block with an arched, 5-deep doorway + body behind
     poly = [(-W / 2, 0)] + arch_pts(DW, SPR) + [(W / 2, 0), (W / 2, H), (-W / 2, H)]
     P.append(xz_slab("front", poly, FY, 5.0, c["wall"], bevel=.08))
-    P.append(box("body", (W, SD - 5, H), loc=(0, (FY + 5 + SD / 2) / 2, H / 2), col=c["wall"], bevel=.1))
+    P.append(sbox("body", (W, SD - 5, H), loc=(0, (FY + 5 + SD / 2) / 2, H / 2), col=c["wall"], bevel=.1))
     # zocalo (base band), broken by the door
     for s in (-1, 1):
         x0, x1 = s * DW, s * (W / 2 + .2)
-        P.append(box(f"zoc{s}", (abs(x1 - x0), .5, 1.5), loc=((x0 + x1) / 2, FY - .1, .75), col=c["zoc"], bevel=.08))
-        P.append(box(f"zocS{s}", (.5, SD + .4, 1.5), loc=(s * (W / 2 + .05), 0, .75), col=c["zoc"], bevel=.08))
-    P.append(box("zocB", (W + .4, .5, 1.5), loc=(0, SD / 2 + .05, .75), col=c["zoc"], bevel=.08))
+        P.append(sbox(f"zoc{s}", (abs(x1 - x0), .5, 1.5), loc=((x0 + x1) / 2, FY - .1, .75), col=c["zoc"], bevel=.08))
+        P.append(sbox(f"zocS{s}", (.5, SD + .4, 1.5), loc=(s * (W / 2 + .05), 0, .75), col=c["zoc"], bevel=.08))
+    P.append(sbox("zocB", (W + .4, .5, 1.5), loc=(0, SD / 2 + .05, .75), col=c["zoc"], bevel=.08))
     # pilasters + capitals + bases; corner pilasters upstairs; band + cornice
     for x in (-W / 2 + .7, -DW - 1.0, DW + 1.0, W / 2 - .7):
-        P.append(box(f"pil{x}", (1.4, .6, H1 - 1.5), loc=(x, FY - .3, 1.5 + (H1 - 1.5) / 2), col=c["trim"], bevel=.08))
-        P.append(box(f"cap{x}", (1.9, .9, .45), loc=(x, FY - .4, H1 - .3), col=c["trim"], bevel=.1))
-        P.append(box(f"pb{x}", (1.8, .8, .5), loc=(x, FY - .35, 1.75), col=c["trim"], bevel=.1))
+        P.append(sbox(f"pil{x}", (1.4, .6, H1 - 1.5), loc=(x, FY - .3, 1.5 + (H1 - 1.5) / 2), col=c["trim"], bevel=.08))
+        P.append(sbox(f"cap{x}", (1.9, .9, .45), loc=(x, FY - .4, H1 - .3), col=c["trim"], bevel=.1))
+        P.append(sbox(f"pb{x}", (1.8, .8, .5), loc=(x, FY - .35, 1.75), col=c["trim"], bevel=.1))
     for x in (-W / 2 + .7, W / 2 - .7):
-        P.append(box(f"upil{x}", (1.3, .5, H - H1 - 1), loc=(x, FY - .25, H1 + .6 + (H - H1 - 1) / 2), col=c["trim"], bevel=.08))
-    P.append(box("band", (W + .7, 1.1, .9), loc=(0, FY - .35, H1 + .25), col=c["trim"], bevel=.12))
-    P.append(box("corn1", (W + 1.0, 1.3, .55), loc=(0, FY - .4, H - .2), col=c["trim"], bevel=.12))
-    P.append(box("corn2", (W + 1.8, 1.9, .45), loc=(0, FY - .55, H + .25), col=c["trim"], bevel=.12))
+        P.append(sbox(f"upil{x}", (1.3, .5, H - H1 - 1), loc=(x, FY - .25, H1 + .6 + (H - H1 - 1) / 2), col=c["trim"], bevel=.08))
+    P.append(sbox("band", (W + .7, 1.1, .9), loc=(0, FY - .35, H1 + .25), col=c["trim"], bevel=.12))
+    P.append(sbox("corn1", (W + 1.0, 1.3, .55), loc=(0, FY - .4, H - .2), col=c["trim"], bevel=.12))
+    P.append(sbox("corn2", (W + 1.8, 1.9, .45), loc=(0, FY - .55, H + .25), col=c["trim"], bevel=.12))
     P.append(tube("archivolt", [(x, FY - .25, z) for x, z in arch_pts(DW + .35, SPR, n=18)], radius=.38, col=c["trim"], seg=8))
-    P.append(box("key", (1.1, .9, 1.5), loc=(0, FY - .35, SPR + DW + .5), col=c["accent"], bevel=.12))
+    P.append(sbox("key", (1.1, .9, 1.5), loc=(0, FY - .35, SPR + DW + .5), col=c["accent"], bevel=.12))
     # --- interior visible through the arch: shelves of jars, counter, hanging lamp
     BY = FY + 5
-    P.append(box("in_floor", (2 * DW, 5, .12), loc=(0, FY + 2.5, .06), col="plaza_tile", bevel=0))
+    P.append(sbox("in_floor", (2 * DW, 5, .12), loc=(0, FY + 2.5, .06), col="plaza_tile", bevel=0))
     for k, z in enumerate((2.2, 4.1, 6.0)):
-        P.append(box(f"shelf{k}", (2 * DW - .4, 1.1, .2), loc=(0, BY - .55, z), col="wood", bevel=.04))
+        P.append(sbox(f"shelf{k}", (2 * DW - .4, 1.1, .2), loc=(0, BY - .55, z), col="wood", bevel=.04))
         for j in range(6):
             x = -DW + .9 + j * (2 * DW - 1.8) / 5
             P += jar(f"sj{k}{j}", (x, BY - .55, z + .1), c["goods"][(j + k) % 5], h=.9, r=.32)
-    P.append(box("counter", (6.8, 1.4, 2.6), loc=(0, FY + 2.4, 1.3), col=c["accent"], bevel=.12))
-    P.append(box("counter_top", (7.2, 1.8, .3), loc=(0, FY + 2.4, 2.75), col="wood", bevel=.06))
+    P.append(sbox("counter", (6.8, 1.4, 2.6), loc=(0, FY + 2.4, 1.3), col=c["accent"], bevel=.12))
+    P.append(sbox("counter_top", (7.2, 1.8, .3), loc=(0, FY + 2.4, 2.75), col="wood", bevel=.06))
     for j, x in enumerate((-2.4, 0, 2.4)):
         P += jar(f"cj{j}", (x, FY + 2.3, 2.9), c["goods"][j + 1], h=1.3, r=.55)
     P.append(cyl("lampcord", .05, .05, 1.2, loc=(0, FY + 2.5, 7.4), col="ink", seg=6))
@@ -193,28 +197,28 @@ def shop(key):
         x = s * 8.25; hw = 1.55; sp = 6.0
         P.append(xz_slab(f"gw{s}", arch_pts(hw, sp, n=12, y0=2.4), FY - .05, .12, "ink_soft", bevel=0, x=x))
         P.append(tube(f"gwf{s}", [(x + px, FY - .12, pz) for px, pz in arch_pts(hw + .15, sp, n=14, y0=2.25)], radius=.2, col=c["trim"], seg=6))
-        P.append(box(f"gwm{s}", (.15, .2, 3.6), loc=(x, FY - .12, 4.2), col=c["trim"], bevel=0))
-        P.append(box(f"gwt{s}", (3.1, .2, .15), loc=(x, FY - .12, 4.6), col=c["trim"], bevel=0))
-        P.append(box(f"gws{s}", (3.8, 1.2, .3), loc=(x, FY - .5, 2.25), col=c["trim"], bevel=.08))
+        P.append(sbox(f"gwm{s}", (.15, .2, 3.6), loc=(x, FY - .12, 4.2), col=c["trim"], bevel=0))
+        P.append(sbox(f"gwt{s}", (3.1, .2, .15), loc=(x, FY - .12, 4.6), col=c["trim"], bevel=0))
+        P.append(sbox(f"gws{s}", (3.8, 1.2, .3), loc=(x, FY - .5, 2.25), col=c["trim"], bevel=.08))
         for j in range(3):
             P += jar(f"wj{s}{j}", (x - 1.1 + j * 1.1, FY - .55, 2.4), c["goods"][(j + 2 + s) % 5], h=.75, r=.3)
     # --- upper floor: 3 windows with open shutters; flower boxes; central iron balcony
     for k, x in enumerate((-7.2, 0, 7.2)):
         z0, z1, hw = H1 + 2.0, H1 + 6.4, 1.35
-        P.append(box(f"uw{k}", (2 * hw, .2, z1 - z0), loc=(x, FY - .05, (z0 + z1) / 2), col="ink_soft", bevel=0))
+        P.append(sbox(f"uw{k}", (2 * hw, .2, z1 - z0), loc=(x, FY - .05, (z0 + z1) / 2), col="ink_soft", bevel=0))
         fr = [(x - hw - .15, FY - .15, z0 - .15), (x - hw - .15, FY - .15, z1 + .15), (x + hw + .15, FY - .15, z1 + .15), (x + hw + .15, FY - .15, z0 - .15)]
         P.append(tube(f"uwf{k}", fr + [fr[0]], radius=.18, col=c["trim"], seg=6))
-        P.append(box(f"uwm{k}", (.14, .2, z1 - z0), loc=(x, FY - .15, (z0 + z1) / 2), col=c["trim"], bevel=0))
-        P.append(box(f"uwl{k}", (2 * hw + 1.2, .8, .5), loc=(x, FY - .35, z1 + .55), col=c["trim"], bevel=.08))
+        P.append(sbox(f"uwm{k}", (.14, .2, z1 - z0), loc=(x, FY - .15, (z0 + z1) / 2), col=c["trim"], bevel=0))
+        P.append(sbox(f"uwl{k}", (2 * hw + 1.2, .8, .5), loc=(x, FY - .35, z1 + .55), col=c["trim"], bevel=.08))
         for s in (-1, 1):
             sx = x + s * (hw + .85)
-            P.append(box(f"sh{k}{s}", (1.45, .25, z1 - z0 + .2), loc=(sx, FY - .3, (z0 + z1) / 2), rot=(0, 0, -s * 12), col=c["shut"], bevel=.05))
+            P.append(sbox(f"sh{k}{s}", (1.45, .25, z1 - z0 + .2), loc=(sx, FY - .3, (z0 + z1) / 2), rot=(0, 0, -s * 12), col=c["shut"], bevel=.05))
             for j in range(5):
-                P.append(box(f"sl{k}{s}{j}", (1.15, .12, .14), loc=(sx - s * .04, FY - .47, z0 + .5 + j * .85), rot=(0, 0, -s * 12), col="snow", bevel=0))
+                P.append(sbox(f"sl{k}{s}{j}", (1.15, .12, .14), loc=(sx - s * .04, FY - .47, z0 + .5 + j * .85), rot=(0, 0, -s * 12), col="snow", bevel=0))
         if k == 1:
-            P.append(box("balc", (5.4, 2.0, .4), loc=(x, FY - 1.0, z0 - .25), col=c["trim"], bevel=.1))
+            P.append(sbox("balc", (5.4, 2.0, .4), loc=(x, FY - 1.0, z0 - .25), col=c["trim"], bevel=.1))
             for s in (-1, 1):
-                P.append(box(f"corb{s}", (.5, 1.5, .9), loc=(x + s * 2.1, FY - .75, z0 - .9), col=c["trim"], bevel=.1))
+                P.append(sbox(f"corb{s}", (.5, 1.5, .9), loc=(x + s * 2.1, FY - .75, z0 - .9), col=c["trim"], bevel=.1))
             rail = [(x - 2.55, FY - .1, z0 + 1.6), (x - 2.55, FY - 1.85, z0 + 1.6), (x + 2.55, FY - 1.85, z0 + 1.6), (x + 2.55, FY - .1, z0 + 1.6)]
             P.append(tube("rail", rail, radius=.1, col="iron", seg=6))
             for j in range(11):
@@ -224,15 +228,15 @@ def shop(key):
                 for s in (-1, 1):
                     P.append(cyl(f"bals{j}{s}", .05, .05, 1.65, loc=(x + s * 2.55, FY - .35 - j * .55, z0 - .05), col="iron", seg=5))
         else:
-            P.append(box(f"fb{k}", (3.4, 1.0, .8), loc=(x, FY - .55, z0 - .45), col="wood", bevel=.08))
+            P.append(sbox(f"fb{k}", (3.4, 1.0, .8), loc=(x, FY - .55, z0 - .45), col="wood", bevel=.08))
             for j in range(5):
                 P.append(lump(f"fbl{k}{j}", .45, (x - 1.3 + j * .65, FY - .6, z0 + .05), "leaf", seed=j + k * 7, sub=1, amp=.15))
-                P.append(sphere(f"fbf{k}{j}", (.24,) * 3, loc=(x - 1.3 + j * .65, FY - .95, z0 + .3 + .1 * (j % 2)), col=("fiesta_pink", "sun_yellow", "snow", "tangerine")[(j + k) % 4], seg=8, ring=5))
+                P.append(sphere(f"fbf{k}{j}", (.24,) * 3, loc=(x - 1.3 + j * .65, FY - .95, z0 + .3 + .1 * (j % 2)), col=("fiesta_pink", "sun_yellow", "snow", "tangerine")[(j + k) % 4], seg=6, ring=4))
     for s in (-1, 1):   # side windows (upper)
-        P.append(box(f"swin{s}", (.2, 2.6, 4.0), loc=(s * (W / 2 + .02), 0, H1 + 4.2), col="ink_soft", bevel=0))
+        P.append(sbox(f"swin{s}", (.2, 2.6, 4.0), loc=(s * (W / 2 + .02), 0, H1 + 4.2), col="ink_soft", bevel=0))
         for dy in (-1.55, 1.55):
-            P.append(box(f"sws{s}{dy}", (.3, 1.3, 4.2), loc=(s * (W / 2 + .1), dy, H1 + 4.2), col=c["shut"], bevel=.05))
-        P.append(box(f"swl{s}", (.7, 3.4, .45), loc=(s * (W / 2 + .2), 0, H1 + 6.5), col=c["trim"], bevel=.08))
+            P.append(sbox(f"sws{s}{dy}", (.3, 1.3, 4.2), loc=(s * (W / 2 + .1), dy, H1 + 4.2), col=c["shut"], bevel=.05))
+        P.append(sbox(f"swl{s}", (.7, 3.4, .45), loc=(s * (W / 2 + .2), 0, H1 + 6.5), col=c["trim"], bevel=.08))
     # --- pitched terracotta (barrel) tile roof, ridge along X
     y_f, y_b, zr = FY + 1.2, SD / 2 + .9, H + 4.6
     def roof_rows(y0, z0, y1, z1):
@@ -595,9 +599,9 @@ MODULES = {
     "lobby_palm": palm, "lobby_flamboyan": flamboyan, "lobby_candy_cart": candy_cart,
     "lobby_fabrica_gate": fabrica, "lobby_pasarela_seg": pasarela_seg,
 }
-CAMS = {"lobby_fountain": (28, 24), "lobby_bench": (30, 14), "lobby_planter": (30, 24), "lobby_lamp": (25, 6),
-        "lobby_light_pole": (25, 6), "lobby_string_lights": (8, 8), "lobby_papel_garland": (8, 8), "lobby_palm": (30, 10),
-        "lobby_flamboyan": (30, 12), "lobby_candy_cart": (32, 14), "lobby_fabrica_gate": (24, 10), "lobby_pasarela_seg": (30, 28)}
+CAMS = {"lobby_fountain": (28, 24, .78), "lobby_bench": (30, 14), "lobby_planter": (30, 24), "lobby_lamp": (25, 6),
+        "lobby_light_pole": (25, 6), "lobby_string_lights": (8, 8, .72), "lobby_papel_garland": (8, 8, .72), "lobby_palm": (30, 10, .82),
+        "lobby_flamboyan": (30, 12, .86), "lobby_candy_cart": (32, 14), "lobby_fabrica_gate": (24, 10), "lobby_pasarela_seg": (30, 28)}
 
 def water_material():
     m = bpy.data.materials.get("M_Water")
@@ -644,13 +648,13 @@ def build_module(name, render_it=True):
 
 def render_module(objs, name, size):
     """Studio render: deeper saturated backdrop + AgX so pastel/white pieces don't wash out; full framing."""
-    az, el = CAMS.get(name, (28, 14))
+    az, el, *mg = CAMS.get(name, (28, 14)); mg = mg[0] if mg else 1.08
     s = setup_render((1400, 1400), 160)
     s.view_settings.view_transform = 'AgX'; s.view_settings.look = 'AgX - Punchy'
     backdrop("#5B33C9", "#A58BF5", rot_z=az, size=max(60, size.length * 4))
     lights(key=1000, rim=700, fill=140, scale=max(1.0, size.z / 3.0), center=(0, 0, size.z * .45))
     bpy.context.scene.world.node_tree.nodes["Background"].inputs[1].default_value = .35
-    camera_fit(objs, az=az, el=el, lens=50, margin=1.08)
+    camera_fit(objs, az=az, el=el, lens=50, margin=mg)
     render(f"{REND}/{name}.png")
 
 # ======================================================================= SCENE

@@ -258,5 +258,17 @@
    "aurazoso": 8256,
    "aurazoso_Neon": 2380
   }
+ },
+ "abuelita_en_vivo": {
+  "name": "abuelita_en_vivo",
+  "size_studs": [
+   4.36,
+   5.03,
+   2.96
+  ],
+  "tris": {
+   "abuelita_en_vivo": 14358,
+   "abuelita_en_vivo_Neon": 1224
+  }
  }
 }

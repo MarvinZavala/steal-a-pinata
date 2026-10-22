@@ -67,3 +67,16 @@
 2. No copia el diseño de una IP: tortuga, garrobo, perezoso, cochinito, piña, chancla, pez y fantasma son genéricos.
 3. Contenido +13: nada. La chancla es una **broma cariñosa**: nunca se ve a un niño golpeado y la animación tumba un vaso.
 4. Se lee sin texto en 150 px. Lo comprobamos en `art/renders/lineup_memes_2.png`.
+
+## Colección Random (añadido fase 3)
+
+Pedido de Marvin: "crea cosas random pero chidas, no den cringe, bien detalladas". No son memes: son ideas originales con **un solo chiste visual** que se entiende de un vistazo (combos inesperados u objetos con personalidad). Nada copiado de una IP ni de una persona real.
+
+| id | Nombre | Rareza | El chiste visual | Idle | es / en / pt |
+|---|---|---|---|---|---|
+| `caracol_turbo` | Caracol Turbo | Épica | El animal más lento con el carro más tuneado: el caparazón es un carro de carreras #7 con alerón, escapes cromados con flamas neón, goggles en la frente y baba con marcas de llanta | Acelera en el lugar (escapes escupen flamas) y avanza 1 cm | El más lento del barrio con el carro más tuneado. / The slowest guy on the block with the most tricked-out ride. / O mais lento do bairro com o carro mais tunado. |
+| `cactus_abrazos` | Cactus Abrazos | Legendaria | La única planta que no podés abrazar es la que más quiere un abrazo: brazos abiertos, ojitos de perrito, letrero "ABRAZOS GRATIS", curita y un globo reventado en el piso | Abre y cierra los brazos esperando un abrazo | Quiere un abrazo. Tú no quieres dárselo. / Wants a hug. You don't want to give it one. / Quer um abraço. Você não quer dar. |
+| `aguacaton` | Aguacatón | Mítica | Aguacate de gym en doble bíceps: la semilla es literalmente su six-pack. Guiño, banda en la frente y pesa en el piso | Flexea y guiña cada 4 s | Bien mamado y bien maduro: la semilla es su six-pack. / Swole and perfectly ripe: the pit is his six-pack. / Marombado e no ponto: o caroço é o tanquinho dele. |
+| `pulpo_dj` | Pulpo DJ | Secreta | El único DJ que de verdad hace todo a la vez: 8 brazos (2 scratch, micro, glow stick, el resto bailando), audífonos neón, notas y bola disco | Scratch + cabeceo al ritmo | El único DJ que de verdad hace todo al mismo tiempo. / The only DJ who actually does everything at once. / O único DJ que realmente faz tudo ao mesmo tempo. |
+
+Economía (misma curva que Meme 1/2): Caracol 700/s · 120,000; Cactus 2,800/s · 650,000; Aguacatón 16,000/s · 7.2M; Pulpo DJ 125,000/s · sin precio. Set = "Random".

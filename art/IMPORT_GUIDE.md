@@ -9,7 +9,7 @@
 ## 0. Qué hay
 | Carpeta | Contenido |
 |---|---|
-| `export/creatures/` | 15 piñatas. Fase 1: estrellita, burrito, michi, cohetin, dragon, toro, renito, torogoz, sombra. **Temporada Meme 1:** michi_aplausos, seis_siete, manzanin_iq, mapache_nel, fichadito, gemelos_pupusa |
+| `export/creatures/` | 27 piñatas. Fase 1: estrellita, burrito, michi, cohetin, dragon, toro, renito, torogoz, sombra (burrito, michi, dragon, toro, renito y torogoz rehechas en fase 3, mismos ids). **Temporada Meme 1:** michi_aplausos, seis_siete, manzanin_iq, mapache_nel, fichadito, gemelos_pupusa. **Temporada Meme 2:** garrobita_terenga, fantasmita_bu, cochinito_quincena, lic_dos_peces, pinovela, chancla_teledirigida, aurazoso, abuelita_en_vivo. **Colección Random:** caracol_turbo, cactus_abrazos, aguacaton, pulpo_dj. Dragón ahora trae `_Neon` (chispitas) |
 | `export/base/` | base_floor, base_gate, base_padlock, base_generator, base_pedestal, base_fence, base_signpost |
 | `export/props/` | bat_wood, bat_gold, caja_sorpresa, candy_pile, papel_picado_banner |
 | `export/lobby/` | Plaza v2 (15 módulos exportados): lobby_shop_dulceria / _bates / _cajas / _vip, lobby_fountain, lobby_fabrica_gate, lobby_bench, lobby_planter, lobby_lamp, lobby_light_pole, lobby_string_lights, lobby_papel_garland, lobby_palm, lobby_flamboyan, lobby_candy_cart. `lobby_pasarela_seg` está en `scripts/lobby.py` pero **no hay FBX/OBJ** en esta carpeta |

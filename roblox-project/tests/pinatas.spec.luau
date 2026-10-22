@@ -36,6 +36,18 @@ local EXPECTED = {
 	"mapache_nel",
 	"fichadito",
 	"gemelos_pupusa",
+	"garrobita_terenga",
+	"fantasmita_bu",
+	"cochinito_quincena",
+	"lic_dos_peces",
+	"pinovela",
+	"chancla_teledirigida",
+	"aurazoso",
+	"abuelita_en_vivo",
+	"caracol_turbo",
+	"cactus_abrazos",
+	"aguacaton",
+	"pulpo_dj",
 }
 
 local MODELED: { [string]: boolean } = {
@@ -54,10 +66,23 @@ local MODELED: { [string]: boolean } = {
 	mapache_nel = true,
 	fichadito = true,
 	gemelos_pupusa = true,
+	garrobita_terenga = true,
+	fantasmita_bu = true,
+	cochinito_quincena = true,
+	lic_dos_peces = true,
+	pinovela = true,
+	chancla_teledirigida = true,
+	aurazoso = true,
+	abuelita_en_vivo = true,
+	caracol_turbo = true,
+	cactus_abrazos = true,
+	aguacaton = true,
+	pulpo_dj = true,
 }
 
 local NEON: { [string]: boolean } = {
 	cohetin = true,
+	dragon = true,
 	toro = true,
 	torogoz = true,
 	sombra = true,
@@ -70,6 +95,18 @@ local NEON: { [string]: boolean } = {
 	mapache_nel = true,
 	fichadito = true,
 	gemelos_pupusa = true,
+	garrobita_terenga = true,
+	fantasmita_bu = true,
+	cochinito_quincena = true,
+	lic_dos_peces = true,
+	pinovela = true,
+	chancla_teledirigida = true,
+	aurazoso = true,
+	abuelita_en_vivo = true,
+	caracol_turbo = true,
+	cactus_abrazos = true,
+	aguacaton = true,
+	pulpo_dj = true,
 }
 
 local RARITIES: { [string]: boolean } = {
@@ -83,7 +120,7 @@ local RARITIES: { [string]: boolean } = {
 	Event = true,
 }
 
-H.check("hay 29 piñatitos y 15 modeladas", function()
+H.check("hay 41 piñatitos y 27 modeladas", function()
 	local seen: { [string]: boolean } = {}
 	local count = 0
 	local modeled = 0
@@ -115,8 +152,8 @@ H.check("hay 29 piñatitos y 15 modeladas", function()
 			H.eq(mesh.Neon, nil, id)
 		end
 	end
-	H.eq(count, 29)
-	H.eq(modeled, 15)
+	H.eq(count, 41)
+	H.eq(modeled, 27)
 	for _, id in EXPECTED do
 		H.truthy(seen[id] == true, id)
 	end
@@ -135,6 +172,31 @@ H.check("hay 29 piñatitos y 15 modeladas", function()
 	H.eq(Pinatas.gemelos_pupusa.Price, nil)
 	H.eq(Pinatas.gemelos_pupusa.CandyPerSec, 150000)
 	H.eq(Pinatas.michi_aplausos.Set, "Memes")
+	-- Temporada Meme 2 + Colección Random (fase 3)
+	H.eq(Pinatas.garrobita_terenga.Rarity, "Epic")
+	H.eq(Pinatas.cochinito_quincena.CandyPerSec, 2515)
+	H.eq(Pinatas.cochinito_quincena.Price, 515150)
+	H.eq(Pinatas.pinovela.Rarity, "Mythic")
+	H.eq(Pinatas.pinovela.Price, 8000000)
+	H.eq(Pinatas.aurazoso.Price, nil)
+	H.eq(Pinatas.abuelita_en_vivo.Price, nil)
+	H.eq(Pinatas.abuelita_en_vivo.CandyPerSec, 135000)
+	H.eq(Pinatas.lic_dos_peces.Set, "Memes2")
+	H.eq(Pinatas.caracol_turbo.Rarity, "Epic")
+	H.eq(Pinatas.aguacaton.Rarity, "Mythic")
+	H.eq(Pinatas.pulpo_dj.Price, nil)
+	H.eq(Pinatas.pulpo_dj.Set, "Random")
+end)
+
+H.check("cada piñata tiene nombre traducido en el catálogo", function()
+	local Catalog = require("../src/ReplicatedStorage/Shared/Locale/Catalog")
+	for id in Pinatas do
+		local e = Catalog.entries["pinata." .. id]
+		H.truthy(e ~= nil, "pinata." .. id)
+		if e then
+			H.truthy(e.es ~= nil and e.en ~= nil and e.pt ~= nil, "pinata." .. id)
+		end
+	end
 end)
 
 H.check("pesos de rareza suman 100", function()

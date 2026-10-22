@@ -307,5 +307,17 @@
    "aguacaton": 14730,
    "aguacaton_Neon": 156
   }
+ },
+ "pulpo_dj": {
+  "name": "pulpo_dj",
+  "size_studs": [
+   4.96,
+   5.74,
+   4.16
+  ],
+  "tris": {
+   "pulpo_dj": 17520,
+   "pulpo_dj_Neon": 1220
+  }
  }
 }

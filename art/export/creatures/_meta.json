@@ -251,12 +251,12 @@
  "aurazoso": {
   "name": "aurazoso",
   "size_studs": [
-   3.91,
-   4.79,
+   4.05,
+   4.95,
    3.4
   ],
   "tris": {
-   "aurazoso": 8256,
+   "aurazoso": 9058,
    "aurazoso_Neon": 2380
   }
  },

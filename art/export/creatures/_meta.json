@@ -13,12 +13,12 @@
  "burrito": {
   "name": "burrito",
   "size_studs": [
-   2.17,
-   3.98,
-   4.5
+   2.28,
+   4.27,
+   4.62
   ],
   "tris": {
-   "burrito": 9848
+   "burrito": 13700
   }
  },
  "michi": {

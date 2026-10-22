@@ -186,5 +186,17 @@
    "garrobita_terenga": 12748,
    "garrobita_terenga_Neon": 144
   }
+ },
+ "fantasmita_bu": {
+  "name": "fantasmita_bu",
+  "size_studs": [
+   4.43,
+   4.24,
+   3.08
+  ],
+  "tris": {
+   "fantasmita_bu": 10244,
+   "fantasmita_bu_Neon": 4072
+  }
  }
 }

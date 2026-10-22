@@ -9,8 +9,10 @@ local ServerStorage = game:GetService("ServerStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Economy = require(Shared:WaitForChild("Config"):WaitForChild("Economy"))
+local FairPlay = require(Shared:WaitForChild("Config"):WaitForChild("FairPlay"))
 local Tuning = require(Shared:WaitForChild("Config"):WaitForChild("Tuning"))
 local BatRules = require(Shared:WaitForChild("Gameplay"):WaitForChild("BatRules"))
+local BatSpam = require(Shared:WaitForChild("Gameplay"):WaitForChild("BatSpam"))
 
 local Server = script.Parent.Parent
 local Records = require(Server:WaitForChild("Data"):WaitForChild("Records"))
@@ -25,6 +27,7 @@ local StealService = require(script.Parent:WaitForChild("StealService"))
 local CombatService = {}
 
 local lastSwing: { [Player]: number } = {}
+local spamState: { [Player]: BatSpam.State } = {}
 local eventService: any = nil
 local template: Tool? = nil
 
@@ -93,7 +96,21 @@ function CombatService.trySwing(player: Player)
 	if root == nil then
 		return
 	end
-	local ready = os.clock() - (lastSwing[player] or 0) >= Economy.Bat.CooldownSec
+	local now = os.clock()
+	local batCfg: BatSpam.Config = {
+		WindowSec = FairPlay.Bat.WindowSec,
+		MaxAttempts = FairPlay.Bat.MaxAttempts,
+		MinIntervalSec = FairPlay.Bat.MinIntervalSec,
+		BurstCount = FairPlay.Bat.BurstCount,
+	}
+	local observed, verdict = BatSpam.observe(spamState[player] or BatSpam.empty(), now, batCfg)
+	spamState[player] = observed
+	if verdict == "spam" then
+		AntiCheatService.reportStrike(player, "bat_spam")
+		lastSwing[player] = now
+		return
+	end
+	local ready = now - (lastSwing[player] or 0) >= Economy.Bat.CooldownSec
 	if not ready then
 		return
 	end
@@ -186,6 +203,7 @@ function CombatService.init(services: { [string]: any })
 	end)
 	Lifecycle.onLeave(10, function(player)
 		lastSwing[player] = nil
+		spamState[player] = nil
 		Movement.forget(player)
 	end)
 end

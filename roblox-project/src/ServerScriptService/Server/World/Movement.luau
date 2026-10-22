@@ -13,6 +13,8 @@ local Movement = {}
 
 local modeOf: { [Player]: string } = {}
 local tokenOf: { [Player]: {} } = {}
+local impulseAt: { [Player]: number } = {}
+local impulseScaleOf: { [Player]: number } = {}
 
 local function desiredSpeed(mode: string): number
 	return MoveMath.speed(mode, Tuning.WalkSpeed, Tuning.CarrySpeed)
@@ -47,9 +49,23 @@ function Movement.mode(player: Player): string
 	return modeOf[player] or "normal"
 end
 
+function Movement.impulseAge(player: Player, now: number): number?
+	local at = impulseAt[player]
+	if at == nil then
+		return nil
+	end
+	return now - at
+end
+
+function Movement.impulseScale(player: Player): number
+	return impulseScaleOf[player] or 1
+end
+
 function Movement.forget(player: Player)
 	modeOf[player] = nil
 	tokenOf[player] = nil
+	impulseAt[player] = nil
+	impulseScaleOf[player] = nil
 end
 
 function Movement.watch(player: Player, character: Model)
@@ -130,6 +146,7 @@ function Movement.knock(player: Player, direction: Vector3, stunSec: number, res
 	end
 	local token = {}
 	tokenOf[player] = token
+	impulseAt[player] = os.clock()
 	Movement.setMode(player, "stun")
 	humanoid.PlatformStand = true
 	humanoid:SetStateEnabled(Enum.HumanoidStateType.GettingUp, false)
@@ -148,6 +165,7 @@ function Movement.knock(player: Player, direction: Vector3, stunSec: number, res
 		flat = Vector3.new(look.X, 0, look.Z)
 	end
 	local scale = if type(pushScale) == "number" and pushScale > 0 then pushScale else 1
+	impulseScaleOf[player] = scale
 	local ix, iy, iz =
 		MoveMath.impulse(flat.X, flat.Z, mass, Tuning.KnockbackHorizontal * scale, Tuning.KnockbackVertical * scale)
 	root:ApplyImpulse(Vector3.new(ix, iy, iz))

@@ -11,6 +11,8 @@ export type Input = {
 	alreadyCarrying: boolean,
 	thiefIsRookie: boolean,
 	victimIsRookie: boolean,
+	-- Liga más alta que la víctima. Lo llena LeagueService; si falta, no bloquea.
+	thiefOutranksVictim: boolean?,
 	cooldownReady: boolean,
 	recentStealsOnVictim: number,
 	maxStealsPerWindow: number,
@@ -34,6 +36,9 @@ function StealRules.evaluate(input: Input): (boolean, string)
 	end
 	if input.thiefIsRookie or input.victimIsRookie then
 		return false, "rookie"
+	end
+	if input.thiefOutranksVictim == true then
+		return false, "tier"
 	end
 	if input.alreadyCarrying then
 		return false, "carrying"

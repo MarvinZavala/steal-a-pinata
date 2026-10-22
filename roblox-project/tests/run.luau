@@ -8,6 +8,7 @@ local specs = {
 	"./pinatas.spec",
 	"./data_service_contract.spec",
 	"./gameplay.spec",
+	"./fairplay.spec",
 	"./economy.spec",
 	"./receipts.spec",
 	"./daily.spec",

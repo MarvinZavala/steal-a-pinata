@@ -102,5 +102,77 @@
    "sombra": 8632,
    "sombra_Neon": 1448
   }
+ },
+ "gemelos_pupusa": {
+  "name": "gemelos_pupusa",
+  "size_studs": [
+   7.75,
+   4.56,
+   1.59
+  ],
+  "tris": {
+   "gemelos_pupusa": 19052,
+   "gemelos_pupusa_Neon": 84
+  }
+ },
+ "fichadito": {
+  "name": "fichadito",
+  "size_studs": [
+   4.4,
+   4.94,
+   2.47
+  ],
+  "tris": {
+   "fichadito": 14964,
+   "fichadito_Neon": 140
+  }
+ },
+ "michi_aplausos": {
+  "name": "michi_aplausos",
+  "size_studs": [
+   2.98,
+   4.06,
+   3.16
+  ],
+  "tris": {
+   "michi_aplausos": 10772,
+   "michi_aplausos_Neon": 96
+  }
+ },
+ "mapache_nel": {
+  "name": "mapache_nel",
+  "size_studs": [
+   4.37,
+   6.02,
+   6.89
+  ],
+  "tris": {
+   "mapache_nel": 12056,
+   "mapache_nel_Neon": 296
+  }
+ },
+ "seis_siete": {
+  "name": "seis_siete",
+  "size_studs": [
+   6.99,
+   3.53,
+   2.03
+  ],
+  "tris": {
+   "seis_siete": 14712,
+   "seis_siete_Neon": 64
+  }
+ },
+ "manzanin_iq": {
+  "name": "manzanin_iq",
+  "size_studs": [
+   4.36,
+   3.83,
+   3.93
+  ],
+  "tris": {
+   "manzanin_iq": 9318,
+   "manzanin_iq_Neon": 480
+  }
  }
 }

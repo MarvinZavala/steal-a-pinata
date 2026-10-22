@@ -48,8 +48,16 @@ PALETTE = [
  ("peach",      "#FFC9A8", .60, 0), ("candy_red",  "#FF2D55", .25, 0),
  ("candy_teal", "#00C2B8", .25, 0), ("candy_violet","#9B4DFF", .25, 0),
  ("chocolate",  "#5A2E1A", .45, 0), ("dark_green", "#0E5C3A", .60, 0),
+ # --- phase 2 (plaza architecture) — appended, existing UV cells unchanged
+ ("wall_rose",  "#F79BBE", .80, 0), ("wall_ochre", "#F9C34E", .80, 0),
+ ("wall_aqua",  "#5AD2CB", .80, 0), ("wall_lilac", "#A88AF2", .80, 0),
+ ("iron",       "#2B2238", .40, .6), ("tile_blue",  "#1F4FC9", .20, 0),
+ ("leaf",       "#3DBB4C", .70, 0), ("leaf_dark",  "#23893A", .75, 0),
+ ("bark",       "#6B4128", .85, 0), ("flame",      "#FF5A1F", .65, 0),
+ ("water",      "#25C7E0", .05, 0), ("trim",       "#FFF4E0", .65, 0),
+ ("roof_tile",  "#C9562E", .70, 0), ("velvet",     "#B0124F", .80, 0),
 ]
-CELL = 16; GRID = 16; TEXSIZE = CELL * GRID
+CELL = 64; GRID = 16; TEXSIZE = CELL * GRID
 PIDX = {n: i for i, (n, *_r) in enumerate(PALETTE)}
 
 def hex2lin(h):

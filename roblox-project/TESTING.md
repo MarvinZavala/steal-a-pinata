@@ -28,13 +28,13 @@ El CI (`.github/workflows/ci.yml`) corre selene, StyLua, los tests y `rojo build
 
 Play (F5). En el output del servidor tienen que aparecer, sin errores rojos:
 
-- `[WP-03] registro: 23 piñatas`
-- `[WP-03] smoke ok: 9 piñatas instanciadas`
+- `[WP-03] registro: 29 piñatas`
+- `[WP-03] smoke ok: 15 piñatas instanciadas`
 - `[WP-02] ProfileStore.Mock`
 - `[WP-10a] anti-cheat escuchando`
 - `[Steal a Piñata] server listo`
 
-En el Explorer, **ServerStorage → Pinatas**: 23 Models. Cada uno tiene `PrimaryPart` = `Root` (en la base), attributes `PinataId`, `Rarity` y `CandyPerSec`. Las que llevan neón (`cohetin`, `toro`, `torogoz`, `sombra`, `renito`, `izalco`, `pixelin`) tienen una parte `*_Neon` con Material Neon. Mientras el mesh siga en `rbxassetid://0` (`Shared/Config/Assets.luau`), el cuerpo es un Part con attribute `MeshPlaceholder`. Cuando subas el FBX, reemplazá ese id y Rojo + Play vuelven a armar un MeshPart. Si ya importaste el modelo con el nombre del id (`toro`, etc.), el registry lo reutiliza y solo completa attributes, Root y el material Neon.
+En el Explorer, **ServerStorage → Pinatas**: 29 Models. Cada uno tiene `PrimaryPart` = `Root` (en la base), attributes `PinataId`, `Rarity` y `CandyPerSec`. Las que llevan neón (`cohetin`, `toro`, `torogoz`, `sombra`, `renito`, `izalco`, `pixelin`, y las 6 de Temporada Meme 1) tienen una parte `*_Neon` con Material Neon. Mientras el mesh siga en `rbxassetid://0` (`Shared/Config/Assets.luau`), el cuerpo es un Part con attribute `MeshPlaceholder`. Cuando subas el FBX, reemplazá ese id y Rojo + Play vuelven a armar un MeshPart. Si ya importaste el modelo con el nombre del id (`toro`, etc.), el registry lo reutiliza y solo completa attributes, Root y el material Neon.
 
 ## WP-01
 
@@ -70,7 +70,7 @@ Si la migración rechaza el perfil, el jugador es kickeado y **no** se reemplaza
 
 ## WP-03 — registro
 
-El smoke del output instancia las 9 modeladas (estrellita, burrito, michi, cohetin, dragon, toro, torogoz, sombra, renito) y revisa PrimaryPart, `PinataId`, `Rarity` y `_Neon`. Los tests de `lune` fijan las 23 entradas contra `Pinatas.luau` y que cada una tenga un mesh id en `Assets.luau`.
+El smoke del output instancia las 15 modeladas (estrellita, burrito, michi, cohetin, dragon, toro, torogoz, sombra, renito, más michi_aplausos, seis_siete, manzanin_iq, mapache_nel, fichadito y gemelos_pupusa) y revisa PrimaryPart, `PinataId`, `Rarity` y `_Neon`. Los tests de `lune` fijan las 29 entradas contra `Pinatas.luau` y que cada una tenga un mesh id en `Assets.luau`.
 
 ## WP-10a — anti-cheat
 

@@ -219,6 +219,65 @@ local Pinatas: { [string]: PinataDef } = {
 		Set = "Christmas",
 		Modeled = true,
 	},
+	-- Temporada Meme 1 (GDD §5, plan/TRENDS_MEMES.md). Bloque aditivo: no borra ni reordena la fase 1.
+	-- Curva de main: Legendaria entre Cadejo (2,000 / 450,000) y Toro (3,500 / 900,000),
+	-- salvo Seis-Siete (el chiste 6,767 / 1,676,767). Mítica entre Izalco y Torogoz Cósmico.
+	-- Secretas sin precio, como Sombra y Pixelín. Mesh ids en Assets.luau (rbxassetid://0).
+	-- TODO: subir el FBX de art/export/creatures/<id>.fbx y reemplazar el placeholder.
+	michi_aplausos = {
+		Name = "Michi Aplausos",
+		Rarity = "Legendary",
+		CandyPerSec = 2750,
+		Price = 650000,
+		Currency = "Dulces",
+		Set = "Memes",
+		Modeled = true,
+	},
+	seis_siete = {
+		Name = "Seis-Siete",
+		Rarity = "Legendary",
+		CandyPerSec = 6767,
+		Price = 1676767,
+		Currency = "Dulces",
+		Set = "Memes",
+		Modeled = true,
+	},
+	manzanin_iq = {
+		Name = "Manzanín IQ",
+		Rarity = "Mythic",
+		CandyPerSec = 13000,
+		Price = 5200000,
+		Currency = "Dulces",
+		Set = "Memes",
+		Modeled = true,
+	},
+	mapache_nel = {
+		Name = "Mapache Nel",
+		Rarity = "Mythic",
+		CandyPerSec = 16500,
+		Price = 7000000,
+		Currency = "Dulces",
+		Set = "Memes",
+		Modeled = true,
+	},
+	fichadito = {
+		Name = "Fichadito",
+		Rarity = "Secret",
+		CandyPerSec = 100000,
+		Price = nil,
+		Currency = "Dulces",
+		Set = "Memes",
+		Modeled = true,
+	},
+	gemelos_pupusa = {
+		Name = "Los Gemelos Pupusa",
+		Rarity = "Secret",
+		CandyPerSec = 150000,
+		Price = nil,
+		Currency = "Dulces",
+		Set = "Memes",
+		Modeled = true,
+	},
 }
 
 return Pinatas

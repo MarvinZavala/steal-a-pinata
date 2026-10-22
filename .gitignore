@@ -14,5 +14,3 @@ roblox-project/sourcemap.json
 .DS_Store
 Thumbs.db
 .vscode/
-# temp renders
-art/renders/*_raw.png

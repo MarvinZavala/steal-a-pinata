@@ -265,16 +265,16 @@ function DataService.trySpend(player: Player, currency: string, amount: number):
 	return Wallet.trySpend(profile.Data, currency, amount, Security.MaxCurrency)
 end
 
-function DataService.grantPinata(player: Player, pinataId: string, mutation: string?): boolean
+function DataService.grantPinata(player: Player, pinataId: string, mutation: string?): (boolean, string?)
 	if not RunService:IsServer() then
-		return false
+		return false, nil
 	end
 	local profile = activeProfile(player)
 	if profile == nil or pinataAllowed[pinataId] ~= true then
-		return false
+		return false, nil
 	end
 	local instanceId = HttpService:GenerateGUID(false)
-	return Wallet.grantPinata(
+	local granted = Wallet.grantPinata(
 		profile.Data,
 		pinataId,
 		mutation,
@@ -283,6 +283,30 @@ function DataService.grantPinata(player: Player, pinataId: string, mutation: str
 		Security.MaxInventory,
 		pinataAllowed
 	)
+	if not granted then
+		return false, nil
+	end
+	return true, instanceId
+end
+
+function DataService.profile(player: Player): any?
+	local profile = activeProfile(player)
+	if profile == nil then
+		return nil
+	end
+	return profile.Data
+end
+
+function DataService.movePinata(fromPlayer: Player, toPlayer: Player, instanceId: string): boolean
+	if not RunService:IsServer() then
+		return false
+	end
+	local fromProfile = activeProfile(fromPlayer)
+	local toProfile = activeProfile(toPlayer)
+	if fromProfile == nil or toProfile == nil then
+		return false
+	end
+	return Wallet.movePinata(fromProfile.Data, toProfile.Data, instanceId, Security.MaxInventory)
 end
 
 function DataService.markPurchase(player: Player, purchaseId: string): boolean

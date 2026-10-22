@@ -3,6 +3,7 @@
 
 local ContextActionService = game:GetService("ContextActionService")
 local GuiService = game:GetService("GuiService")
+local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -294,7 +295,8 @@ local function refresh()
 	local cap = math.max(1, rate * tiers[tier])
 	local stored = num(s.vaultStored, 0)
 	vaultFill.Size = UDim2.new(math.clamp(stored / cap, 0, 1), 0, 1, 0)
-	collectWrap.Visible = stored >= 1
+	-- En la plaza el pad amarillo es el único cobro. El botón queda para el teatro offline.
+	collectWrap.Visible = stored >= 1 and not UIBridge.isAuthoritative()
 	collectLabel.Text = Locale.t("hud.collect") .. " " .. Format(stored)
 
 	local fiesta = num(s.fiestaRemaining, -1)
@@ -650,6 +652,41 @@ function HUDController.start()
 	syncPad(UserInputService:GetLastInputType())
 	UserInputService.LastInputTypeChanged:Connect(syncPad)
 	GuiService.AutoSelectGuiEnabled = true
+
+	local player = Players.LocalPlayer
+	local seenTool: { [Tool]: boolean } = {}
+	local function watchTool(inst: Instance)
+		if not inst:IsA("Tool") or inst.Name ~= "Bate" or seenTool[inst] then
+			return
+		end
+		seenTool[inst] = true
+		inst.Activated:Connect(swing)
+	end
+	local function watchBag(bag: Instance)
+		bag.ChildAdded:Connect(watchTool)
+		for _, child in bag:GetChildren() do
+			watchTool(child)
+		end
+	end
+	local backpack = player:FindFirstChild("Backpack")
+	if backpack then
+		watchBag(backpack)
+	end
+	player.ChildAdded:Connect(function(child)
+		if child.Name == "Backpack" then
+			watchBag(child)
+		end
+	end)
+	local function watchCharacter(character: Model)
+		character.ChildAdded:Connect(watchTool)
+		for _, child in character:GetChildren() do
+			watchTool(child)
+		end
+	end
+	if player.Character then
+		watchCharacter(player.Character)
+	end
+	player.CharacterAdded:Connect(watchCharacter)
 end
 
 return HUDController

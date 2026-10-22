@@ -292,6 +292,11 @@ local entries: { [string]: Entry } = {
 	["ftue.guide_arrow"] = { es = "Seguí la flecha", en = "Follow the arrow", pt = "Siga a seta" },
 	["ftue.guide_thief"] = { es = "¡Te lo está robando!", en = "They're taking it!", pt = "Estão roubando!" },
 	["ftue.guide_income"] = { es = "Ya está produciendo", en = "It's making Candy", pt = "Já está produzindo" },
+	["ftue.pad"] = {
+		es = "Pisá el pad amarillo",
+		en = "Step on the yellow pad",
+		pt = "Pise o pad amarelo",
+	},
 	["ftue.guide_party"] = { es = "La Fiesta se acerca", en = "The Party is coming", pt = "A Festa está chegando" },
 
 	["preview.title"] = { es = "Preview", en = "Preview", pt = "Preview" },

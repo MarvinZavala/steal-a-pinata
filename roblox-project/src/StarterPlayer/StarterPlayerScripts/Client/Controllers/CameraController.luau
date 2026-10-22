@@ -40,14 +40,37 @@ function CameraController.cancel()
 	savedFov = nil
 end
 
+local function worldPoint(inst: Instance?): Vector3?
+	if inst == nil then
+		return nil
+	end
+	if inst:IsA("BasePart") then
+		return inst.Position
+	end
+	if inst:IsA("Model") then
+		return inst:GetPivot().Position
+	end
+	return nil
+end
+
+local function ownBasePoint(): Vector3?
+	local userId = Players.LocalPlayer.UserId
+	for _, inst in CollectionService:GetTagged("FTUEBase") do
+		if inst:GetAttribute("OwnerUserId") == userId then
+			return worldPoint(inst)
+		end
+	end
+	return nil
+end
+
 function CameraController.swoop()
 	local cam = camera()
 	if not cam then
 		return
 	end
-	local fountain = CollectionService:GetTagged("FTUEFountain")[1]
-	local base = CollectionService:GetTagged("FTUEBase")[1]
-	if not fountain or not fountain:IsA("BasePart") or not base or not base:IsA("BasePart") then
+	local fountainPos = worldPoint(CollectionService:GetTagged("FTUEFountain")[1])
+	local basePos = ownBasePoint()
+	if fountainPos == nil or basePos == nil then
 		return
 	end
 	local settings = UIState.get().settings
@@ -58,8 +81,8 @@ function CameraController.swoop()
 	local id = token
 	remember(cam)
 	cam.CameraType = Enum.CameraType.Scriptable
-	cam.CFrame = CFrame.lookAt(fountain.Position + Vector3.new(0, 18, 22), fountain.Position)
-	local goal = CFrame.lookAt(base.Position + Vector3.new(0, 12, 18), base.Position + Vector3.new(0, 2, 0))
+	cam.CFrame = CFrame.lookAt(fountainPos + Vector3.new(0, 18, 22), fountainPos)
+	local goal = CFrame.lookAt(basePos + Vector3.new(0, 12, 18), basePos + Vector3.new(0, 2, 0))
 	UIKit.tween(cam, 2.4, { CFrame = goal }, Enum.EasingStyle.Quad)
 	task.delay(2.7, function()
 		if id ~= token then
@@ -113,7 +136,7 @@ function CameraController.start()
 	-- La picada y el slow-mo los dispara el FTUE. El BONK del servidor sacude acá.
 	local UIStateModule = UIState
 	UIStateModule.onFeedback(function(kind)
-		if kind == "BONK" then
+		if kind == "BONK" or kind == "LAND" then
 			CameraController.shake()
 		end
 	end)

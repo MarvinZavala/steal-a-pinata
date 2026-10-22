@@ -10,6 +10,7 @@ local UIRoot = require(script.Parent.Parent.UI.UIRoot)
 local UIState = require(script.Parent.Parent.UI.UIState)
 
 local host: Frame
+local flash: Frame
 local alive = 0
 
 local VFXController = {}
@@ -48,8 +49,17 @@ function VFXController.confetti(count: number, slow: boolean)
 	end
 end
 
+local function hitFlash()
+	if not flash then
+		return
+	end
+	flash.BackgroundTransparency = 0.55
+	UIKit.tween(flash, 0.25, { BackgroundTransparency = 1 })
+end
+
 function VFXController.bonk()
 	SoundBus.play("bonk")
+	hitFlash()
 	if not host then
 		return
 	end
@@ -83,6 +93,15 @@ function VFXController.start()
 	host.ZIndex = 3
 	host.Active = false
 	host.Parent = UIRoot.layer("Ftue")
+	flash = Instance.new("Frame")
+	flash.Name = "HitFlash"
+	flash.BackgroundColor3 = Theme.color.sun_yellow
+	flash.BackgroundTransparency = 1
+	flash.BorderSizePixel = 0
+	flash.Size = UDim2.fromScale(1, 1)
+	flash.Active = false
+	flash.ZIndex = 2
+	flash.Parent = host
 	UIState.onFeedback(function(kind)
 		if kind == "BONK" then
 			VFXController.bonk()
@@ -90,6 +109,9 @@ function VFXController.start()
 		elseif kind == "COLLECT" then
 			SoundBus.play("candy")
 			VFXController.confetti(12, false)
+		elseif kind == "STEAL" or kind == "DELIVER" then
+			SoundBus.play("pop")
+			VFXController.confetti(16, false)
 		elseif kind == "PURCHASE" or kind == "PURCHASED" then
 			SoundBus.play("pop")
 		end

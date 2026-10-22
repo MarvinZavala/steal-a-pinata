@@ -46,7 +46,7 @@ local Security = {
 		"7_first_collect",
 		"8_first_purchase",
 	},
-	FtueActions = { "claim", "bonk", "collect", "buy", "complete" },
+	FtueActions = { "claim", "bonk", "collect", "buy", "complete", "skip" },
 	Locales = { "auto", "es", "en", "pt" },
 }
 

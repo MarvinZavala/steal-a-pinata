@@ -12,7 +12,9 @@ local Economy = {
 	ReFiestaMultiplierStep = 0.5,
 	Walk = { Normal = 16, Carrying = 11 },
 	Buy = { MaxDistance = 12 }, -- GDD §3.1, prompt de la Pasarela
-	Conveyor = { SpawnEverySec = 4, CrossSeconds = 40, LuckBoostMultiplier = 2 },
+	Conveyor = { SpawnEverySec = 4, CrossSeconds = 40, LuckBoostMultiplier = 2, AnnounceLeadSec = 5 },
+	Return = { ProtectSec = 3, WalkSpeed = 14 },
+	StealPromptHoldSec = 0.6,
 	Lock = {
 		DurationSec = 30,
 		VipBonusSec = 10,
@@ -21,7 +23,7 @@ local Economy = {
 		CooldownSec = 60,
 		AfterRobbedFreeSec = 20,
 	},
-	Steal = { MaxDistance = 8, CooldownSec = 1.5, MaxPerVictimPer5Min = 2 },
+	Steal = { MaxDistance = 8, CooldownSec = 1.5, MaxPerVictimPer5Min = 2, WindowSec = 5 * 60 },
 	Bat = { CooldownSec = 0.8, MaxDistance = 9, MaxAngleDeg = 70, StunSec = 1.5 },
 	RookieShieldSec = 15 * 60,
 	Fiesta = { EverySec = 30 * 60, DurationSec = 180 },

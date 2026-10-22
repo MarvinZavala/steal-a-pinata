@@ -104,6 +104,7 @@ function Cinematic.mount()
 	UIKit.stroke(sheet, Theme.color.white, 4)
 
 	local sky = Instance.new("Frame")
+	sky.Name = "Sky"
 	sky.Size = UDim2.fromScale(1, 1)
 	sky.BorderSizePixel = 0
 	sky.BackgroundColor3 = Theme.color.turquoise
@@ -297,6 +298,27 @@ function Cinematic.setVisible(on: boolean)
 		Cinematic.layout()
 	else
 		UIGuide.pointAt(nil)
+		UIGuide.pointWorld(nil)
+	end
+end
+
+-- En la plaza real el teatro no tapa el mundo: quedan el texto y la flecha.
+function Cinematic.setLive(on: boolean)
+	if not sheet then
+		return
+	end
+	local sky = sheet:FindFirstChild("Sky")
+	if sky and sky:IsA("GuiObject") then
+		sky.Visible = not on
+	end
+	if scene then
+		scene.Visible = not on
+	end
+	sheet.BackgroundTransparency = if on then 1 else 0
+	sheet.Active = false
+	local stroke = sheet:FindFirstChildOfClass("UIStroke")
+	if stroke then
+		stroke.Enabled = not on
 	end
 end
 

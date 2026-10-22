@@ -136,6 +136,17 @@ function UIBridge.start()
 		hook("StateChanged", function(patch)
 			authoritative = true
 			income = false
+			if typeof(patch) == "table" then
+				if typeof(patch.vault) == "number" and typeof(patch.vaultStored) ~= "number" then
+					patch.vaultStored = patch.vault
+				end
+				if typeof(patch.perSec) == "number" and typeof(patch.candyPerSec) ~= "number" then
+					patch.candyPerSec = patch.perSec
+				end
+				if typeof(patch.rookieLeft) == "number" and typeof(patch.rookieShieldRemaining) ~= "number" then
+					patch.rookieShieldRemaining = patch.rookieLeft
+				end
+			end
 			UIState.patch(patch)
 			applySettingsPatch(patch)
 		end)

@@ -168,9 +168,29 @@ def fantasmita_bu():
         P.append(slab(f"lf{k}", [(0, 0), (.15, .06), (.32, 0), (.15, -.06)], thick=.04, col="leaf", bevel=.01,
                       matrix=Matrix.Translation(Lm @ V(-.6 + .6 * k, .05, H - .15)) @ Matrix.Rotation(math.radians(60 + 30 * k), 4, 'Y')))
     # speech burst '¡BÚ!' (neon)
-    t = text_mesh("bu", "¡BÚ!", size=.62, extrude=.06, col="neon_pink", rot=(90, 0, -8), bevel=.01, res=4)
+    t = text_mesh("bu", "¡BÚ!", size=.62, extrude=.06, col="neon_pink", rot=(90, 0, -8), bevel=.01, res=2)
     t.location = (1.55, -.9, 3.65); G.append(t)
     G += [star_prism(f"bs{k}", 4, .14, .04, .04, loc=loc, rot=(90, 0, 0), col="neon_gold", bevel=0) for k, loc in enumerate(((.75, -.9, 3.85), (2.45, -.9, 3.3)))]
+    # detail pass: papel picado garland across the body, votive candles + marigold petals at its feet, sugar-skull charm
+    gp = [Lm @ V(-1.2, -.95, 1.15), Lm @ V(-.4, -1.32, .85), Lm @ V(.4, -1.32, .85), Lm @ V(1.2, -.95, 1.15)]
+    P.append(tube("garl", gp, radius=.02, col="ink_soft", seg=4))
+    for k in range(6):
+        t = (k + .5) / 6; i = min(int(t * 3), 2); u = t * 3 - i
+        p = gp[i].lerp(gp[i + 1], u) + V(0, -.02, -.02)
+        flag = [(-.13, 0), (.13, 0), (.13, -.24), (.06, -.3), (0, -.24), (-.06, -.3), (-.13, -.24)]
+        P.append(upright(f"pp{k}", flag, .02, ("fiesta_pink", "sun_yellow", "turquoise", "lime", "grape", "tangerine")[k], p, rz=-6 + 4 * k, bevel=0))
+    for k, (x, y) in enumerate(((-1.55, -.75), (1.6, -.55))):
+        P.append(cyl(f"cand{k}", .13, .13, .3, loc=(x, y, 0), col="cream", seg=14, bevel=.02))
+        P.append(cyl(f"wick{k}", .015, .015, .06, loc=(x, y, .3), col="ink", seg=4))
+        G.append(sphere(f"cfl{k}", (.06, .06, .13), loc=(x, y, .43), col="neon_gold", seg=8, ring=6))
+    rnd = random.Random(431)
+    for k in range(9):
+        P.append(sphere(f"pet{k}", (.09, .07, .025), loc=(rnd.uniform(-1.7, 1.7), rnd.uniform(-1.3, -.6), .02), rot=(0, 0, rnd.uniform(0, 180)), col="mango" if k % 2 else "tangerine", seg=8, ring=4))
+    sk = Lm @ V(.55, -1.28, 1.35)
+    P.append(sphere("skull", (.17, .1, .17), loc=sk, col="eye_white", seg=12, ring=8))
+    for s_ in (-1, 1):
+        P.append(sphere(f"skeye{s_}", (.05, .02, .05), loc=sk + V(.06 * s_, -.09, .03), col="fiesta_pink", seg=8, ring=5))
+    P.append(sphere("skn", (.025, .015, .02), loc=sk + V(0, -.1, -.04), col="ink", seg=6, ring=4))
     return P + G, {"glow": G}
 
 # ======================================================================= 3. COCHINITO QUINCENA (legendary)
@@ -227,6 +247,14 @@ def cochinito_quincena():
     P += sign_board("cal", [("15", .62, -.12)], .95, .95, cx + V(0, -.02, 2.05), board="snow", ink="candy_red", rim="candy_red")
     P.append(box("calhead", (1.07, .16, .25), loc=cx + V(0, -.04, 2.6), col="candy_red", bevel=.04))
     t = text_mesh("calt", "QUINCENA", size=.13, extrude=.02, col="eye_white", rot=(90, 0, 0), bevel=0, res=3); t.location = cx + V(0, -.14, 2.6); P.append(t)
+    # detail pass: the punchline - after payday, moths (polillas) fly out of the slot
+    for k, (p, rz) in enumerate(((V(1.35, .1, 3.55), 20), (-V(1.25, -.45, -3.25), -25))):
+        P.append(sphere(f"moth{k}", (.07, .07, .16), loc=p, rot=(0, 70, rz), col="stone", seg=10, ring=6))
+        for s_ in (-1, 1):
+            w = [(0, 0), (.28, .12), (.32, -.05), (.12, -.14)]
+            P.append(slab(f"mw{k}{s_}", [(x * s_, y) for x, y in w], thick=.02, col="cream", bevel=0,
+                          matrix=Matrix.Translation(p) @ Matrix.Rotation(math.radians(rz), 4, 'Z') @ Matrix.Rotation(math.radians(70 + 15 * s_), 4, 'X')))
+        P.append(tube(f"mant{k}", [p + V(0, -.05, .12), p + V(.05, -.12, .25)], radius=.01, col="ink", seg=4))
     return P + G, {"glow": G}
 
 # ======================================================================= 4. LIC. DOS PECES (legendary)
@@ -297,6 +325,13 @@ def lic_dos_peces():
     G.append(slab("check", [(-.1, 0), (0, -.1), (.22, .16), (.16, .21), (0, .04), (-.05, .08)], thick=.04, col="neon_green", bevel=0,
                   matrix=Matrix.Translation(bc + V(.65, -.07, .0)) @ Matrix.Rotation(math.radians(90), 4, 'X') @ Matrix.Scale(1.4, 4)))
     t = text_mesh("bth", "DOS PECES", size=.27, extrude=.02, col="ink_soft", rot=(90, 0, 0), bevel=0, res=3); t.location = bc + V(0, -.06, .38); P.append(t)
+    # detail pass: pocket squares, gold pen, case files under the briefcase, lapel pins
+    for x0, col in ((-1.35, "sun_yellow"), (1.35, "fiesta_pink")):
+        P.append(upright(f"pocket{x0}", [(-.1, 0), (.1, 0), (.07, .14), (0, .08), (-.07, .14)], .03, col, (x0 + .38, -.72, 1.25), rz=8, bevel=.01))
+        P.append(sphere(f"pin{x0}", (.05, .03, .05), loc=(x0 - .38, -.74, 1.32), col="gold", seg=8, ring=5))
+    P.append(cyl("pen", .025, .025, .35, loc=(1.62, -.66, 1.18), rot=(0, 15, 0), col="gold", seg=6))
+    for k in range(3):
+        P.append(box(f"file{k}", (.62, .45, .04), loc=(2.3, -.3, .63 + .045 * k - .4), rot=(0, 0, 6 * k - 6), col=("snow", "sun_yellow", "snow")[k], bevel=.01))
     return P + G, {"glow": G}
 
 # ======================================================================= 5. PINOVELA (mythic)
@@ -490,6 +525,21 @@ def aurazoso():
         G.append(wisp)
     P.append(torus("aurafloor", 1.6, .035, col="neon_cyan", seg=40, mseg=4)); G.append(P.pop()); G[-1].location = (0, .1, .06)
     t = text_mesh("auratxt", "+1000 AURA", size=.5, extrude=.06, col="neon_cyan", rot=(90, 0, 6), bevel=.0, res=2); t.location = (0, -.4, 4.55); G.append(t)
+    # detail pass: grass tufts round the log, a mushroom and a sprout on the log, chill drink on the log
+    rnd = random.Random(851)
+    for k in range(10):
+        x = rnd.uniform(-1.8, 1.8); y = rnd.choice((-.6, .85)) + rnd.uniform(-.15, .15)
+        for j in range(3):
+            P.append(cyl(f"gr{k}{j}", .05, .005, .25 + .08 * j, loc=(x + .05 * (j - 1), y, 0), rot=(12 * (j - 1), 15 * (j - 1), 0), col="grass" if j % 2 else "grass_dark", seg=4, base=False))
+    mc = V(1.25, .25, 1.05)
+    P.append(cyl("mstem", .06, .07, .18, loc=mc, col="cream", seg=8))
+    P.append(sphere("mcap", (.16, .16, .09), loc=mc + V(0, 0, .2), col="candy_red", seg=12, ring=6))
+    for j in range(3):
+        P.append(sphere(f"mdot{j}", (.03, .03, .015), loc=mc + V(-.07 + .07 * j, -.08, .26), col="eye_white", seg=6, ring=4))
+    P.append(ribbon("sprout", [V(-1.3, .1, 1.08), V(-1.32, .05, 1.3), V(-1.2, 0, 1.42)], width=.1, normal=(0, -1, 0), col="leaf", thick=.03))
+    cup = V(-.95, -.15, 1.1)
+    P.append(cyl("coco", .14, .16, .26, loc=cup, col="leaf", seg=12, bevel=.03))
+    P.append(tube("straw", [cup + V(0, 0, .2), cup + V(.05, -.03, .45), cup + V(.14, -.05, .5)], radius=.02, col="fiesta_pink", seg=5))
     return P + G, {"glow": G}
 
 # ======================================================================= 8. ABUELITA EN VIVO (secret)

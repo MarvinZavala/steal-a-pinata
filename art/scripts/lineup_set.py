@@ -11,7 +11,7 @@ SETS = {
         ("cochinito_quincena", "Cochinito Quincena", "LEGENDARIO"), ("lic_dos_peces", "Lic. Dos Peces", "LEGENDARIO"),
         ("pinovela", "Piñovela", "MÍTICO"), ("chancla_teledirigida", "La Chancla Teledirigida", "MÍTICO"),
         ("aurazoso", "Aurazoso", "SECRETO"), ("abuelita_en_vivo", "Abuelita en Vivo", "SECRETO")],
-        rot={"cochinito_quincena": -35, "chancla_teledirigida": 10, "lic_dos_peces": 0}),
+        rot={"cochinito_quincena": -35, "chancla_teledirigida": 0, "lic_dos_peces": 0}),
     "random": dict(out="lineup_random", res=(2600, 1150), bg=("#0F6E8C", "#43D9B8"), order=[
         ("caracol_turbo", "Caracol Turbo", "ÉPICO"), ("cactus_abrazos", "Cactus Abrazos", "LEGENDARIO"),
         ("aguacaton", "Aguacatón", "MÍTICO"), ("pulpo_dj", "Pulpo DJ", "SECRETO")],

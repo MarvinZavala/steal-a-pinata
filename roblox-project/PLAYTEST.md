@@ -13,7 +13,7 @@ En Studio el perfil vacío arranca con **2500 Dulces** (`Tuning.PlaytestCandy`) 
 ## WP-04 — Bases
 
 - Entrá: te asigna una base libre (hay 6) y aparecés adentro, con el bate equipado.
-- En el piso hay 8 pedestales; los primeros 4 están claros y el resto oscuros (todavía no se compran: eso es WP-09).
+- En el piso hay 12 pads: 8 abajo y 4 en un segundo piso. Los primeros 4 están claros. El resto se abre en la Dulcería (hasta 8; el pase suma 2; Re-Fiesta 3 llega a 12).
 - Comprá algo en la Pasarela (abajo). Camina solo al pedestal. El letrero de la Dulcería sube `+N/s` cada segundo.
 - Pisá la plataforma amarilla de la Dulcería estando dentro de tu base: los Dulces pasan a tu contador (arriba, y en la leaderboard `Dulces`).
 - El tope es 5 min de producción (`Economy.VaultCapSeconds`). Cuando se llena, el número deja de crecer hasta que juntás.
@@ -64,6 +64,30 @@ Hacé lo mismo con el otro jugador. Si no, `RequestSteal` responde `rookie`.
 - Con el láser prendido, otro jugador no cruza (grupo de colisión; el dueño sí sale) y `RequestSteal` responde `locked`.
 - Al irte, el láser se apaga. El cooldown queda en el perfil.
 
+## WP-09, WP-11, WP-14 y WP-15
+
+`rojo serve`, Play. Los kioscos de la plaza (DULCERÍA, BATES, CAJAS, VIP) abren la tienda. Mientras los Id del config sigan en 0, un botón de Robux dice **Pronto** y no llama a `MarketplaceService`.
+
+- Dulcería: comprá un pedestal (el 5º sale 500). El pad se aclara. Subí el tope. La Re-Fiesta pide la rareza y los Dulces del nivel (`Economy.refiestaOffer`). Con una Épica y 500.000, la primera reinicia Dulces y piñatas normales y deja Secretas y de Evento.
+- Cajas: con 3 de la misma especie, fusioná. Sale 1 Dorada (a veces Arcoíris).
+- Bates: la mejora de Dulces empuja más. El pase de skins no cambia el golpe.
+- VIP: los pases y productos muestran el precio de `Config/Monetization.luau`. Servidor privado es una nota (50 R$/mes, se configura en la página del juego). Suscripción y video quedan en **Pronto** hasta tener id y API.
+- FIESTA: el chip cuenta hasta el próximo bloque de 30 min UTC. En esos 3 min llueven piñatas; los últimos 40 s es la Gigante en la fuente. Batealas. El panel dice tus golpes.
+- HOY: reclamá la racha. La segunda vez en el mismo día UTC no da nada. Las misiones usan compras, batazos, Dulces de Fiesta, robos y recolecciones de ese día.
+- Para saltar la intro: attribute `SkipFTUE = true` en `ReplicatedStorage`. El perfil de Studio sigue regalando 2500 Dulces una vez.
+
+Recibo de prueba (consola del **servidor**, dos veces con el mismo id: la segunda no suma Dulces):
+
+```lua
+local M = require(game.ServerScriptService.Server.Services.MonetizationService)
+local p = game.Players:GetPlayers()[1]
+print(M.debugGrant(p, "CandyPackS", "studio-1"))
+print(M.debugGrant(p, "CandyPackS", "studio-1"))
+M.debugOwnPass(p, "Vip", true)
+```
+
+`debugGrant` y `debugOwnPass` no hacen nada fuera de Studio. Un `ProcessReceipt` con Id 0 queda en `NotProcessedYet` a propósito.
+
 ## Pruebas sin Studio
 
 Desde `roblox-project/`, con [Lune](https://github.com/lune-org/lune):
@@ -72,4 +96,4 @@ Desde `roblox-project/`, con [Lune](https://github.com/lune-org/lune):
 lune run tests/run.luau
 ```
 
-`lune run tests/run` corre las suites de S1 y `gameplay.spec` (reglas, migración de `VaultCandy` y `Wallet.movePinata`). `selene src tests`, `stylua --check src tests` y `rojo build` son el CI.
+`lune run tests/run` corre las suites de S1, el gameplay y las de economía, recibos y racha. `lune run tests/economy_sim.luau` imprime la proyección (no falla el CI). `selene src tests`, `stylua --check src tests` y `rojo build` son el CI.

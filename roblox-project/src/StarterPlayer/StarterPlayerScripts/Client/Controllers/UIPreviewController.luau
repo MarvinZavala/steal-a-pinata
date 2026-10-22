@@ -103,6 +103,7 @@ local function blank(): { [string]: any }
 		settings = copySettings(),
 		ftueCompleted = false,
 		multiplier = 1,
+		batUpgrade = 0,
 	}
 end
 

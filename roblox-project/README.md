@@ -59,12 +59,14 @@ src/
 | Pieza | Estado |
 |---|---|
 | Tooling (Rojo 7, Wally, Selene, StyLua, Lune, CI) | ✅ WP-01 |
-| DataService + ProfileStore (esquema v2, migraciones, mock, autosave, EndSession) | ✅ WP-02. El dupe de 2 servers se prueba en Studio con API Services ([TESTING.md](TESTING.md)) |
+| DataService + ProfileStore (esquema v3, migraciones, mock, autosave, EndSession) | ✅ WP-02. El dupe de 2 servers se prueba en Studio con API Services ([TESTING.md](TESTING.md)) |
 | Registro de 23 piñatas, mesh ids placeholder y modelos en ServerStorage | ✅ WP-03. Los FBX se importan aparte; `rbxassetid://0` hasta subirlos |
 | Anti-cheat (payload, leaky bucket, honeypots, `authorize`) | ✅ WP-10a. Robo, bate, compra y candado lo usan |
 | WP-04 a WP-08 (bases, Pasarela, robo, bate, candado) + gravedad | ✅ ver `PLAYTEST.md` |
 | Config de rarezas, economía, monetización y eventos | ✅ datos de diseño (balancear) |
-| Servicios de economía, tienda, FTUE, fiesta, diarios, ligas | ⏳ stubs con TODO(WP-xx) |
+| Economía, fusión, Re-Fiesta, Fiesta y diarios | ✅ WP-09, WP-14, WP-15. La simulación está en `ECONOMY_SIM.md` |
+| Monetización (pases, `ProcessReceipt`, kiosco VIP) | ✅ WP-11. Los Id siguen en 0 hasta el Creator Dashboard |
+| Ligas y escudo de novato entre servers | ⏳ WP-16 |
 | IDs de pases, productos, texturas y mallas | ⏳ en 0 hasta crearlos en el Creator Dashboard |
 
 Cómo probar el loop en Studio: `PLAYTEST.md`. El perfil y el anti-cheat que usa el loop: `INTEGRATION.md`. Por qué la gravedad y el salto están así: `PHYSICS.md`. Semana 1: `TESTING.md`.

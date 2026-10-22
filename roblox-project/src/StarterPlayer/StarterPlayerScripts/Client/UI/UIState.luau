@@ -35,6 +35,22 @@ local state: { [string]: any } = {
 	},
 	ftueCompleted = false,
 	multiplier = 1,
+	batUpgrade = 0,
+	fiestaPhase = "idle",
+	fiestaLeft = 0,
+	giantHp = 0,
+	giantMax = 0,
+	myFiestaHits = 0,
+	daily = {
+		streak = 0,
+		cycleDay = 1,
+		claimed = false,
+		canClaim = false,
+		rewardCandy = 0,
+		rewardPinata = "",
+		quests = {},
+		subscribed = false,
+	},
 }
 
 local listeners: { ({ [string]: any }) -> () } = {}
@@ -56,6 +72,11 @@ local NUMBER_KEYS = {
 	"fiestaRemaining",
 	"reFiestas",
 	"multiplier",
+	"batUpgrade",
+	"fiestaLeft",
+	"giantHp",
+	"giantMax",
+	"myFiestaHits",
 }
 
 local function emit()
@@ -185,6 +206,12 @@ function UIState.patch(partial: any)
 	end
 	if typeof(partial.batSkin) == "string" then
 		state.batSkin = partial.batSkin
+	end
+	if typeof(partial.fiestaPhase) == "string" then
+		state.fiestaPhase = partial.fiestaPhase
+	end
+	if typeof(partial.daily) == "table" then
+		state.daily = partial.daily
 	end
 	if typeof(partial.ftueCompleted) == "boolean" then
 		state.ftueCompleted = partial.ftueCompleted

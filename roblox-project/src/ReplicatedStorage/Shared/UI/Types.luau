@@ -60,6 +60,7 @@ export type GameState = {
 	settings: Settings,
 	ftueCompleted: boolean,
 	multiplier: number,
+	batUpgrade: number,
 }
 
 export type ShopEntry = {

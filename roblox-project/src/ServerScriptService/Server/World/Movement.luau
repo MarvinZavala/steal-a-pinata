@@ -118,7 +118,7 @@ function Movement.watch(player: Player, character: Model)
 	end)
 end
 
-function Movement.knock(player: Player, direction: Vector3, stunSec: number, restore: () -> string)
+function Movement.knock(player: Player, direction: Vector3, stunSec: number, restore: () -> string, pushScale: number?)
 	local character = player.Character
 	if character == nil then
 		return
@@ -147,7 +147,9 @@ function Movement.knock(player: Player, direction: Vector3, stunSec: number, res
 		local look = root.CFrame.LookVector
 		flat = Vector3.new(look.X, 0, look.Z)
 	end
-	local ix, iy, iz = MoveMath.impulse(flat.X, flat.Z, mass, Tuning.KnockbackHorizontal, Tuning.KnockbackVertical)
+	local scale = if type(pushScale) == "number" and pushScale > 0 then pushScale else 1
+	local ix, iy, iz =
+		MoveMath.impulse(flat.X, flat.Z, mass, Tuning.KnockbackHorizontal * scale, Tuning.KnockbackVertical * scale)
 	root:ApplyImpulse(Vector3.new(ix, iy, iz))
 	task.delay(stunSec, function()
 		if tokenOf[player] ~= token then

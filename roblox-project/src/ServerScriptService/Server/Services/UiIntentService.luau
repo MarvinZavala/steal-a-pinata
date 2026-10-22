@@ -9,10 +9,8 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
-local Economy = require(Shared:WaitForChild("Config"):WaitForChild("Economy"))
 local Pinatas = require(Shared:WaitForChild("Config"):WaitForChild("Pinatas"))
 local Remotes = require(Shared:WaitForChild("Net"):WaitForChild("Remotes"))
-local ShopCatalog = require(Shared:WaitForChild("UI"):WaitForChild("ShopCatalog"))
 
 local Server = script.Parent.Parent
 local Records = require(Server:WaitForChild("Data"):WaitForChild("Records"))
@@ -37,67 +35,6 @@ local bots: { [Player]: BasePart } = {}
 
 function UiIntentService.settingsOf(player: Player): Settings?
 	return settingsOf[player]
-end
-
-local function deny(player: Player, key: string)
-	Remotes.get("Feedback"):FireClient(player, "DENIED", { key = key })
-end
-
-local function hasEpic(data: Records.PlayerData): boolean
-	for _, item in data.Inventory do
-		local def = Pinatas[item.PinataId]
-		if def ~= nil and def.Rarity == "Epic" then
-			return true
-		end
-	end
-	return false
-end
-
-local function onUpgrade(player: Player, args: { any })
-	local id = args[1]
-	local data = Records.get(player)
-	if type(id) ~= "string" or data == nil then
-		return
-	end
-	if id == "Pedestal" then
-		if data.PedestalsOwned >= Economy.MaxPedestals then
-			deny(player, "common.max")
-			return
-		end
-		local price = ShopCatalog.pedestalPrice(data.PedestalsOwned + 1)
-		if not Records.trySpendDulces(player, price) then
-			deny(player, "poor")
-			return
-		end
-		data.PedestalsOwned += 1
-		BaseService.syncPads(player.UserId)
-	elseif id == "VaultCap" then
-		local tiers = Economy.VaultCapSeconds
-		if data.VaultCapTier >= #tiers then
-			deny(player, "common.max")
-			return
-		end
-		local price = ShopCatalog.vaultCost(data.VaultCapTier + 1)
-		if price <= 0 or not Records.trySpendDulces(player, price) then
-			deny(player, "poor")
-			return
-		end
-		data.VaultCapTier += 1
-	elseif id == "ReFiesta" then
-		if not hasEpic(data) then
-			deny(player, "poor")
-			return
-		end
-		local price = ShopCatalog.refiestaCandy()
-		if price <= 0 or not Records.trySpendDulces(player, price) then
-			deny(player, "poor")
-			return
-		end
-		data.ReFiestas += 1
-	else
-		return
-	end
-	BaseService.pushState(player)
 end
 
 local function onSettings(player: Player, args: { any })
@@ -279,7 +216,6 @@ local function onAction(player: Player, args: { any })
 end
 
 function UiIntentService.init(_services: { [string]: any })
-	AntiCheatService.register("RequestUpgrade", onUpgrade)
 	AntiCheatService.register("RequestSettings", onSettings)
 	AntiCheatService.register("RequestFTUEStep", onStep)
 	AntiCheatService.register("RequestFTUEAction", onAction)

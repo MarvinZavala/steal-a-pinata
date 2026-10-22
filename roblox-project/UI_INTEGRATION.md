@@ -12,7 +12,7 @@ No registres un segundo `LogFunnelStepEvent` para el mismo paso: el cliente ya l
 | `RequestSteal` | C2S | `userId`, `pedestal` |
 | `RequestSwing` | C2S | — |
 | `RequestLock` | C2S | — |
-| `RequestUpgrade` | C2S | `"Pedestal"` \| `"VaultCap"` \| `"ReFiesta"` (`Security.Upgrades`) |
+| `RequestUpgrade` | C2S | `"Pedestal"` \| `"VaultCap"` \| `"ReFiesta"` \| `"Bat"` (`Security.Upgrades`) |
 | `RequestFuse` | C2S | `pinataId` del roster |
 | `StateChanged` | S2C | parche de estado (abajo) |
 | `Feedback` | S2C | `kind`, `payload` |
@@ -26,19 +26,22 @@ No registres un segundo `LogFunnelStepEvent` para el mismo paso: el cliente ya l
 | `RequestSettings` | C2S | `locale`, `music`, `sfx`, `reduceMotion`, `cameraShake` | `UiIntentService` los guarda en la sesión y los devuelve en el próximo `StateChanged`. `locale` es `"auto"` `"es"` `"en"` `"pt"`. Volúmenes 0–1. No es un campo del perfil |
 | `RequestFTUEStep` | C2S | un paso de `Security.FtueSteps` | Reacciona al guion real (abajo). No loguea el embudo |
 | `RequestFTUEAction` | C2S | `claim` `bonk` `collect` `buy` `complete` `skip` | `bonk` saca al Ladronzuelo. `complete` y `skip` marcan `FtueCompleted`. `claim`, `collect` y `buy` no regalan nada: eso lo hacen la Pasarela y el pad |
-| `OpenShop` | S2C | `kiosk`: `"dulceria"` `"bates"` `"cajas"` `"vip"` o `""` | El servidor, al entrar a un kiosco. `FireClient`, no `fireServer` |
+| `OpenShop` | S2C | `kiosk`: `"dulceria"` `"bates"` `"cajas"` `"vip"` o `""` | `EconomyService` pone un `ProximityPrompt` en cada kiosco de la plaza y hace `FireClient` |
+| `RequestClaimDaily` | C2S | — | `DailyService` reclama la racha del día UTC. El mismo día responde `DENIED` `daily.already` |
+| `RequestClaimQuest` | C2S | `"1"` `"2"` `"3"` | Cobra una misión del tablero de hoy si el progreso llega a la meta |
+| `RequestRewarded` | C2S | — | Si el API de video y el product id están, muestra el anuncio. Si no, `DENIED` `common.soon` |
 
-`RequestUpgrade` (`"Pedestal"` \| `"VaultCap"` \| `"ReFiesta"`) lo registra `UiIntentService`. Cobra con `Records.trySpendDulces` al precio de `ShopCatalog` (el mismo que muestra el kiosco), sube `PedestalsOwned` hasta `Economy.MaxPedestals` y repinta los pads, o sube `VaultCapTier`, o suma una Re-Fiesta si hay una Epic en el inventario. Si falta plata manda `Feedback` `DENIED` con `poor`.
+`RequestUpgrade` lo registra `EconomyService` (ya no `UiIntentService`). Hay que estar a ≤ `Economy.Buy.MaxDistance` del kiosco Dulcería (bate: también Bates) o del pad de la propia base. Cobra con `Records.trySpendDulces`. Pedestal respeta `Economy.pedestalCap` (8, +2 del pase, 12 en Re-Fiesta 3). Tope usa `Economy.vaultCost`. Bate usa `Economy.batUpgradeCost` y sube el empuje, no el daño. Re-Fiesta llama `Progression.tryRebirth`: gasta los Dulces del nivel, borra piñatas normales y pedestales comprados, y conserva Secretas y de Evento.
 
-`RequestSwing` lo disparan el botón BATE y la tool `Bate` (un solo intento). `RequestLock` lo dispara el botón CANDADO. No hay un segundo HUD.
+`RequestFuse` lo registra `EconomyService`, cerca de Cajas o Dulcería. Rompe 3 de la especie que no estén en tránsito y devuelve 1 con mutación Dorada (Arcoíris 10 %).
 
-`RequestFuse` sigue sin handler: un payload válido no fusiona.
+`RequestSwing` lo disparan el botón BATE y la tool `Bate` (un solo intento). `RequestLock` lo dispara el botón CANDADO. No hay un segundo HUD. El chip FIESTA abre el panel; HOY abre la racha.
 
 ## Parche `StateChanged`
 
 Solo se aplican estas claves. Un campo ausente no borra el valor anterior. `nil` no viaja: para soltar la piñata mandá `carrying = false` o `clearCarrying = true`.
 
-- Números: `candy`, `candyPerSec`, `bastones`, `pedestalCount`, `pedestalCap`, `vaultTier`, `vaultStored`, `rookieShieldRemaining`, `myLockRemaining`, `myLockCooldown`, `fiestaRemaining` (`-1` = sin fiesta), `reFiestas`, `multiplier`
+- Números: `candy`, `candyPerSec`, `bastones`, `pedestalCount`, `pedestalCap`, `vaultTier`, `vaultStored`, `rookieShieldRemaining`, `myLockRemaining`, `myLockCooldown`, `fiestaRemaining` (`-1` = escondido, `0` = en curso, `>0` = cuenta regresiva), `fiestaLeft`, `giantHp`, `giantMax`, `myFiestaHits`, `reFiestas`, `multiplier`, `batUpgrade`
 - `owned`: `{ uid, pinataId, mutation, pedestal? }`
 - `carrying`: `{ pinataId, mutation, fromUserId, hitsLeft }`
 - `nearbyLocks`: `{ userId, name, remaining, cooldown }` (el nombre se corta a 24)
@@ -46,6 +49,8 @@ Solo se aplican estas claves. Un campo ausente no borra el valor anterior. `nil`
 - `settings`: `locale` (`""` o `"auto"` = idioma del cliente), `music`, `sfx`, `reduceMotion`, `cameraShake`
 - `batSkin`: string
 - `ftueCompleted`: boolean
+- `fiestaPhase`: `"idle"` `"rain"` `"giant"`
+- `daily`: `streak`, `cycleDay`, `claimed`, `canClaim`, `rewardCandy`, `rewardPinata`, `subscribed`, `quests[]` (`index`, `titleKey`, `progress`, `goal`, `candy`, `claimed`, `ready`)
 
 El servidor manda las dos formas de cada número para que el HUD viejo y el nuevo lean lo mismo: `candy` y `vault` / `vaultStored`, `perSec` / `candyPerSec`, `rookieLeft` / `rookieShieldRemaining`. `carrying = false` suelta la piñata; si hay carga es `{ pinataId, mutation, fromUserId, hitsLeft }`. También manda `owned`, `pedestalCount`, `vaultTier`, `reFiestas`, `multiplier`, `ftueCompleted`, `myLockRemaining`, `myLockCooldown` y, si ya se guardaron, `settings`.
 

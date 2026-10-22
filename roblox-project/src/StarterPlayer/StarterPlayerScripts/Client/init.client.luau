@@ -1,13 +1,51 @@
 --!strict
 -- Bootstrap del cliente. El cliente SOLO presenta y manda intenciones vía Remotes.fireServer.
+-- El HUD se monta antes del FTUE para que las flechas encuentren sus botones.
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Remotes = require(ReplicatedStorage.Shared.Net.Remotes)
+local RunService = game:GetService("RunService")
+
+local Remotes = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Net"):WaitForChild("Remotes"))
+local Locale = require(script.UI.Locale)
+local Toast = require(script.UI.Toast)
+local UIBridge = require(script.UI.UIBridge)
+local UIGuide = require(script.UI.UIGuide)
+local UIKit = require(script.UI.UIKit)
+local UIRoot = require(script.UI.UIRoot)
+
+local CameraController = require(script.Controllers.CameraController)
+local FTUEController = require(script.Controllers.FTUEController)
+local HUDController = require(script.Controllers.HUDController)
+local ShopController = require(script.Controllers.ShopController)
+local UIPreviewController = require(script.Controllers.UIPreviewController)
+local VFXController = require(script.Controllers.VFXController)
+
 task.spawn(Remotes.init)
 
-local ORDER = { "HUDController", "ShopController", "FTUEController", "VFXController", "CameraController" }
-for _, name in ORDER do
-	local c = require(script.Controllers:FindFirstChild(name)) :: any
-	if c.start then
-		task.spawn(c.start)
-	end
+Locale.install()
+UIRoot.mount()
+UIKit.bindEffects()
+UIGuide.mount()
+Toast.start()
+
+HUDController.start()
+ShopController.start()
+VFXController.start()
+CameraController.start()
+FTUEController.start()
+
+local function previewAllowed(): boolean
+	return RunService:IsStudio() or ReplicatedStorage:GetAttribute("UIPreview") == true
 end
+
+if previewAllowed() then
+	UIPreviewController.start()
+else
+	ReplicatedStorage:GetAttributeChangedSignal("UIPreview"):Connect(function()
+		if previewAllowed() then
+			UIPreviewController.start()
+		end
+	end)
+end
+
+task.spawn(UIBridge.start)

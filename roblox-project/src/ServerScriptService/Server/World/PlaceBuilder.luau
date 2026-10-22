@@ -123,6 +123,7 @@ local function buildPlot(index: number, spot: { x: number, z: number, faceX: num
 	model:SetAttribute("PlotIndex", index)
 	model:SetAttribute("OwnerUserId", 0)
 	CollectionService:AddTag(model, "Plot")
+	CollectionService:AddTag(model, "FTUEBase")
 
 	local floor = part("Floor", Vector3.new(Layout.FloorX, 1, Layout.FloorZ), cf * CFrame.new(0, 0.5, 0), TILE, model)
 	floor.Material = Enum.Material.SmoothPlastic
@@ -330,6 +331,7 @@ function PlaceBuilder.build(): World
 	local fountain =
 		part("Fountain", Vector3.new(10, 16, 16), CFrame.new(0, 5, 0) * CFrame.Angles(0, 0, math.rad(90)), TURQ, folder)
 	fountain.Shape = Enum.PartType.Cylinder
+	CollectionService:AddTag(fountain, "FTUEFountain")
 	local star = part("EstrellitaStatue", Vector3.new(6, 6, 6), CFrame.new(0, 12, 0), YELLOW, folder)
 	star.Shape = Enum.PartType.Ball
 	star.Material = Enum.Material.Neon

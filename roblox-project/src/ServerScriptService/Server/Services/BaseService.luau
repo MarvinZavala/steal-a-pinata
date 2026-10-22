@@ -182,14 +182,71 @@ function BaseService.pushState(player: Player)
 		plot.generatorLabel.Text = string.format("DULCERÍA\n%s\n+%s/s", Format(data.VaultCandy), Format(perSec))
 	end
 	Records.refreshLeaderstats(player)
-	Remotes.get("StateChanged"):FireClient(player, {
+	local carrying: any = false
+	local steal = servicesRef.StealService
+	if type(steal) == "table" and type(steal.peek) == "function" then
+		local carry = steal.peek(player)
+		if type(carry) == "table" then
+			local hitsRequired = if type(carry.hitsRequired) == "number" then carry.hitsRequired else 1
+			local hitsTaken = if type(carry.hitsTaken) == "number" then carry.hitsTaken else 0
+			carrying = {
+				pinataId = carry.pinataId,
+				mutation = if type(carry.mutation) == "string" then carry.mutation else "None",
+				fromUserId = carry.ownerUserId,
+				hitsLeft = math.max(0, hitsRequired - hitsTaken),
+			}
+		end
+	end
+	local owned = {}
+	for _, item in data.Inventory do
+		table.insert(owned, {
+			uid = item.InstanceId,
+			pinataId = item.PinataId,
+			mutation = item.Mutation,
+			pedestal = Records.slotOf(data, item.InstanceId),
+		})
+	end
+	local lockRemaining = 0
+	local lockCooldown = 0
+	local plotIndex = BaseService.plotIndexOf(player.UserId)
+	local lockService = servicesRef.LockService
+	if plotIndex ~= nil and type(lockService) == "table" then
+		if type(lockService.remaining) == "function" then
+			lockRemaining = lockService.remaining(plotIndex)
+		end
+		if type(lockService.cooldownLeft) == "function" then
+			lockCooldown = lockService.cooldownLeft(player)
+		end
+	end
+	local payload: { [string]: any } = {
 		candy = data.Dulces,
 		vault = data.VaultCandy,
+		vaultStored = data.VaultCandy,
 		perSec = perSec,
-		carrying = player:GetAttribute("Carrying") == true,
+		candyPerSec = perSec,
+		carrying = carrying,
 		rookie = Records.isRookie(data),
 		rookieLeft = Records.rookieLeft(data),
-	})
+		rookieShieldRemaining = Records.rookieLeft(data),
+		owned = owned,
+		pedestalCount = data.PedestalsOwned,
+		pedestalCap = Economy.MaxPedestals,
+		vaultTier = data.VaultCapTier,
+		bastones = data.Bastones,
+		reFiestas = data.ReFiestas,
+		multiplier = Economy.totalMultiplier(data.ReFiestas, false, false, 0),
+		ftueCompleted = data.FtueCompleted == true,
+		myLockRemaining = lockRemaining,
+		myLockCooldown = lockCooldown,
+	}
+	local ui = servicesRef.UiIntentService
+	if type(ui) == "table" and type(ui.settingsOf) == "function" then
+		local settings = ui.settingsOf(player)
+		if type(settings) == "table" then
+			payload.settings = settings
+		end
+	end
+	Remotes.get("StateChanged"):FireClient(player, payload)
 end
 
 local function paintPads(plot: Plot, count: number)
@@ -198,6 +255,15 @@ local function paintPads(plot: Plot, count: number)
 		pedestal.pad.Color = if open then OPEN else CLOSED
 		pedestal.pad.Transparency = if open then 0 else 0.35
 	end
+end
+
+function BaseService.syncPads(userId: number)
+	local data = Records.byUserId(userId)
+	local plot = BaseService.plotOf(userId)
+	if data == nil or plot == nil then
+		return
+	end
+	paintPads(plot, data.PedestalsOwned)
 end
 
 local function walk(model: Model, feet: Vector3, speed: number)
@@ -293,7 +359,8 @@ function BaseService.acceptPurchase(
 	player: Player,
 	pinataId: string,
 	mutation: string?,
-	model: Model
+	model: Model,
+	price: number?
 ): (boolean, string)
 	local data = Records.get(player)
 	local plot = BaseService.plotOf(player.UserId)
@@ -308,14 +375,15 @@ function BaseService.acceptPurchase(
 	if slot == nil then
 		return false, "no_room"
 	end
-	local price = def.Price
-	if price ~= nil and not Records.trySpendDulces(player, price) then
+	-- nil o <= 0 es gratis (Secretas, y el Michi dorado de la intro). El llamador pasa el precio del slot.
+	local charge = if price ~= nil and price > 0 then price else nil
+	if charge ~= nil and not Records.trySpendDulces(player, charge) then
 		return false, "funds"
 	end
 	local granted, instanceId = Records.grantPinata(player, pinataId, mutation)
 	if not granted or instanceId == nil then
-		if price ~= nil then
-			Records.grantDulces(player, price)
+		if charge ~= nil then
+			Records.grantDulces(player, charge)
 		end
 		return false, "funds"
 	end
@@ -501,6 +569,10 @@ local function bindCollect(plot: Plot)
 			data.VaultCandy = gain
 		end
 		Juice.confetti(plot.collect.Position, Tuning.Sfx.Collect)
+		Remotes.get("Feedback"):FireClient(player, "COLLECT", {
+			amount = gain,
+			position = plot.collect.Position,
+		})
 		BaseService.pushState(player)
 	end)
 end

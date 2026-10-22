@@ -18,6 +18,7 @@ local ORDER = {
 	"StealService", -- WP-06
 	"CombatService", -- WP-07
 	"LockService", -- WP-08
+	"UiIntentService", -- WP-12a / WP-13: mejoras, ajustes e intro
 	"EconomyService", -- WP-09
 	"MonetizationService", -- WP-11
 	"EventService", -- WP-14

@@ -1,0 +1,369 @@
+--!strict
+-- Única fuente de los textos de UI. Locale.luau los vuelca a una LocalizationTable
+-- (es, en, pt) para WP-21. Los placeholders {nombre} tienen que coincidir en los 3 idiomas.
+-- Los Piñatitos conservan su nombre propio; en y pt agregan la lectura cuando el nombre describe.
+
+export type LocaleId = "es" | "en" | "pt"
+
+export type Entry = {
+	es: string,
+	en: string,
+	pt: string,
+}
+
+local entries: { [string]: Entry } = {
+	["common.close"] = { es = "Cerrar", en = "Close", pt = "Fechar" },
+	["common.free"] = { es = "Gratis", en = "Free", pt = "Grátis" },
+	["common.owned"] = { es = "Tenés", en = "Owned", pt = "Você tem" },
+	["common.equipped"] = { es = "Puesto", en = "Equipped", pt = "Equipado" },
+	["common.soon"] = { es = "Pronto", en = "Soon", pt = "Em breve" },
+	["common.buy"] = { es = "Comprar", en = "Buy", pt = "Comprar" },
+	["common.sent"] = { es = "Pedido enviado", en = "Sent", pt = "Pedido enviado" },
+	["common.need"] = { es = "Te faltan {n}", en = "Need {n} more", pt = "Faltam {n}" },
+	["common.max"] = { es = "Al máximo", en = "Maxed", pt = "No máximo" },
+	["common.back"] = { es = "Volver", en = "Back", pt = "Voltar" },
+
+	["hud.candy"] = { es = "Dulces", en = "Candy", pt = "Doces" },
+	["hud.per_sec"] = { es = "+{n}/s", en = "+{n}/s", pt = "+{n}/s" },
+	["hud.fiesta_in"] = { es = "FIESTA en {time}", en = "PARTY in {time}", pt = "FESTA em {time}" },
+	["hud.fiesta_now"] = { es = "¡FIESTA!", en = "PARTY!", pt = "FESTA!" },
+	["hud.shield"] = { es = "Protegido {time}", en = "Shield {time}", pt = "Protegido {time}" },
+	["hud.bat"] = { es = "Batear", en = "Swing", pt = "Bater" },
+	["hud.lock"] = { es = "Candado", en = "Lock", pt = "Cadeado" },
+	["hud.inventory"] = { es = "Piñatas", en = "Piñatas", pt = "Piñatas" },
+	["hud.settings"] = { es = "Ajustes", en = "Settings", pt = "Ajustes" },
+	["hud.shop"] = { es = "Tienda", en = "Shop", pt = "Loja" },
+	["hud.collect"] = { es = "Juntar", en = "Collect", pt = "Juntar" },
+	["hud.carry"] = { es = "Llevás", en = "Carrying", pt = "Levando" },
+	["hud.carry_hint"] = { es = "¡A tu base!", en = "Get home!", pt = "Vá pra base!" },
+	["hud.hits"] = { es = "Golpes {n}", en = "Hits {n}", pt = "Golpes {n}" },
+	["hud.empty"] = { es = "Vacío", en = "Empty", pt = "Vazio" },
+	["hud.nearby"] = { es = "Candados cerca", en = "Nearby locks", pt = "Cadeados perto" },
+	["hud.lock_ready"] = { es = "Listo", en = "Ready", pt = "Pronto" },
+	["hud.multiplier"] = { es = "x{n}", en = "x{n}", pt = "x{n}" },
+	["hud.vault"] = { es = "Dulcería {n}", en = "Vault {n}", pt = "Doçaria {n}" },
+	["hud.bastones"] = { es = "Bastones {n}", en = "Canes {n}", pt = "Bengalas {n}" },
+	["hud.local_badge"] = { es = "Sin servidor", en = "Offline preview", pt = "Sem servidor" },
+
+	["rarity.Common"] = { es = "Común", en = "Common", pt = "Comum" },
+	["rarity.Uncommon"] = { es = "Poco común", en = "Uncommon", pt = "Incomum" },
+	["rarity.Rare"] = { es = "Rara", en = "Rare", pt = "Rara" },
+	["rarity.Epic"] = { es = "Épica", en = "Epic", pt = "Épica" },
+	["rarity.Legendary"] = { es = "Legendaria", en = "Legendary", pt = "Lendária" },
+	["rarity.Mythic"] = { es = "Mítica", en = "Mythic", pt = "Mítica" },
+	["rarity.Secret"] = { es = "Secreta", en = "Secret", pt = "Secreta" },
+	["rarity.Event"] = { es = "Evento", en = "Event", pt = "Evento" },
+
+	["mutation.Golden"] = { es = "Dorada", en = "Golden", pt = "Dourada" },
+	["mutation.Rainbow"] = { es = "Arcoíris", en = "Rainbow", pt = "Arco-íris" },
+	["mutation.Christmas"] = { es = "Navideña", en = "Holiday", pt = "Natalina" },
+	["mutation.None"] = { es = "", en = "", pt = "" },
+
+	["inv.title"] = { es = "Tus Piñatitos", en = "Your Piñatitos", pt = "Seus Piñatitos" },
+	["inv.count"] = { es = "{n}/{max}", en = "{n}/{max}", pt = "{n}/{max}" },
+	["inv.empty"] = {
+		es = "Todavía no tenés Piñatitos",
+		en = "No Piñatitos yet",
+		pt = "Você ainda não tem Piñatitos",
+	},
+	["inv.on_base"] = { es = "En la base", en = "At home", pt = "Na base" },
+	["inv.bag"] = { es = "Sin pedestal", en = "Not placed", pt = "Sem pedestal" },
+
+	["shop.kiosk_dulceria"] = { es = "Dulcería", en = "Candy shop", pt = "Doçaria" },
+	["shop.kiosk_bates"] = { es = "Bates", en = "Bats", pt = "Tacos" },
+	["shop.kiosk_cajas"] = { es = "Cajas", en = "Boxes", pt = "Caixas" },
+	["shop.kiosk_vip"] = { es = "VIP", en = "VIP", pt = "VIP" },
+	["shop.blurb_dulceria"] = {
+		es = "Mejorás la base con Dulces. El multiplicador se suma, no se duplica.",
+		en = "Upgrade home with Candy. The multiplier adds. It does not stack-multiply.",
+		pt = "Melhore a base com Doces. O multiplicador soma, não duplica.",
+	},
+	["shop.blurb_bates"] = {
+		es = "El bate empuja. Los looks de Robux no pegan más fuerte.",
+		en = "The bat shoves. Robux looks do not hit harder.",
+		pt = "O taco empurra. Visuais de Robux não batem mais forte.",
+	},
+	["shop.blurb_cajas"] = {
+		es = "Cosméticos con las chances a la vista, y fusión de 3 iguales.",
+		en = "Cosmetics with the odds on the label, plus a 3-into-1 fuse.",
+		pt = "Cosméticos com as chances à vista, e fusão de 3 iguais.",
+	},
+	["shop.blurb_vip"] = {
+		es = "Pases y regalos para todo el server. Nada de esto vende velocidad ni Secretas.",
+		en = "Passes and gifts for the whole server. None of this sells speed or Secrets.",
+		pt = "Passes e presentes pro server inteiro. Nada disso vende velocidade nem Secretas.",
+	},
+	["shop.pedestal_title"] = { es = "Pedestal {n}", en = "Pedestal {n}", pt = "Pedestal {n}" },
+	["shop.pedestal_body"] = {
+		es = "Otro lugar para un Piñatito.",
+		en = "One more spot for a Piñatito.",
+		pt = "Mais um lugar para um Piñatito.",
+	},
+	["shop.vault_title"] = { es = "Tope {min} min", en = "{min} min cap", pt = "Limite {min} min" },
+	["shop.vault_body"] = {
+		es = "La Dulcería aguanta más antes de llenarse.",
+		en = "The vault holds more before it fills.",
+		pt = "A doçaria aguenta mais antes de encher.",
+	},
+	["shop.refiesta_title"] = { es = "Re-Fiesta", en = "Re-Party", pt = "Re-Festa" },
+	["shop.refiesta_body"] = {
+		es = "Reinicia Dulces y piñatas comunes. Conserva Secretas y de Evento. +0.5× para siempre.",
+		en = "Resets Candy and regular piñatas. Keeps Secrets and Event ones. +0.5× forever.",
+		pt = "Zera Doces e piñatas comuns. Conserva Secretas e de Evento. +0.5× para sempre.",
+	},
+	["shop.refiesta_need"] = {
+		es = "Pedís 1 Épica y {n} Dulces.",
+		en = "Needs 1 Epic and {n} Candy.",
+		pt = "Pede 1 Épica e {n} Doces.",
+	},
+	["shop.bat_wood_title"] = { es = "Bate de madera", en = "Wood bat", pt = "Taco de madeira" },
+	["shop.bat_wood_body"] = {
+		es = "Empuja y aturde {stun} s. Recarga {cd} s. Sin daño.",
+		en = "Shoves and stuns {stun}s. Cooldown {cd}s. No damage.",
+		pt = "Empurra e atordoa {stun} s. Recarga {cd} s. Sem dano.",
+	},
+	["shop.bat_pack_title"] = { es = "Pase de bates", en = "Bat pass", pt = "Passe de tacos" },
+	["shop.bat_pack_body"] = {
+		es = "Oro, fiesta y serpentina. Mismas stats.",
+		en = "Gold, party, and streamer. Same stats.",
+		pt = "Ouro, festa e serpentina. Mesmas stats.",
+	},
+	["shop.bat_gold"] = { es = "Bate de oro", en = "Gold bat", pt = "Taco de ouro" },
+	["shop.bat_fiesta"] = { es = "Bate fiesta", en = "Party bat", pt = "Taco festa" },
+	["shop.bat_ribbon"] = { es = "Bate serpentina", en = "Streamer bat", pt = "Taco serpentina" },
+	["shop.cosmetic_only"] = {
+		es = "Solo el look. Mismas stats.",
+		en = "Look only. Same stats.",
+		pt = "Só o visual. Mesmas stats.",
+	},
+	["shop.box_title"] = { es = "Caja sorpresa", en = "Surprise box", pt = "Caixa surpresa" },
+	["shop.box_body"] = {
+		es = "Un cosmético al azar. Nunca una piñata.",
+		en = "A random cosmetic. Never a piñata.",
+		pt = "Um cosmético aleatório. Nunca uma piñata.",
+	},
+	["shop.odds_title"] = { es = "Probabilidades", en = "Odds", pt = "Probabilidades" },
+	["shop.odds_trail"] = { es = "Estela de confeti", en = "Confetti trail", pt = "Rastro de confete" },
+	["shop.odds_ribbon"] = { es = "Estela serpentina", en = "Streamer trail", pt = "Rastro serpentina" },
+	["shop.odds_decor"] = { es = "Decoración de base", en = "Base decor", pt = "Decoração de base" },
+	["shop.odds_pedestal"] = { es = "Piel de pedestal", en = "Pedestal skin", pt = "Skin de pedestal" },
+	["shop.odds_bat"] = { es = "Bate fiesta", en = "Party bat", pt = "Taco festa" },
+	["shop.odds_dupe"] = {
+		es = "Si ya lo tenés, te damos Dulces.",
+		en = "A duplicate pays you Candy.",
+		pt = "Se você já tem, ganha Doces.",
+	},
+	["shop.fuse_title"] = { es = "Fundir {name}", en = "Fuse {name}", pt = "Fundir {name}" },
+	["shop.fuse_body"] = {
+		es = "3 iguales se rompen y vuelve 1 con mutación.",
+		en = "Break 3 of a kind. One comes back mutated.",
+		pt = "3 iguais quebram e volta 1 com mutação.",
+	},
+	["shop.fuse_empty"] = {
+		es = "Juntá 3 de la misma especie.",
+		en = "Collect 3 of the same kind.",
+		pt = "Junte 3 da mesma espécie.",
+	},
+	["shop.pass_double"] = { es = "2× Dulces", en = "2× Candy", pt = "2× Doces" },
+	["shop.pass_double_body"] = {
+		es = "Suma +1× a tu multiplicador. No duplica todo.",
+		en = "Adds +1× to your multiplier. It does not double everything.",
+		pt = "Soma +1× ao multiplicador. Não duplica tudo.",
+	},
+	["shop.pass_vip"] = { es = "VIP Fiesta", en = "Party VIP", pt = "VIP Festa" },
+	["shop.pass_vip_body"] = {
+		es = "+0.5×, tag VIP, +10 s de candado y este kiosco.",
+		en = "+0.5×, VIP tag, +10s lock, and this kiosk.",
+		pt = "+0.5×, tag VIP, +10 s de cadeado e este quiosque.",
+	},
+	["shop.pass_pedestals"] = { es = "+2 Pedestales", en = "+2 Pedestals", pt = "+2 Pedestais" },
+	["shop.pass_pedestals_body"] = {
+		es = "Dos lugares extra, para siempre.",
+		en = "Two extra spots, forever.",
+		pt = "Dois lugares extras, para sempre.",
+	},
+	["shop.pass_auto"] = { es = "Auto-recolectar", en = "Auto-collect", pt = "Auto-coletar" },
+	["shop.pass_auto_body"] = {
+		es = "La Dulcería te manda Dulces cada 60 s.",
+		en = "The vault sends Candy every 60s.",
+		pt = "A doçaria manda Doces a cada 60 s.",
+	},
+	["shop.prod_luck"] = { es = "Suerte de server ×2", en = "Server luck ×2", pt = "Sorte do server ×2" },
+	["shop.prod_luck_body"] = {
+		es = "15 min de rarezas altas para TODO el server.",
+		en = "15 min of higher rarities for the WHOLE server.",
+		pt = "15 min de raridades altas para o server INTEIRO.",
+	},
+	["shop.prod_golden"] = { es = "Pasarela dorada", en = "Golden runway", pt = "Passarela dourada" },
+	["shop.prod_golden_body"] = {
+		es = "Las próximas 5 del server salen Raras o mejores.",
+		en = "The next 5 spawns for the server are Rare or better.",
+		pt = "As próximas 5 do server saem Raras ou melhores.",
+	},
+	["shop.prod_candy_s"] = { es = "Bolsa de Dulces", en = "Candy pouch", pt = "Sacola de Doces" },
+	["shop.prod_candy_m"] = { es = "Saco de Dulces", en = "Candy sack", pt = "Saco de Doces" },
+	["shop.prod_candy_l"] = { es = "Carretilla de Dulces", en = "Candy cart", pt = "Carriola de Doces" },
+	["shop.prod_candy_body"] = {
+		es = "{min} min de tu producción de ahora.",
+		en = "{min} min of your current production.",
+		pt = "{min} min da sua produção de agora.",
+	},
+	["shop.prod_lock"] = { es = "Candado de emergencia", en = "Emergency lock", pt = "Cadeado de emergência" },
+	["shop.prod_lock_body"] = {
+		es = "30 s de láser. No salta tu espera. Máximo 1 cada 10 min.",
+		en = "30s laser. Does not skip your cooldown. Once per 10 min.",
+		pt = "30 s de laser. Não pula a espera. No máximo 1 a cada 10 min.",
+	},
+	["shop.social"] = { es = "Para todo el server", en = "For the whole server", pt = "Para o server inteiro" },
+	["shop.robux"] = { es = "{n} R$", en = "{n} R$", pt = "{n} R$" },
+	["shop.your_mult"] = { es = "Tu multiplicador: x{n}", en = "Your multiplier: x{n}", pt = "Seu multiplicador: x{n}" },
+	["shop.thanks"] = { es = "¡Gracias!", en = "Thanks!", pt = "Valeu!" },
+
+	["settings.title"] = { es = "Ajustes", en = "Settings", pt = "Ajustes" },
+	["settings.language"] = { es = "Idioma", en = "Language", pt = "Idioma" },
+	["settings.auto"] = { es = "Auto", en = "Auto", pt = "Auto" },
+	["settings.music"] = { es = "Música", en = "Music", pt = "Música" },
+	["settings.sfx"] = { es = "Efectos", en = "Effects", pt = "Efeitos" },
+	["settings.motion"] = { es = "Menos movimiento", en = "Less motion", pt = "Menos movimento" },
+	["settings.shake"] = { es = "Sacudida", en = "Shake", pt = "Tremor" },
+	["settings.on"] = { es = "Sí", en = "On", pt = "Sim" },
+	["settings.off"] = { es = "No", en = "Off", pt = "Não" },
+	["settings.hints"] = {
+		es = "E batear · Q candado · I piñatas · M ajustes · Esc cerrar",
+		en = "E swing · Q lock · I piñatas · M settings · Esc close",
+		pt = "E bater · Q cadeado · I piñatas · M ajustes · Esc fechar",
+	},
+	["settings.pad"] = {
+		es = "Mando: RT batear · LB candado · Y piñatas · Menu ajustes · B cerrar",
+		en = "Pad: RT swing · LB lock · Y piñatas · Menu settings · B close",
+		pt = "Controle: RT bater · LB cadeado · Y piñatas · Menu ajustes · B fechar",
+	},
+
+	["toast.bonk"] = { es = "¡BONK!", en = "BONK!", pt = "BONK!" },
+	["toast.robbed"] = {
+		es = "Te sacaron un Piñatito",
+		en = "Someone took a Piñatito",
+		pt = "Levaram um Piñatito seu",
+	},
+	["toast.purchase"] = { es = "Compra lista", en = "Purchase ready", pt = "Compra pronta" },
+	["toast.collect"] = { es = "+{n} Dulces", en = "+{n} Candy", pt = "+{n} Doces" },
+	["toast.denied"] = { es = "No se pudo", en = "Not now", pt = "Não deu" },
+	["toast.saved"] = { es = "Ajustes guardados", en = "Settings saved", pt = "Ajustes salvos" },
+	["toast.soon"] = { es = "Todavía no está a la venta", en = "Not for sale yet", pt = "Ainda não está à venda" },
+	["toast.returned"] = {
+		es = "El Piñatito volvió a casa",
+		en = "The Piñatito went home",
+		pt = "O Piñatito voltou pra casa",
+	},
+	["toast.ftue_yours"] = { es = "¡Es tuyo!", en = "It's yours!", pt = "É seu!" },
+
+	["deny.poor"] = { es = "Te faltan Dulces", en = "Not enough Candy", pt = "Faltam Doces" },
+	["deny.far"] = { es = "Estás muy lejos", en = "Too far", pt = "Longe demais" },
+	["deny.locked"] = { es = "Esa base está cerrada", en = "That base is locked", pt = "Essa base está fechada" },
+	["deny.cooldown"] = { es = "Esperá un poco", en = "Wait a moment", pt = "Espera um pouco" },
+	["deny.shield"] = { es = "El escudo lo protege", en = "The shield protects them", pt = "O escudo protege" },
+	["deny.full"] = { es = "No te queda pedestal", en = "No pedestal left", pt = "Sem pedestal livre" },
+	["deny.busy"] = {
+		es = "Ya estás cargando algo",
+		en = "You are already carrying",
+		pt = "Você já está carregando",
+	},
+	["deny.rate"] = { es = "Más despacio", en = "Slow down", pt = "Mais devagar" },
+
+	["ftue.your_base"] = { es = "¡TU BASE!", en = "YOUR BASE!", pt = "SUA BASE!" },
+	["ftue.go"] = { es = "¡VAMOS!", en = "LET'S GO!", pt = "BORA!" },
+	["ftue.take"] = { es = "TOMAR", en = "TAKE", pt = "PEGAR" },
+	["ftue.yours"] = { es = "¡ES TUYO!", en = "IT'S YOURS!", pt = "É SEU!" },
+	["ftue.hit"] = { es = "¡PÉGALE!", en = "WHACK!", pt = "PEGA NELE!" },
+	["ftue.bonk"] = { es = "¡BONK!", en = "BONK!", pt = "BONK!" },
+	["ftue.guaranteed"] = { es = "¡Garantizado!", en = "Guaranteed!", pt = "Garantido!" },
+	["ftue.free"] = { es = "¡GRATIS!", en = "FREE!", pt = "GRÁTIS!" },
+	["ftue.collect_btn"] = { es = "JUNTAR", en = "COLLECT", pt = "JUNTAR" },
+	["ftue.plus_candy"] = { es = "+{n}", en = "+{n}", pt = "+{n}" },
+	["ftue.buy"] = { es = "COMPRAR", en = "BUY", pt = "COMPRAR" },
+	["ftue.next"] = { es = "Siguiente: Dragón Chile", en = "Next: Chili Dragon", pt = "Próximo: Dragão Pimenta" },
+	["ftue.thief"] = { es = "Ladronzuelo", en = "Lil' Thief", pt = "Ladrãozinho" },
+	["ftue.play"] = { es = "¡A JUGAR!", en = "PLAY!", pt = "JOGAR!" },
+	["ftue.summary"] = { es = "Tu fiesta ya empezó", en = "Your party just started", pt = "Sua festa começou" },
+	["ftue.skip"] = { es = "Saltar", en = "Skip", pt = "Pular" },
+	["ftue.income"] = { es = "+{n}/s", en = "+{n}/s", pt = "+{n}/s" },
+	["ftue.slow"] = { es = "0.4s", en = "0.4s", pt = "0.4s" },
+	["ftue.guide_base"] = { es = "Esta es tu base", en = "This is your base", pt = "Esta é a sua base" },
+	["ftue.guide_arrow"] = { es = "Seguí la flecha", en = "Follow the arrow", pt = "Siga a seta" },
+	["ftue.guide_thief"] = { es = "¡Te lo está robando!", en = "They're taking it!", pt = "Estão roubando!" },
+	["ftue.guide_income"] = { es = "Ya está produciendo", en = "It's making Candy", pt = "Já está produzindo" },
+	["ftue.pad"] = {
+		es = "Pisá el pad amarillo",
+		en = "Step on the yellow pad",
+		pt = "Pise o pad amarelo",
+	},
+	["ftue.guide_party"] = { es = "La Fiesta se acerca", en = "The Party is coming", pt = "A Festa está chegando" },
+
+	["preview.title"] = { es = "Preview", en = "Preview", pt = "Preview" },
+	["preview.device"] = { es = "Pantalla", en = "Screen", pt = "Tela" },
+	["preview.auto"] = { es = "Auto", en = "Auto", pt = "Auto" },
+	["preview.phone"] = { es = "Teléfono", en = "Phone", pt = "Celular" },
+	["preview.portrait"] = { es = "Vertical", en = "Portrait", pt = "Vertical" },
+	["preview.tablet"] = { es = "Tablet", en = "Tablet", pt = "Tablet" },
+	["preview.desktop"] = { es = "PC", en = "PC", pt = "PC" },
+	["preview.ftue"] = { es = "Intro", en = "Intro", pt = "Intro" },
+	["preview.stop"] = { es = "Parar", en = "Stop", pt = "Parar" },
+	["preview.analytics"] = { es = "Embudo", en = "Funnel", pt = "Funil" },
+	["preview.note"] = {
+		es = "Sin el juego completo: solo la UI.",
+		en = "Without the full game: UI only.",
+		pt = "Sem o jogo completo: só a UI.",
+	},
+	["preview.hud"] = { es = "HUD", en = "HUD", pt = "HUD" },
+	["preview.carry"] = { es = "Robo", en = "Carry", pt = "Roubo" },
+	["preview.inventory"] = { es = "Inventario", en = "Inventory", pt = "Inventário" },
+	["preview.toasts"] = { es = "Avisos", en = "Toasts", pt = "Avisos" },
+	["preview.settings"] = { es = "Ajustes", en = "Settings", pt = "Ajustes" },
+
+	["pinata.estrellita"] = { es = "Estrellita", en = "Estrellita", pt = "Estrelinha" },
+	["pinata.pollito"] = { es = "Pollito Pío", en = "Chirp Chick", pt = "Pintinho Pio" },
+	["pinata.burrito"] = { es = "Burrito", en = "Burrito", pt = "Burrinho" },
+	["pinata.sandia"] = { es = "Sandía Sonriente", en = "Smiley Melon", pt = "Melancia Sorriso" },
+	["pinata.michi"] = { es = "Michi", en = "Michi", pt = "Michi" },
+	["pinata.elotito"] = { es = "Elotito", en = "Elotito", pt = "Espiguinha" },
+	["pinata.ranita"] = { es = "Ranita Fiestera", en = "Party Frog", pt = "Sapinha Festeira" },
+	["pinata.pupusita"] = { es = "Pupusita", en = "Pupusita", pt = "Pupusita" },
+	["pinata.cohetin"] = { es = "Cohetín", en = "Cohetín", pt = "Foguetinho" },
+	["pinata.paleton"] = { es = "Paletón", en = "Paletón", pt = "Pirulitão" },
+	["pinata.tortuga"] = { es = "Tortuga Tambor", en = "Drum Turtle", pt = "Tartaruga Tambor" },
+	["pinata.pulpo"] = { es = "Pulpo Confeti", en = "Confetti Octopus", pt = "Polvo Confete" },
+	["pinata.robo"] = { es = "Robo-Piñata", en = "Robo-Piñata", pt = "Robô-Piñata" },
+	["pinata.dragon"] = { es = "Dragón Chile", en = "Chili Dragon", pt = "Dragão Pimenta" },
+	["pinata.cadejo"] = { es = "Cadejo", en = "Cadejo", pt = "Cadejo" },
+	["pinata.toro"] = { es = "Toro de Oro", en = "Golden Bull", pt = "Touro de Ouro" },
+	["pinata.izalco"] = { es = "Volcán Izalco", en = "Izalco Volcano", pt = "Vulcão Izalco" },
+	["pinata.torogoz"] = { es = "Torogoz Cósmico", en = "Cosmic Torogoz", pt = "Torogoz Cósmico" },
+	["pinata.sombra"] = { es = "Sombra", en = "Sombra", pt = "Sombra" },
+	["pinata.pixelin"] = { es = "Pixelín", en = "Pixelín", pt = "Pixelín" },
+	["pinata.tamalito"] = { es = "Tamalito", en = "Tamalito", pt = "Tamalzinho" },
+	["pinata.jengibrin"] = { es = "Jengibrín", en = "Jengibrín", pt = "Gengibrinho" },
+	["pinata.renito"] = { es = "Renito", en = "Renito", pt = "Reninha" },
+}
+
+local Catalog = {
+	entries = entries,
+	locales = { "es", "en", "pt" },
+}
+
+function Catalog.missing(): { string }
+	local bad = {}
+	for key, row in entries do
+		if row.es == "" and key ~= "mutation.None" then
+			table.insert(bad, key .. ":es")
+		end
+		if row.en == "" and key ~= "mutation.None" then
+			table.insert(bad, key .. ":en")
+		end
+		if row.pt == "" and key ~= "mutation.None" then
+			table.insert(bad, key .. ":pt")
+		end
+	end
+	return bad
+end
+
+return Catalog

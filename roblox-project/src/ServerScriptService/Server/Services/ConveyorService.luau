@@ -84,16 +84,15 @@ local function rollPinata(): (string?, string)
 	return id, rarity
 end
 
-local function spawnSlot(pinataId: string, rarity: string)
+local function insertSlot(pinataId: string, rarity: string, mutation: string?, price: number?): number?
 	local current = BaseService.getWorld()
 	if current == nil then
-		return
+		return nil
 	end
 	local def = Pinatas[pinataId]
 	if def == nil then
-		return
+		return nil
 	end
-	local mutation = rollMutation()
 	local model = PinataVisual.create(pinataId, mutation)
 	local id = nextId
 	nextId += 1
@@ -104,7 +103,7 @@ local function spawnSlot(pinataId: string, rarity: string)
 	if primary ~= nil then
 		local prompt = Instance.new("ProximityPrompt")
 		prompt.Name = "BuyPrompt"
-		prompt.ActionText = if def.Price == nil then "¡Tomar!" else "Comprar"
+		prompt.ActionText = if price == nil then "¡Tomar!" else "Comprar"
 		prompt.ObjectText = def.Name
 		prompt.HoldDuration = 0
 		prompt.MaxActivationDistance = Economy.Buy.MaxDistance
@@ -119,11 +118,28 @@ local function spawnSlot(pinataId: string, rarity: string)
 		model = model,
 		pinataId = pinataId,
 		mutation = mutation,
-		price = def.Price,
+		price = price,
 		rarity = rarity,
 		born = os.clock(),
 		sold = false,
 	})
+	return id
+end
+
+local function spawnSlot(pinataId: string, rarity: string)
+	local def = Pinatas[pinataId]
+	local price = if def ~= nil then def.Price else nil
+	insertSlot(pinataId, rarity, rollMutation(), price)
+end
+
+-- La intro pone un slot concreto. free = true no cobra aunque el roster tenga precio.
+function ConveyorService.offer(pinataId: string, mutation: string?, free: boolean): number?
+	local def = Pinatas[pinataId]
+	if def == nil then
+		return nil
+	end
+	local price = if free then nil else def.Price
+	return insertSlot(pinataId, def.Rarity, mutation, price)
 end
 
 function ConveyorService.tryBuy(player: Player, slotId: number)
@@ -161,7 +177,7 @@ function ConveyorService.tryBuy(player: Player, slotId: number)
 	end
 	slot.sold = true
 	removeSlot(slot)
-	local accepted, reject = BaseService.acceptPurchase(player, slot.pinataId, slot.mutation, slot.model)
+	local accepted, reject = BaseService.acceptPurchase(player, slot.pinataId, slot.mutation, slot.model, slot.price)
 	if not accepted then
 		slot.sold = false
 		slot.born = os.clock()

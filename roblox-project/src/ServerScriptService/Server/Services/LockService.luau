@@ -45,6 +45,22 @@ function LockService.isLocked(plotIndex: number): boolean
 	return row ~= nil and os.clock() < row.endsAt
 end
 
+function LockService.remaining(plotIndex: number): number
+	local row = active[plotIndex]
+	if row == nil then
+		return 0
+	end
+	return math.max(0, row.endsAt - os.clock())
+end
+
+function LockService.cooldownLeft(player: Player): number
+	local data = Records.get(player)
+	if data == nil then
+		return 0
+	end
+	return math.max(0, data.LockReadyUnix - os.time())
+end
+
 local function applyGroups(player: Player)
 	local plotIndex = BaseService.plotIndexOf(player.UserId)
 	local ownerInside = plotIndex ~= nil and LockService.isLocked(plotIndex)

@@ -49,6 +49,8 @@ export type PlayerData = {
 	LockReadyUnix: number,
 	-- Unix de los últimos robos sufridos (ventana de 5 min, tope corto).
 	RobbedUnix: { number },
+	-- La intro de 60 s ya se cumplió (o se saltó). No vuelve a regalar el Michi.
+	FtueCompleted: boolean,
 }
 
 export type Defaults = {
@@ -155,6 +157,7 @@ function Migrations.blank(defaults: Defaults): PlayerData
 		VaultCandy = 0,
 		LockReadyUnix = 0,
 		RobbedUnix = {},
+		FtueCompleted = false,
 	}
 end
 
@@ -466,6 +469,8 @@ function Migrations.migrate(raw: any, defaults: Defaults): (PlayerData?, string?
 	data.VaultCandy = vaultCandy
 	data.LockReadyUnix = lockReady
 	data.RobbedUnix = robbedUnix
+	-- Un valor que no es true (ausente, string, número) queda en false. No rechaza el perfil.
+	data.FtueCompleted = raw.FtueCompleted == true
 	data.Inventory = inventory
 	data.Placed = placed
 	data.Dex = dex

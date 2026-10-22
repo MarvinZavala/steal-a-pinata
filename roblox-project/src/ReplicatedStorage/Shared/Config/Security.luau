@@ -27,10 +27,27 @@ local Security = {
 		RequestLock = { Capacity = 2, LeakPerSec = 1 },
 		RequestUpgrade = { Capacity = 3, LeakPerSec = 1 },
 		RequestFuse = { Capacity = 2, LeakPerSec = 1 },
+		RequestCollect = { Capacity = 3, LeakPerSec = 1 },
+		RequestSettings = { Capacity = 2, LeakPerSec = 1 },
+		RequestFTUEStep = { Capacity = 4, LeakPerSec = 1 },
+		RequestFTUEAction = { Capacity = 4, LeakPerSec = 1 },
 		Honeypot = { Capacity = 1, LeakPerSec = 0.2 },
 		Default = { Capacity = 5, LeakPerSec = 2 },
 	},
 	Upgrades = { "Pedestal", "VaultCap", "ReFiesta" },
+	-- Pasos del embudo §10.1 y acciones que la UI pide. El servidor no vuelve a loguear el funnel.
+	FtueSteps = {
+		"1_spawn",
+		"2_arrow_followed",
+		"3_first_claim",
+		"4_thief_seen",
+		"5_first_bonk",
+		"6_first_income",
+		"7_first_collect",
+		"8_first_purchase",
+	},
+	FtueActions = { "claim", "bonk", "collect", "buy", "complete", "skip" },
+	Locales = { "auto", "es", "en", "pt" },
 }
 
 return Security

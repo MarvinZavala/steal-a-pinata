@@ -295,5 +295,17 @@
    "cactus_abrazos": 16006,
    "cactus_abrazos_Neon": 184
   }
+ },
+ "aguacaton": {
+  "name": "aguacaton",
+  "size_studs": [
+   3.74,
+   4.2,
+   2.6
+  ],
+  "tris": {
+   "aguacaton": 14730,
+   "aguacaton_Neon": 156
+  }
  }
 }

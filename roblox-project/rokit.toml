@@ -1,0 +1,7 @@
+# Toolchain (https://github.com/rojo-rbx/rokit). Ejecutá `rokit install`.
+# Versiones fijadas al 22 oct 2026; revisá las últimas antes de empezar.
+[tools]
+rojo = "rojo-rbx/rojo@7.7.0"
+wally = "UpliftGames/wally@0.3.2"
+selene = "Kampfkarren/selene@0.28.0"
+stylua = "JohnnyMorganz/StyLua@2.0.2"

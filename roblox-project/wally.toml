@@ -1,0 +1,9 @@
+[package]
+name = "marvinzavala/steal-a-pinata"
+version = "0.1.0"
+registry = "https://github.com/UpliftGames/wally-index"
+realm = "shared"
+
+[dependencies]
+# Agregá aquí dependencias de Wally (verificá el nombre exacto en https://wally.run).
+# ProfileStore se vendoriza a mano: ver src/ServerScriptService/Server/Vendor/README.md

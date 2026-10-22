@@ -1,5 +1,7 @@
 # Integración con S1 (WP-02 y WP-10a)
 
+Esta rama incluye `main` en `58d18c5` (PR #1). Donde el loop y S1 tocaban el mismo archivo, se quedó la implementación de S1 (ProfileStore, migraciones, `AntiCheatService`, registro) y el gameplay solo suma llamadas encima.
+
 El loop de WP-04 a WP-08 ya no tiene un perfil en memoria ni un rate limiter propio. Usa lo que quedó en `main`.
 
 ## Datos

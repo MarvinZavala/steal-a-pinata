@@ -12,6 +12,7 @@ local specs = {
 	"./economy.spec",
 	"./receipts.spec",
 	"./daily.spec",
+	"./mutation_visual.spec",
 }
 
 local failed = 0

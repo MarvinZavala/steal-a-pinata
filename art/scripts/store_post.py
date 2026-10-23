@@ -108,6 +108,7 @@ TEXT = {  # key: (es, en)
     "fusion_tags": ((("DORADA", "x2"), ("ARCOÍRIS", "x5")), (("GOLDEN", "x2"), ("RAINBOW", "x5"))),
     "memes": ([("¡NUEVAS", 130, "white"), ("PIÑATAS!", 200, "rainbow")], [("NEW", 130, "white"), ("PIÑATAS!", 200, "rainbow")]),
     "fiesta": ([("¡FIESTA!", 230, "rainbow"), ("¡LLUEVEN PIÑATAS!", 92, "white")], [("PARTY!", 230, "rainbow"), ("IT'S RAINING PIÑATAS!", 84, "white")]),
+    "defensa": ([("¡DEFENDÉ", 200, "rainbow"), ("TU BASE!", 150, "white")], [("DEFEND", 200, "rainbow"), ("YOUR BASE!", 140, "white")]),
 }
 
 def thumb(name, lang):
@@ -131,10 +132,12 @@ def thumb(name, lang):
         im = put(im, text_layer(TEXT["memes"][i], gap=.02), W * .5, H * .17, rot=-3, max_w=W * .5)
     elif name == "fiesta":
         im = put(im, text_layer(TEXT["fiesta"][i], gap=.04), W * .22, H * .19, rot=-5, max_w=W * .4)
+    elif name == "defensa":
+        im = put(im, text_layer(TEXT["defensa"][i], gap=.02), W * .18, H * .2, rot=-6, max_w=W * .32)
     return im
 
-THUMBS = [("robo", "01_robo"), ("coleccion", "02_coleccion"), ("fusion", "03_fusion"), ("memes", "04_memes_random"), ("fiesta", "05_fiesta")]
-EN = {"01_robo": "01_steal", "02_coleccion": "02_collection", "03_fusion": "03_fuse", "04_memes_random": "04_meme_random", "05_fiesta": "05_party"}
+THUMBS = [("robo", "01_robo"), ("coleccion", "02_coleccion"), ("fusion", "03_fusion"), ("memes", "04_memes_random"), ("fiesta", "05_fiesta"), ("defensa", "06_defensa")]
+EN = {"01_robo": "01_steal", "02_coleccion": "02_collection", "03_fusion": "03_fuse", "04_memes_random": "04_meme_random", "05_fiesta": "05_party", "06_defensa": "06_defend"}
 
 # ------------------------------------------------------------------ icons
 ICONS = [("icon_ladron", "icon_A_ladron", None), ("icon_pulpo", "icon_B_pulpo_arcoiris", "logo"), ("icon_aurazoso_gold", "icon_C_aurazoso_dorado", "pinata")]
@@ -156,7 +159,7 @@ def sheet():
     tw, thh = 640, 360; pad = 24
     Wd = pad + 2 * (tw + pad) + 0
     Wd = max(Wd, pad + 3 * (300 + pad) + 3 * (100 + pad))
-    Hd = 110 + 300 + pad + 100 + 5 * (thh + pad) + 40
+    Hd = 110 + 300 + pad + 100 + len(THUMBS) * (thh + pad) + 40
     S = Image.new("RGB", (Wd, Hd), "#1B1430"); d = ImageDraw.Draw(S)
     f = ImageFont.truetype(FONT, 44); fs = ImageFont.truetype(FONT, 26)
     d.text((pad, 30), "STEAL A PIÑATA! - STORE ART SET", font=f, fill="#FFE14D")

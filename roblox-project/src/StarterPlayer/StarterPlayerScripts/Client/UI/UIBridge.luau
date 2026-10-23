@@ -83,6 +83,18 @@ function UIBridge.claimQuest(index: string)
 	fire("RequestClaimQuest", index)
 end
 
+function UIBridge.claimAdvent()
+	fire("RequestClaimAdvent")
+end
+
+function UIBridge.eventBuy(sku: string)
+	fire("RequestEventBuy", sku)
+end
+
+function UIBridge.gift(userId: number, pedestal: number)
+	fire("RequestGift", userId, pedestal)
+end
+
 function UIBridge.rewarded()
 	fire("RequestRewarded")
 end

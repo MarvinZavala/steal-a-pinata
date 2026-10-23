@@ -89,7 +89,8 @@ function Juice.bonkSign(position: Vector3)
 	text.Size = UDim2.fromScale(1, 1)
 	text.Font = Enum.Font.FredokaOne
 	text.TextScaled = true
-	text.Text = "¡BONK!"
+	text:SetAttribute("LKey", "toast.bonk")
+	text.Text = "BONK"
 	text.TextColor3 = Color3.fromHex("#FFE14D")
 	text.TextStrokeColor3 = Color3.fromHex("#1B1430")
 	text.TextStrokeTransparency = 0

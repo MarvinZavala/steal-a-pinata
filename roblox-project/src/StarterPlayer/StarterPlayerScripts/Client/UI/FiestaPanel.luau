@@ -24,18 +24,39 @@ local function paint()
 	end
 	local state = UIState.get()
 	local phase = if typeof(state.fiestaPhase) == "string" then state.fiestaPhase else "idle"
+	local variant = if typeof(state.fiestaVariant) == "string" then state.fiestaVariant else "fiesta"
 	local left = if typeof(state.fiestaLeft) == "number" then state.fiestaLeft else 0
 	local waitSec = if typeof(state.fiestaRemaining) == "number" then state.fiestaRemaining else -1
+	local nowKey = "hud.fiesta_now"
+	local waitKey = "fiesta.title"
+	local rainKey = "fiesta.rain"
+	local giantKey = "fiesta.giant"
+	if variant == "posada" then
+		nowKey = "event.hud_posada"
+		waitKey = "event.posada_title"
+		rainKey = "event.posada_rain"
+		giantKey = "event.posada_giant"
+	elseif variant == "newyear" then
+		nowKey = "event.hud_newyear"
+		waitKey = "event.newyear_title"
+		rainKey = "event.newyear_rain"
+		giantKey = "event.posada_giant"
+	elseif variant == "rosca" then
+		nowKey = "event.hud_rosca"
+		waitKey = "event.rosca_title"
+		rainKey = "event.rosca_rain"
+		giantKey = "event.rosca_giant"
+	end
 	if phase == "giant" then
-		title.Text = Locale.t("fiesta.giant")
+		title.Text = Locale.t(giantKey)
 		local hp = if typeof(state.giantHp) == "number" then state.giantHp else 0
 		local maxHp = if typeof(state.giantMax) == "number" then state.giantMax else 0
 		detail.Text = Locale.t("fiesta.hp", { hp = tostring(hp), max = tostring(maxHp), time = UIKit.clock(left) })
 	elseif phase == "rain" then
-		title.Text = Locale.t("hud.fiesta_now")
-		detail.Text = Locale.t("fiesta.rain", { time = UIKit.clock(left) })
+		title.Text = Locale.t(nowKey)
+		detail.Text = Locale.t(rainKey, { time = UIKit.clock(left) })
 	else
-		title.Text = Locale.t("fiesta.title")
+		title.Text = Locale.t(waitKey)
 		local shown = if waitSec >= 0 then waitSec else 0
 		detail.Text = Locale.t("fiesta.wait", { time = UIKit.clock(shown) })
 	end

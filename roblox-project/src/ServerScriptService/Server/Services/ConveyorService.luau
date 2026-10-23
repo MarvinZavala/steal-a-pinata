@@ -11,12 +11,15 @@ local Rarities = require(Shared:WaitForChild("Config"):WaitForChild("Rarities"))
 local Remotes = require(Shared:WaitForChild("Net"):WaitForChild("Remotes"))
 local SpawnWeights = require(Shared:WaitForChild("Gameplay"):WaitForChild("SpawnWeights"))
 local BuyRules = require(Shared:WaitForChild("Gameplay"):WaitForChild("BuyRules"))
+local EventCalendar = require(Shared:WaitForChild("Gameplay"):WaitForChild("EventCalendar"))
+local Events = require(Shared:WaitForChild("Config"):WaitForChild("Events"))
 
 local Server = script.Parent.Parent
 local Records = require(Server:WaitForChild("Data"):WaitForChild("Records"))
 local AntiCheatService = require(script.Parent:WaitForChild("AntiCheatService"))
 local Validators = require(script.Parent:WaitForChild("AntiCheat"):WaitForChild("Validators"))
 local Logger = require(script.Parent:WaitForChild("AntiCheat"):WaitForChild("Logger"))
+local Labels = require(Server:WaitForChild("World"):WaitForChild("Labels"))
 local PinataVisual = require(Server:WaitForChild("World"):WaitForChild("PinataVisual"))
 local BaseService = require(script.Parent:WaitForChild("BaseService"))
 
@@ -30,6 +33,7 @@ type Slot = {
 	pinataId: string,
 	mutation: string?,
 	price: number?,
+	currency: string,
 	rarity: string,
 	born: number,
 	sold: boolean,
@@ -75,7 +79,20 @@ local function removeSlot(slot: Slot)
 	slots = keep
 end
 
+local function eventNow()
+	local attribute = workspace:GetAttribute("ForcePosadas")
+	local phase = workspace:GetAttribute("ForcePosadasPhase")
+	return EventCalendar.snapshot(
+		os.time(),
+		EventCalendar.isForced(attribute),
+		if type(phase) == "string" then phase else nil
+	)
+end
+
 local function rollMutation(): string?
+	if EventCalendar.mutationHit(eventNow(), math.random()) then
+		return "Christmas"
+	end
 	if math.random() < Economy.Mutations.Rainbow.ConveyorChance then
 		return "Rainbow"
 	end
@@ -86,6 +103,14 @@ local function rollMutation(): string?
 end
 
 local function rollPinata(): (string?, string)
+	local snap = eventNow()
+	if EventCalendar.runwayHit(snap, math.random()) then
+		local runwayId = Events.PosadasPinateras.RunwayId
+		local runway = Pinatas[runwayId]
+		if runway ~= nil then
+			return runwayId, runway.Rarity
+		end
+	end
 	local rarity = SpawnWeights.pick(Rarities.SpawnWeight, math.random(), luckOn(), BOOST)
 	if goldenLeft > 0 then
 		goldenLeft -= 1
@@ -103,7 +128,13 @@ local function rollPinata(): (string?, string)
 	return id, rarity
 end
 
-local function insertSlot(pinataId: string, rarity: string, mutation: string?, price: number?): number?
+local function insertSlot(
+	pinataId: string,
+	rarity: string,
+	mutation: string?,
+	price: number?,
+	currency: string
+): number?
 	local current = BaseService.getWorld()
 	if current == nil then
 		return nil
@@ -122,8 +153,8 @@ local function insertSlot(pinataId: string, rarity: string, mutation: string?, p
 	if primary ~= nil then
 		local prompt = Instance.new("ProximityPrompt")
 		prompt.Name = "BuyPrompt"
-		prompt.ActionText = if price == nil then "¡Tomar!" else "Comprar"
-		prompt.ObjectText = def.Name
+		local actionKey = if price == nil then "prompt.take" else "prompt.buy"
+		Labels.prompt(prompt, actionKey, "pinata." .. pinataId)
 		prompt.HoldDuration = 0
 		prompt.MaxActivationDistance = Economy.Buy.MaxDistance
 		prompt.RequiresLineOfSight = false
@@ -138,6 +169,7 @@ local function insertSlot(pinataId: string, rarity: string, mutation: string?, p
 		pinataId = pinataId,
 		mutation = mutation,
 		price = price,
+		currency = currency,
 		rarity = rarity,
 		born = os.clock(),
 		sold = false,
@@ -148,7 +180,8 @@ end
 local function spawnSlot(pinataId: string, rarity: string)
 	local def = Pinatas[pinataId]
 	local price = if def ~= nil then def.Price else nil
-	insertSlot(pinataId, rarity, rollMutation(), price)
+	local currency = if def ~= nil and def.Currency == "Bastones" then "Bastones" else "Dulces"
+	insertSlot(pinataId, rarity, rollMutation(), price, currency)
 end
 
 -- La intro pone un slot concreto. free = true no cobra aunque el roster tenga precio.
@@ -158,7 +191,8 @@ function ConveyorService.offer(pinataId: string, mutation: string?, free: boolea
 		return nil
 	end
 	local price = if free then nil else def.Price
-	return insertSlot(pinataId, def.Rarity, mutation, price)
+	local currency = if def.Currency == "Bastones" then "Bastones" else "Dulces"
+	return insertSlot(pinataId, def.Rarity, mutation, price, currency)
 end
 
 function ConveyorService.tryBuy(player: Player, slotId: number)
@@ -181,8 +215,13 @@ function ConveyorService.tryBuy(player: Player, slotId: number)
 	end
 	local data = Records.get(player)
 	local candy = if data ~= nil then data.Dulces else 0
+	local balance = candy
+	if slot.currency == "Bastones" then
+		balance = if data ~= nil then data.Bastones else 0
+	end
 	local ok, reason = BuyRules.evaluate({
 		candy = candy,
+		balance = balance,
 		price = slot.price,
 		distance = math.min(distance, Economy.Buy.MaxDistance),
 		maxDistance = Economy.Buy.MaxDistance,
@@ -196,7 +235,8 @@ function ConveyorService.tryBuy(player: Player, slotId: number)
 	end
 	slot.sold = true
 	removeSlot(slot)
-	local accepted, reject = BaseService.acceptPurchase(player, slot.pinataId, slot.mutation, slot.model, slot.price)
+	local accepted, reject =
+		BaseService.acceptPurchase(player, slot.pinataId, slot.mutation, slot.model, slot.price, slot.currency)
 	if not accepted then
 		slot.sold = false
 		slot.born = os.clock()
@@ -249,10 +289,9 @@ function ConveyorService.start()
 	task.spawn(function()
 		while true do
 			local pinataId, rarity = rollPinata()
-			if pinataId ~= nil and SpawnWeights.isHeadline(rarity) then
-				local def = Pinatas[pinataId]
-				local name = if def then def.Name else pinataId
-				Remotes.get("Announce"):FireAllClients(string.format("¡%s en la Pasarela!", name), rarity)
+			local headline = SpawnWeights.isHeadline(rarity) or pinataId == Events.PosadasPinateras.RunwayId
+			if pinataId ~= nil and headline then
+				Remotes.get("Announce"):FireAllClients("announce.runway:" .. pinataId, rarity)
 				task.wait(Economy.Conveyor.AnnounceLeadSec)
 			end
 			if pinataId ~= nil then

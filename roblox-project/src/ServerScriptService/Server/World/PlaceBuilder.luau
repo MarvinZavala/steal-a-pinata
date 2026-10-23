@@ -9,6 +9,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Layout = require(Shared:WaitForChild("Config"):WaitForChild("WorldLayout"))
+local Labels = require(script.Parent:WaitForChild("Labels"))
 
 local PlaceBuilder = {}
 
@@ -57,6 +58,14 @@ local TURQ = Color3.fromHex("#16D3E8")
 local GRASS = Color3.fromHex("#58D15A")
 local NEON = Color3.fromHex("#FF4FD8")
 local WHITE = Color3.fromHex("#FFF7EC")
+local SNOW = Color3.fromHex("#F4FBFF")
+local XMAS_RED = Color3.fromHex("#D7192F")
+local XMAS_GREEN = Color3.fromHex("#11A35A")
+
+local dressParts: { BasePart } = {}
+local paradeParts: { BasePart } = {}
+local bulbParts: { BasePart } = {}
+local shopPart: BasePart? = nil
 
 local function part(name: string, size: Vector3, cf: CFrame, color: Color3, parent: Instance): Part
 	local piece = Instance.new("Part")
@@ -72,7 +81,7 @@ local function part(name: string, size: Vector3, cf: CFrame, color: Color3, pare
 	return piece
 end
 
-local function caption(parent: BasePart, name: string, text: string, offset: Vector3, px: number): TextLabel
+local function caption(parent: BasePart, name: string, key: string, offset: Vector3, px: number): TextLabel
 	local gui = Instance.new("BillboardGui")
 	gui.Name = name
 	gui.Size = UDim2.fromOffset(px, math.floor(px * 0.45))
@@ -85,7 +94,7 @@ local function caption(parent: BasePart, name: string, text: string, offset: Vec
 	label.Size = UDim2.fromScale(1, 1)
 	label.Font = Enum.Font.FredokaOne
 	label.TextScaled = true
-	label.Text = text
+	Labels.line(label, key)
 	label.TextColor3 = WHITE
 	label.TextStrokeColor3 = INK
 	label.TextStrokeTransparency = 0
@@ -221,7 +230,7 @@ local function buildPlot(index: number, spot: { x: number, z: number, faceX: num
 	ringLabel.Size = UDim2.fromScale(1, 1)
 	ringLabel.Font = Enum.Font.FredokaOne
 	ringLabel.TextScaled = true
-	ringLabel.Text = "ABIERTA"
+	Labels.line(ringLabel, "world.open")
 	ringLabel.TextColor3 = WHITE
 	ringLabel.TextStrokeTransparency = 0
 	ringLabel.TextStrokeColor3 = INK
@@ -240,12 +249,12 @@ local function buildPlot(index: number, spot: { x: number, z: number, faceX: num
 	dome.Material = Enum.Material.Glass
 	dome.Transparency = 0.45
 	dome.CanCollide = false
-	local generatorLabel = caption(generator, "Vault", "DULCERÍA", Vector3.new(0, 5, 0), 180)
+	local generatorLabel = caption(generator, "Vault", "shop.kiosk_dulceria", Vector3.new(0, 5, 0), 180)
 
 	local collect =
 		part("Collect", Vector3.new(12, 0.6, 12), cf * CFrame.new(0, 1.4, Layout.GeneratorLocalZ - 8), YELLOW, model)
 	collect.Material = Enum.Material.Neon
-	caption(collect, "CollectHint", "PISÁ PARA JUNTAR", Vector3.new(0, 3, 0), 160)
+	caption(collect, "CollectHint", "world.step_collect", Vector3.new(0, 3, 0), 160)
 
 	local spawnPart = Instance.new("SpawnLocation")
 	spawnPart.Name = "Spawn"
@@ -261,7 +270,7 @@ local function buildPlot(index: number, spot: { x: number, z: number, faceX: num
 
 	local signPart = part("Sign", Vector3.new(8, 3, 0.4), cf * CFrame.new(0, 11.5, Layout.GateLocalZ), PINK, model)
 	signPart.CanCollide = false
-	local sign = caption(signPart, "Owner", "LIBRE", Vector3.new(0, 0, 0), 200)
+	local sign = caption(signPart, "Owner", "world.free", Vector3.new(0, 0, 0), 200)
 
 	local pedestals: { Pedestal } = {}
 	for indexPed = 1, 12 do
@@ -306,7 +315,51 @@ local function buildPlot(index: number, spot: { x: number, z: number, faceX: num
 	}
 end
 
+local function showPart(piece: BasePart, on: boolean)
+	piece.Transparency = if on then 0 else 1
+	piece.CanCollide = false
+	piece.CanQuery = on
+	piece.CanTouch = false
+end
+
+function PlaceBuilder.setEventDress(decor: boolean, parade: boolean, shopOpen: boolean)
+	for _, piece in dressParts do
+		showPart(piece, decor)
+	end
+	for _, piece in paradeParts do
+		showPart(piece, parade)
+	end
+	for index, bulb in bulbParts do
+		bulb.Color = if decor then (if index % 2 == 0 then XMAS_RED else XMAS_GREEN) else YELLOW
+	end
+	local holiday = shopPart
+	if holiday ~= nil then
+		holiday.Transparency = if shopOpen then 0 else 1
+		holiday.CanCollide = shopOpen
+		holiday.CanQuery = shopOpen
+		local prompt = holiday:FindFirstChild("OpenShop")
+		if prompt ~= nil and prompt:IsA("ProximityPrompt") then
+			prompt.Enabled = shopOpen
+		end
+		local sign = holiday:FindFirstChild("NavidadSign", true)
+		if sign ~= nil then
+			sign.Enabled = shopOpen
+		end
+	end
+	if decor then
+		Lighting.ClockTime = 18.4
+		Lighting.OutdoorAmbient = Color3.fromHex("#D7E7FF")
+		Lighting.Ambient = Color3.fromHex("#C9D8FF")
+	else
+		applyLighting()
+	end
+end
+
 function PlaceBuilder.build(): World
+	table.clear(dressParts)
+	table.clear(paradeParts)
+	table.clear(bulbParts)
+	shopPart = nil
 	applyLighting()
 	local existing = workspace:FindFirstChild("World")
 	if existing ~= nil then
@@ -347,7 +400,7 @@ function PlaceBuilder.build(): World
 	star.Shape = Enum.PartType.Ball
 	star.Material = Enum.Material.Neon
 	star.CanCollide = false
-	caption(star, "Hub", "LA PLAZA", Vector3.new(0, 5, 0), 220)
+	caption(star, "Hub", "world.plaza", Vector3.new(0, 5, 0), 220)
 
 	local pasarela = part(
 		"Pasarela",
@@ -383,35 +436,29 @@ function PlaceBuilder.build(): World
 		chev.CanCollide = false
 	end
 
-	local function arch(x: number, title: string)
-		part(title .. "L", Vector3.new(2, 12, 2), CFrame.new(x, 6, Layout.PasarelaZ - 6), TURQ, folder)
-		part(title .. "R", Vector3.new(2, 12, 2), CFrame.new(x, 6, Layout.PasarelaZ + 6), TURQ, folder)
-		local beam = part(title .. "Beam", Vector3.new(2, 2, 14), CFrame.new(x, 12.5, Layout.PasarelaZ), GOLD, folder)
-		caption(beam, title .. "Sign", title, Vector3.new(0, 2, 0), 180)
+	local function arch(x: number, partName: string, key: string)
+		part(partName .. "L", Vector3.new(2, 12, 2), CFrame.new(x, 6, Layout.PasarelaZ - 6), TURQ, folder)
+		part(partName .. "R", Vector3.new(2, 12, 2), CFrame.new(x, 6, Layout.PasarelaZ + 6), TURQ, folder)
+		local beam =
+			part(partName .. "Beam", Vector3.new(2, 2, 14), CFrame.new(x, 12.5, Layout.PasarelaZ), GOLD, folder)
+		caption(beam, partName .. "Sign", key, Vector3.new(0, 2, 0), 180)
 	end
-	arch(Layout.PasarelaSpawnX, "FÁBRICA")
-	arch(Layout.PasarelaExitX, "SALIDA")
+	arch(Layout.PasarelaSpawnX, "Fabrica", "world.factory")
+	arch(Layout.PasarelaExitX, "Salida", "world.exit")
 
-	local shops: { { name: string, angle: number, color: Color3 } } = {
-		{ name = "DULCERÍA", angle = 155, color = YELLOW },
-		{ name = "BATES", angle = 115, color = Color3.fromHex("#3DA5FF") },
-		{ name = "CAJAS", angle = 65, color = Color3.fromHex("#C59BFF") },
-		{ name = "VIP", angle = 25, color = GOLD },
+	local shops: { { name: string, key: string, id: string, angle: number, color: Color3 } } = {
+		{ name = "Dulceria", key = "shop.kiosk_dulceria", id = "dulceria", angle = 155, color = YELLOW },
+		{ name = "Bates", key = "shop.kiosk_bates", id = "bates", angle = 115, color = Color3.fromHex("#3DA5FF") },
+		{ name = "Cajas", key = "shop.kiosk_cajas", id = "cajas", angle = 65, color = Color3.fromHex("#C59BFF") },
+		{ name = "Vip", key = "shop.kiosk_vip", id = "vip", angle = 25, color = GOLD },
 	}
 	for _, shop in shops do
-		local label = shop.name
 		local angle = math.rad(shop.angle)
-		local color = shop.color
 		local x = math.cos(angle) * 33
 		local z = math.sin(angle) * 33
-		local kiosk = part(label, Vector3.new(10, 8, 10), CFrame.new(x, 4, z), color, folder)
-		local kioskId = if label == "DULCERÍA"
-			then "dulceria"
-			elseif label == "BATES" then "bates"
-			elseif label == "CAJAS" then "cajas"
-			else "vip"
-		kiosk:SetAttribute("KioskId", kioskId)
-		caption(kiosk, label .. "Sign", label, Vector3.new(0, 6, 0), 160)
+		local kiosk = part(shop.name, Vector3.new(10, 8, 10), CFrame.new(x, 4, z), shop.color, folder)
+		kiosk:SetAttribute("KioskId", shop.id)
+		caption(kiosk, shop.name .. "Sign", shop.key, Vector3.new(0, 6, 0), 160)
 	end
 
 	local plotsFolder = Instance.new("Folder")
@@ -457,7 +504,69 @@ function PlaceBuilder.build(): World
 		bulb.Material = Enum.Material.Neon
 		bulb.Shape = Enum.PartType.Ball
 		bulb.CanCollide = false
+		table.insert(bulbParts, bulb)
 	end
+
+	-- TODO(WP-18): mallas nuevas que todavía no están en art/export:
+	-- nieve de techos y palmeras, faroles del desfile, Tamalito, Jengibrín y el gorro.
+	-- Hasta que lleguen, el vestido usa los faroles, las luces y los kioscos que ya existen.
+	local dress = Instance.new("Folder")
+	dress.Name = "EventDress"
+	dress.Parent = folder
+	for _, shopName in { "Dulceria", "Bates", "Cajas", "Vip" } do
+		local kiosk = folder:FindFirstChild(shopName)
+		if kiosk ~= nil and kiosk:IsA("BasePart") then
+			local cap = part(
+				"Snow" .. shopName,
+				Vector3.new(10.4, 0.45, 10.4),
+				kiosk.CFrame * CFrame.new(0, 4.3, 0),
+				SNOW,
+				dress
+			)
+			cap.Material = Enum.Material.SmoothPlastic
+			cap.CanCollide = false
+			table.insert(dressParts, cap)
+		end
+	end
+	for i = 1, 8 do
+		local angle = math.rad((i - 1) * 45 + 12)
+		local light = part(
+			"StringLight" .. tostring(i),
+			Vector3.new(0.7, 0.7, 0.7),
+			CFrame.new(math.cos(angle) * 36, 8.2, math.sin(angle) * 36),
+			if i % 2 == 0 then XMAS_RED else XMAS_GREEN,
+			dress
+		)
+		light.Shape = Enum.PartType.Ball
+		light.Material = Enum.Material.Neon
+		light.CanCollide = false
+		table.insert(dressParts, light)
+	end
+	for i = 0, 7 do
+		local x = Layout.PasarelaSpawnX + 12 + i * 16
+		local lantern = part(
+			"ParadeLantern" .. tostring(i),
+			Vector3.new(1.1, 1.6, 1.1),
+			CFrame.new(x, 6.2, Layout.PasarelaZ - 7),
+			if i % 2 == 0 then XMAS_RED else GOLD,
+			dress
+		)
+		lantern.Material = Enum.Material.Neon
+		lantern.CanCollide = false
+		table.insert(paradeParts, lantern)
+	end
+	local holidayAngle = math.rad(200)
+	local holiday = part(
+		"Navidad",
+		Vector3.new(10, 8, 10),
+		CFrame.new(math.cos(holidayAngle) * 33, 4, math.sin(holidayAngle) * 33),
+		XMAS_RED,
+		folder
+	)
+	holiday:SetAttribute("KioskId", "navidad")
+	caption(holiday, "NavidadSign", "shop.kiosk_navidad", Vector3.new(0, 6, 0), 160)
+	shopPart = holiday
+	PlaceBuilder.setEventDress(false, false, false)
 
 	return {
 		folder = folder,

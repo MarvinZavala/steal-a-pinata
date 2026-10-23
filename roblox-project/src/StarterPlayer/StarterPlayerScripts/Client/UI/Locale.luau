@@ -201,6 +201,101 @@ function Locale.pinataName(id: string): string
 	return id
 end
 
+local watched: { [Instance]: boolean } = {}
+local painting = false
+
+local function argMap(inst: Instance): { [string]: string }
+	local args: { [string]: string } = {}
+	for name, value in inst:GetAttributes() do
+		if string.sub(name, 1, 5) == "LArg_" and typeof(value) == "string" then
+			args[string.sub(name, 6)] = value
+		end
+	end
+	return args
+end
+
+local function paintWorld(inst: Instance)
+	if painting then
+		return
+	end
+	painting = true
+	if inst:IsA("TextLabel") then
+		local key = inst:GetAttribute("LKey")
+		if typeof(key) == "string" and key ~= "" then
+			inst.AutoLocalize = false
+			inst.Text = Locale.t(key, argMap(inst))
+		end
+	elseif inst:IsA("ProximityPrompt") then
+		local actionKey = inst:GetAttribute("LKeyAction")
+		local objectKey = inst:GetAttribute("LKeyObject")
+		if typeof(actionKey) == "string" or typeof(objectKey) == "string" then
+			inst.AutoLocalize = false
+		end
+		if typeof(actionKey) == "string" and actionKey ~= "" then
+			inst.ActionText = Locale.t(actionKey)
+		end
+		if typeof(objectKey) == "string" and objectKey ~= "" then
+			inst.ObjectText = Locale.t(objectKey)
+		end
+	end
+	painting = false
+end
+
+local function armWorld(inst: Instance)
+	if watched[inst] then
+		paintWorld(inst)
+		return
+	end
+	local labelKey = inst:IsA("TextLabel") and typeof(inst:GetAttribute("LKey")) == "string"
+	local promptKey = inst:IsA("ProximityPrompt")
+		and (typeof(inst:GetAttribute("LKeyAction")) == "string" or typeof(inst:GetAttribute("LKeyObject")) == "string")
+	if not labelKey and not promptKey then
+		return
+	end
+	watched[inst] = true
+	paintWorld(inst)
+	inst.AttributeChanged:Connect(function()
+		paintWorld(inst)
+	end)
+	if inst:IsA("TextLabel") then
+		inst:GetPropertyChangedSignal("Text"):Connect(function()
+			paintWorld(inst)
+		end)
+	elseif inst:IsA("ProximityPrompt") then
+		inst:GetPropertyChangedSignal("ActionText"):Connect(function()
+			paintWorld(inst)
+		end)
+		inst:GetPropertyChangedSignal("ObjectText"):Connect(function()
+			paintWorld(inst)
+		end)
+	end
+	inst.Destroying:Connect(function()
+		watched[inst] = nil
+	end)
+end
+
+function Locale.watchWorld()
+	local function paintAll()
+		for inst in watched do
+			if inst.Parent ~= nil then
+				paintWorld(inst)
+			end
+		end
+	end
+	table.insert(binders, paintAll)
+	local function consider(inst: Instance)
+		task.defer(function()
+			if inst.Parent ~= nil then
+				armWorld(inst)
+			end
+		end)
+	end
+	for _, inst in workspace:GetDescendants() do
+		consider(inst)
+	end
+	workspace.DescendantAdded:Connect(consider)
+end
+
 function Locale.mutationName(mutation: string): string
 	if mutation == "" or mutation == "None" then
 		return ""

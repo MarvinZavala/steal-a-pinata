@@ -20,6 +20,7 @@ local Lifecycle = require(Server:WaitForChild("Adapters"):WaitForChild("Lifecycl
 local AntiCheatService = require(script.Parent:WaitForChild("AntiCheatService"))
 local Validators = require(script.Parent:WaitForChild("AntiCheat"):WaitForChild("Validators"))
 local Logger = require(script.Parent:WaitForChild("AntiCheat"):WaitForChild("Logger"))
+local Labels = require(Server:WaitForChild("World"):WaitForChild("Labels"))
 local PinataVisual = require(Server:WaitForChild("World"):WaitForChild("PinataVisual"))
 local Movement = require(Server:WaitForChild("World"):WaitForChild("Movement"))
 local Transit = require(Server:WaitForChild("World"):WaitForChild("Transit"))
@@ -219,8 +220,7 @@ local function addPrompt(ownerUserId: number, pedestalIndex: number, model: Mode
 	end
 	local prompt = Instance.new("ProximityPrompt")
 	prompt.Name = "StealPrompt"
-	prompt.ActionText = "Robar"
-	prompt.ObjectText = "Piñata"
+	Labels.prompt(prompt, "prompt.steal", "prompt.pinata")
 	prompt.HoldDuration = Economy.StealPromptHoldSec
 	prompt.MaxActivationDistance = Economy.Steal.MaxDistance
 	prompt.RequiresLineOfSight = false
@@ -528,8 +528,7 @@ function StealService.drop(player: Player)
 	end
 	local prompt = Instance.new("ProximityPrompt")
 	prompt.Name = "StealPrompt"
-	prompt.ActionText = "Robar"
-	prompt.ObjectText = "Piñata suelta"
+	Labels.prompt(prompt, "prompt.steal", "prompt.loose")
 	prompt.HoldDuration = Economy.StealPromptHoldSec
 	prompt.MaxActivationDistance = Economy.Steal.MaxDistance
 	prompt.RequiresLineOfSight = false

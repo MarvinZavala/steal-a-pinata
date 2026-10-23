@@ -11,6 +11,7 @@ local Pinatas = require(Shared:WaitForChild("Config"):WaitForChild("Pinatas"))
 local Rarities = require(Shared:WaitForChild("Config"):WaitForChild("Rarities"))
 local Tuning = require(Shared:WaitForChild("Config"):WaitForChild("Tuning"))
 local Format = require(Shared:WaitForChild("Util"):WaitForChild("Format"))
+local Text = require(Shared:WaitForChild("Locale"):WaitForChild("Text"))
 
 local PinataVisual = {}
 
@@ -125,13 +126,10 @@ function PinataVisual.describe(pinataId: string, mutation: string?): (string, nu
 	local rarity = if def then def.Rarity else "Common"
 	if mutation == "Golden" then
 		perSec *= 2
-		name = name .. " Dorada"
 	elseif mutation == "Rainbow" then
 		perSec *= 5
-		name = name .. " Arcoíris"
 	elseif mutation == "Christmas" then
 		perSec *= 3
-		name = name .. " Navideña"
 	end
 	return name, perSec, price, rarity
 end
@@ -171,9 +169,34 @@ function PinataVisual.create(pinataId: string, mutation: string?): Model
 end
 
 function PinataVisual.setCaption(model: Model, pinataId: string, mutation: string?)
-	local name, perSec, price = PinataVisual.describe(pinataId, mutation)
-	local priceText = if price == nil then "¡TOMAR!" else (Format(price) .. " dulces")
-	captionFor(model).Text = string.format("%s\n%s/s\n%s", name, Format(perSec), priceText)
+	local _, perSec, price = PinataVisual.describe(pinataId, mutation)
+	local def = Pinatas[pinataId]
+	local currency = if def ~= nil and def.Currency == "Bastones" then "Bastones" else "Dulces"
+	local storedMutation = if mutation == nil or mutation == "" then "None" else mutation
+	model:SetAttribute("CaptionPrice", if price == nil then -1 else price)
+	model:SetAttribute("CaptionCurrency", currency)
+	model:SetAttribute("Mutation", storedMutation)
+	local label = captionFor(model)
+	label:SetAttribute("CaptionKind", "pinata")
+	label.AutoLocalize = false
+	local name = Text.line("pinata." .. pinataId, "es")
+	if name == "[" .. "pinata." .. pinataId .. "]" then
+		name = if def ~= nil then def.Name else pinataId
+	end
+	if storedMutation ~= "None" then
+		local mut = Text.line("mutation." .. storedMutation, "es")
+		if mut ~= "" then
+			name ..= " " .. mut
+		end
+	end
+	local priceText = Text.line("caption.free", "es")
+	if price ~= nil then
+		priceText = Text.line("caption.price", "es", {
+			n = Format(price),
+			currency = Text.line(if currency == "Bastones" then "currency.bastones" else "currency.dulces", "es"),
+		})
+	end
+	label.Text = name .. "\n" .. Text.line("hud.per_sec", "es", { n = Format(perSec) }) .. "\n" .. priceText
 end
 
 function PinataVisual.place(model: Model, feet: Vector3)

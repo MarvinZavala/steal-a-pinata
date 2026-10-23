@@ -4,6 +4,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Theme = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("UI"):WaitForChild("Theme")) :: any
+local Locale = require(script.Parent.Parent.UI.Locale)
 local SoundBus = require(script.Parent.Parent.UI.SoundBus)
 local UIKit = require(script.Parent.Parent.UI.UIKit)
 local UIRoot = require(script.Parent.Parent.UI.UIRoot)
@@ -68,7 +69,7 @@ function VFXController.bonk()
 	label.AnchorPoint = Vector2.new(0.5, 0.5)
 	label.Position = UDim2.fromScale(0.5, 0.42)
 	label.Size = UDim2.fromOffset(220, 70)
-	label.Text = "BONK"
+	label.Text = Locale.t("toast.bonk")
 	label.TextSize = 64
 	label.ZIndex = 8
 	label.Parent = host

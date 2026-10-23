@@ -4,6 +4,7 @@
 -- y se reemplaza solo si aparece Economy.VaultUpgradeCost (WP-09).
 
 local Economy = require(script.Parent.Parent.Config.Economy)
+local Events = require(script.Parent.Parent.Config.Events)
 local Monetization = require(script.Parent.Parent.Config.Monetization)
 local Pinatas = require(script.Parent.Parent.Config.Pinatas)
 local Types = require(script.Parent.Types)
@@ -28,8 +29,12 @@ local BOX_ODDS: { Types.OddsRow } = {
 
 local ShopCatalog = {}
 
-function ShopCatalog.kiosks(): { string }
-	return { "dulceria", "bates", "cajas", "vip" }
+function ShopCatalog.kiosks(state: Types.GameState?): { string }
+	local list = { "dulceria", "bates", "cajas", "vip" }
+	if state ~= nil and state.eventShop == true then
+		table.insert(list, "navidad")
+	end
+	return list
 end
 
 function ShopCatalog.pedestalPrice(nextIndex: number): number
@@ -442,6 +447,65 @@ local function vip(state: Types.GameState): { ShopEntry }
 	}
 end
 
+local function ownsCosmetic(state: Types.GameState, id: string): boolean
+	local bag = state.cosmetics
+	return type(bag) == "table" and bag[id] == true
+end
+
+local function navidad(state: Types.GameState): { ShopEntry }
+	if state.eventShop ~= true then
+		return {
+			{
+				id = "closed",
+				titleKey = "shop.kiosk_navidad",
+				bodyKey = "deny.event_off",
+				action = "info",
+				owned = false,
+				enabled = false,
+			},
+		}
+	end
+	local rules = Events.PosadasPinateras
+	local bastones = state.bastones
+	local list: { ShopEntry } = {}
+	for _, pinataId in rules.ShopIds do
+		local def = Pinatas[pinataId]
+		local price = if def ~= nil and def.Price ~= nil then def.Price else 0
+		local perSec = if def ~= nil then def.CandyPerSec else 0
+		table.insert(list, {
+			id = pinataId,
+			titleKey = "pinata." .. pinataId,
+			bodyKey = "event.shop_pinata",
+			bodyArgs = { n = tostring(perSec) },
+			priceBastones = price,
+			action = "event",
+			owned = false,
+			enabled = bastones >= price,
+		})
+	end
+	local hatOwned = ownsCosmetic(state, rules.HatId)
+	table.insert(list, {
+		id = rules.HatId,
+		titleKey = "event.hat_title",
+		bodyKey = "event.shop_hat",
+		priceBastones = rules.HatPrice,
+		action = "event",
+		owned = hatOwned,
+		enabled = not hatOwned and bastones >= rules.HatPrice,
+	})
+	local hugOwned = ownsCosmetic(state, rules.HugId)
+	table.insert(list, {
+		id = rules.HugId,
+		titleKey = "event.hug_title",
+		bodyKey = "event.shop_hug",
+		priceBastones = rules.HugPrice,
+		action = "event",
+		owned = hugOwned,
+		enabled = not hugOwned and bastones >= rules.HugPrice,
+	})
+	return list
+end
+
 function ShopCatalog.entries(kiosk: string, state: Types.GameState): { ShopEntry }
 	if kiosk == "dulceria" then
 		return dulceria(state)
@@ -451,6 +515,8 @@ function ShopCatalog.entries(kiosk: string, state: Types.GameState): { ShopEntry
 		return cajas(state)
 	elseif kiosk == "vip" then
 		return vip(state)
+	elseif kiosk == "navidad" then
+		return navidad(state)
 	end
 	return {}
 end

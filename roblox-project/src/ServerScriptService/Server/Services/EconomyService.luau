@@ -11,6 +11,7 @@ local Fusion = require(Shared:WaitForChild("Gameplay"):WaitForChild("Fusion"))
 local Progression = require(Shared:WaitForChild("Gameplay"):WaitForChild("Progression"))
 
 local Server = script.Parent.Parent
+local Labels = require(Server:WaitForChild("World"):WaitForChild("Labels"))
 local Records = require(Server:WaitForChild("Data"):WaitForChild("Records"))
 local AntiCheatService = require(script.Parent:WaitForChild("AntiCheatService"))
 local BaseService = require(script.Parent:WaitForChild("BaseService"))
@@ -19,10 +20,11 @@ local Transit = require(Server:WaitForChild("World"):WaitForChild("Transit"))
 local EconomyService = {}
 
 local PROMPTS: { [string]: string } = {
-	dulceria = "Dulcería",
-	bates = "Bates",
-	cajas = "Cajas",
-	vip = "VIP",
+	dulceria = "shop.kiosk_dulceria",
+	bates = "shop.kiosk_bates",
+	cajas = "shop.kiosk_cajas",
+	vip = "shop.kiosk_vip",
+	navidad = "shop.kiosk_navidad",
 }
 
 local function track(player: Player, name: string, value: number)
@@ -125,7 +127,7 @@ local function onUpgrade(player: Player, args: { any })
 		end
 		BaseService.resync(player)
 		track(player, "economy_refiesta", data.ReFiestas)
-		Remotes.get("Announce"):FireClient(player, "¡Re-Fiesta!", "Epic")
+		Remotes.get("Announce"):FireClient(player, "announce.refiesta", "Epic")
 		return
 	else
 		return
@@ -178,8 +180,7 @@ local function bindKiosks()
 			if type(kioskId) == "string" and child:FindFirstChild("OpenShop") == nil then
 				local prompt = Instance.new("ProximityPrompt")
 				prompt.Name = "OpenShop"
-				prompt.ActionText = "Abrir"
-				prompt.ObjectText = PROMPTS[kioskId] or kioskId
+				Labels.prompt(prompt, "prompt.open", PROMPTS[kioskId] or "prompt.open")
 				prompt.HoldDuration = 0
 				prompt.MaxActivationDistance = Economy.Buy.MaxDistance
 				prompt.RequiresLineOfSight = false

@@ -44,6 +44,8 @@ local vaultFill: Frame
 local fiestaLabel: TextLabel
 local shieldLabel: TextLabel
 local fiestaWrap: Frame
+local caneWrap: Frame
+local caneLabel: TextLabel
 local hoyWrap: Frame
 local hoyLabel: TextLabel
 local shieldWrap: Frame
@@ -170,6 +172,15 @@ local function layout(m: any)
 	hoyWrap.Position = UDim2.fromOffset(left, top + m.candyH + 6)
 	hoyWrap.Size = UDim2.fromOffset(chipW, m.chip)
 	hoyLabel.TextSize = m.small
+	caneWrap.Size = UDim2.fromOffset(chipW, m.chip)
+	caneLabel.TextSize = m.small
+	if m.compact then
+		caneWrap.AnchorPoint = Vector2.zero
+		caneWrap.Position = UDim2.fromOffset(left + chipW + 8, top + m.candyH + m.chip + 12)
+	else
+		caneWrap.AnchorPoint = Vector2.zero
+		caneWrap.Position = UDim2.fromOffset(left + chipW + 8, top + m.candyH + 6)
+	end
 	if m.compact then
 		fiestaWrap.AnchorPoint = Vector2.zero
 		fiestaWrap.Position = UDim2.fromOffset(left + chipW + 8, top + m.candyH + 6)
@@ -309,14 +320,36 @@ local function refresh()
 
 	local fiesta = num(s.fiestaRemaining, -1)
 	fiestaWrap.Visible = fiesta >= 0
-	fiestaLabel.Text = if fiesta <= 0
-		then Locale.t("hud.fiesta_now")
-		else Locale.t("hud.fiesta_in", { time = UIKit.clock(fiesta) })
+	local variant = if typeof(s.fiestaVariant) == "string" then s.fiestaVariant else "fiesta"
+	local nowKey = "hud.fiesta_now"
+	local inKey = "hud.fiesta_in"
+	if variant == "posada" then
+		nowKey = "event.hud_posada"
+		inKey = "event.hud_posada_in"
+	elseif variant == "newyear" then
+		nowKey = "event.hud_newyear"
+		inKey = "event.hud_newyear_in"
+	elseif variant == "rosca" then
+		nowKey = "event.hud_rosca"
+		inKey = "event.hud_rosca_in"
+	end
+	fiestaLabel.Text = if fiesta <= 0 then Locale.t(nowKey) else Locale.t(inKey, { time = UIKit.clock(fiesta) })
+	local bastones = num(s.bastones, 0)
+	caneWrap.Visible = s.eventActive == true or bastones > 0
+	caneLabel.Text = Locale.t("hud.bastones", { n = Format(bastones) })
 	local shield = num(s.rookieShieldRemaining, 0)
 	shieldWrap.Visible = shield > 0
 	shieldLabel.Text = Locale.t("hud.shield", { time = UIKit.clock(shield) })
-	badge.Visible = RunService:IsStudio() and not UIBridge.isAuthoritative()
-	badge.Text = Locale.t("hud.local_badge")
+	local league = s.league
+	if RunService:IsStudio() and not UIBridge.isAuthoritative() then
+		badge.Visible = true
+		badge.Text = Locale.t("hud.local_badge")
+	elseif typeof(league) == "string" and league ~= "" and Locale.has("league." .. league) then
+		badge.Visible = true
+		badge.Text = Locale.t("league." .. league)
+	else
+		badge.Visible = false
+	end
 
 	local carry = s.carrying
 	carryWrap.Visible = typeof(carry) == "table"
@@ -444,6 +477,20 @@ function HUDController.start()
 		face.Selectable = false
 		caption.TextSize = 16
 		return wrap, caption
+	end
+	caneWrap, caneLabel = chip("Bastones", Theme.color.gold)
+	Theme.apply(caneLabel, "display", Theme.color.ink)
+	caneWrap.Visible = false
+	local caneFace = caneWrap:FindFirstChild("Bastones", true)
+	if caneFace and caneFace:IsA("TextButton") then
+		caneFace.Active = true
+		caneFace.Activated:Connect(function()
+			if UIState.get().eventShop == true then
+				ShopController.open("navidad")
+			else
+				DailyPanel.toggle()
+			end
+		end)
 	end
 	fiestaWrap, fiestaLabel = chip("Fiesta", Theme.color.hot_magenta)
 	Theme.apply(fiestaLabel, "display", Theme.color.white)

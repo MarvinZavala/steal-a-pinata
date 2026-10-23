@@ -139,19 +139,27 @@ function Records.applyOffline(data: PlayerData)
 	data.Stats.LastLeaveUnix = 0
 end
 
-function Records.trySpendDulces(player: Player, amount: number): boolean
+function Records.trySpend(player: Player, currency: string, amount: number): boolean
 	if amount ~= math.floor(amount) or amount <= 0 then
 		return false
 	end
-	return DataService.trySpend(player, "Dulces", amount)
+	return DataService.trySpend(player, currency, amount)
 end
 
-function Records.grantDulces(player: Player, amount: number): boolean
+function Records.trySpendDulces(player: Player, amount: number): boolean
+	return Records.trySpend(player, "Dulces", amount)
+end
+
+function Records.grantCurrency(player: Player, currency: string, amount: number): boolean
 	local whole = math.floor(amount)
 	if whole <= 0 then
 		return false
 	end
-	return DataService.grant(player, "Dulces", whole)
+	return DataService.grant(player, currency, whole)
+end
+
+function Records.grantDulces(player: Player, amount: number): boolean
+	return Records.grantCurrency(player, "Dulces", amount)
 end
 
 function Records.grantPinata(player: Player, pinataId: string, mutation: string?): (boolean, string?)

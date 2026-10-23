@@ -9,6 +9,8 @@ export type Input = {
 	distance: number,
 	maxDistance: number,
 	hasRoom: boolean,
+	-- Si viene, es el saldo de la moneda del slot (Bastones en el evento). Si no, se usa candy.
+	balance: number?,
 }
 
 function BuyRules.evaluate(input: Input): (boolean, string)
@@ -18,7 +20,8 @@ function BuyRules.evaluate(input: Input): (boolean, string)
 	if not input.hasRoom then
 		return false, "no_room"
 	end
-	if input.price ~= nil and input.candy < input.price then
+	local purse = if input.balance ~= nil then input.balance else input.candy
+	if input.price ~= nil and purse < input.price then
 		return false, "funds"
 	end
 	return true, "ok"

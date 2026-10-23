@@ -693,7 +693,7 @@
   "folder": "lobby",
   "file": "lobby_fabrica_gate",
   "mesh": "lobby_fabrica_gate_Sign",
-  "tris": 17237
+  "tris": 17236
  },
  {
   "folder": "lobby",
@@ -757,6 +757,12 @@
  },
  {
   "folder": "lobby",
+  "file": "lobby_pasarela_seg",
+  "mesh": "lobby_pasarela_seg",
+  "tris": 1604
+ },
+ {
+  "folder": "lobby",
   "file": "lobby_planter",
   "mesh": "lobby_planter",
   "tris": 2696
@@ -765,7 +771,7 @@
   "folder": "lobby",
   "file": "lobby_shop_bates",
   "mesh": "lobby_shop_bates",
-  "tris": 18188
+  "tris": 13796
  },
  {
   "folder": "lobby",
@@ -783,7 +789,7 @@
   "folder": "lobby",
   "file": "lobby_shop_cajas",
   "mesh": "lobby_shop_cajas",
-  "tris": 18956
+  "tris": 13904
  },
  {
   "folder": "lobby",
@@ -801,7 +807,7 @@
   "folder": "lobby",
   "file": "lobby_shop_dulceria",
   "mesh": "lobby_shop_dulceria",
-  "tris": 19620
+  "tris": 14332
  },
  {
   "folder": "lobby",
@@ -813,13 +819,13 @@
   "folder": "lobby",
   "file": "lobby_shop_dulceria",
   "mesh": "lobby_shop_dulceria_Sign",
-  "tris": 9434
+  "tris": 9430
  },
  {
   "folder": "lobby",
   "file": "lobby_shop_vip",
   "mesh": "lobby_shop_vip",
-  "tris": 18520
+  "tris": 14128
  },
  {
   "folder": "lobby",

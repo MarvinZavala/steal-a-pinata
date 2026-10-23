@@ -705,7 +705,7 @@ def build_module(name, render_it=True):
                 relax_question_mark(o)
     size = base_origin(objs, keep_xy=name.startswith("lobby_shop") or name == "lobby_fabrica_gate")
     info = export(objs, name, "lobby")
-    bpy.ops.wm.save_as_mainfile(filepath=f"{BLEND}/{name}.blend")
+    if render_it: bpy.ops.wm.save_as_mainfile(filepath=f"{BLEND}/{name}.blend")
     meta = {"name": name, "size_studs": [round(size.x, 2), round(size.z, 2), round(size.y, 2)], "tris": info}
     print("META", json.dumps(meta))
     if render_it:

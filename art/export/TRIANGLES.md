@@ -119,7 +119,7 @@ Roblox limit: 20,000 triangles per MeshPart. Each row = one MeshPart after impor
 | lobby | lobby_candy_cart | lobby_candy_cart | 4,132 | ✅ |
 | lobby | lobby_fabrica_gate | lobby_fabrica_gate | 7,788 | ✅ |
 | lobby | lobby_fabrica_gate | lobby_fabrica_gate_Neon | 1,280 | ✅ |
-| lobby | lobby_fabrica_gate | lobby_fabrica_gate_Sign | 17,237 | ✅ |
+| lobby | lobby_fabrica_gate | lobby_fabrica_gate_Sign | 17,236 | ✅ |
 | lobby | lobby_flamboyan | lobby_flamboyan | 1,696 | ✅ |
 | lobby | lobby_fountain | lobby_fountain | 9,764 | ✅ |
 | lobby | lobby_fountain | lobby_fountain_Water | 2,228 | ✅ |
@@ -130,17 +130,18 @@ Roblox limit: 20,000 triangles per MeshPart. Each row = one MeshPart after impor
 | lobby | lobby_palm | lobby_palm | 4,398 | ✅ |
 | lobby | lobby_papel_garland | lobby_papel_garland | 306 | ✅ |
 | lobby | lobby_papel_garland | lobby_papel_garland_Flags | 176 | ✅ |
+| lobby | lobby_pasarela_seg | lobby_pasarela_seg | 1,604 | ✅ |
 | lobby | lobby_planter | lobby_planter | 2,696 | ✅ |
-| lobby | lobby_shop_bates | lobby_shop_bates | 18,188 | ✅ |
+| lobby | lobby_shop_bates | lobby_shop_bates | 13,796 | ✅ |
 | lobby | lobby_shop_bates | lobby_shop_bates_Neon | 744 | ✅ |
 | lobby | lobby_shop_bates | lobby_shop_bates_Sign | 7,656 | ✅ |
-| lobby | lobby_shop_cajas | lobby_shop_cajas | 18,956 | ✅ |
+| lobby | lobby_shop_cajas | lobby_shop_cajas | 13,904 | ✅ |
 | lobby | lobby_shop_cajas | lobby_shop_cajas_Neon | 744 | ✅ |
 | lobby | lobby_shop_cajas | lobby_shop_cajas_Sign | 7,325 | ✅ |
-| lobby | lobby_shop_dulceria | lobby_shop_dulceria | 19,620 | ✅ |
+| lobby | lobby_shop_dulceria | lobby_shop_dulceria | 14,332 | ✅ |
 | lobby | lobby_shop_dulceria | lobby_shop_dulceria_Neon | 744 | ✅ |
-| lobby | lobby_shop_dulceria | lobby_shop_dulceria_Sign | 9,434 | ✅ |
-| lobby | lobby_shop_vip | lobby_shop_vip | 18,520 | ✅ |
+| lobby | lobby_shop_dulceria | lobby_shop_dulceria_Sign | 9,430 | ✅ |
+| lobby | lobby_shop_vip | lobby_shop_vip | 14,128 | ✅ |
 | lobby | lobby_shop_vip | lobby_shop_vip_Neon | 1,344 | ✅ |
 | lobby | lobby_shop_vip | lobby_shop_vip_Sign | 2,960 | ✅ |
 | lobby | lobby_string_lights | lobby_string_lights | 546 | ✅ |
@@ -153,4 +154,4 @@ Roblox limit: 20,000 triangles per MeshPart. Each row = one MeshPart after impor
 | props | papel_picado_banner | papel_picado_banner | 816 | ✅ |
 | props | papel_picado_banner | papel_picado_Flags | 144 | ✅ |
 
-**148 MeshParts, max 19,620 tris, 0 over the limit.**
+**149 MeshParts, max 19,052 tris, 0 over the limit.**

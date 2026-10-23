@@ -48,6 +48,25 @@ local EXPECTED = {
 	"cactus_abrazos",
 	"aguacaton",
 	"pulpo_dj",
+	"saltena_jugosa",
+	"cucurucho_mani",
+	"arepa_reina",
+	"completito_italiano",
+	"platanito_merenguero",
+	"baleada_con_todo",
+	"coqui_bocina",
+	"matecito_termero",
+	"gallo_pinton",
+	"aranita_nanduti",
+	"piquero_patazul",
+	"alpaca_esponjada",
+	"carretica_pura_vida",
+	"harpia_despeinada",
+	"carpincho_tranqui",
+	"quetzalete",
+	"chivita_rumbera",
+	"boto_bailao",
+	"ajolote_trajinero",
 }
 
 local MODELED: { [string]: boolean } = {
@@ -78,6 +97,25 @@ local MODELED: { [string]: boolean } = {
 	cactus_abrazos = true,
 	aguacaton = true,
 	pulpo_dj = true,
+	saltena_jugosa = true,
+	cucurucho_mani = true,
+	arepa_reina = true,
+	completito_italiano = true,
+	platanito_merenguero = true,
+	baleada_con_todo = true,
+	coqui_bocina = true,
+	matecito_termero = true,
+	gallo_pinton = true,
+	aranita_nanduti = true,
+	piquero_patazul = true,
+	alpaca_esponjada = true,
+	carretica_pura_vida = true,
+	harpia_despeinada = true,
+	carpincho_tranqui = true,
+	quetzalete = true,
+	chivita_rumbera = true,
+	boto_bailao = true,
+	ajolote_trajinero = true,
 }
 
 local NEON: { [string]: boolean } = {
@@ -107,6 +145,19 @@ local NEON: { [string]: boolean } = {
 	cactus_abrazos = true,
 	aguacaton = true,
 	pulpo_dj = true,
+	coqui_bocina = true,
+	matecito_termero = true,
+	gallo_pinton = true,
+	aranita_nanduti = true,
+	piquero_patazul = true,
+	alpaca_esponjada = true,
+	carretica_pura_vida = true,
+	harpia_despeinada = true,
+	carpincho_tranqui = true,
+	quetzalete = true,
+	chivita_rumbera = true,
+	boto_bailao = true,
+	ajolote_trajinero = true,
 }
 
 local RARITIES: { [string]: boolean } = {
@@ -120,7 +171,7 @@ local RARITIES: { [string]: boolean } = {
 	Event = true,
 }
 
-H.check("hay 41 piñatitos y 27 modeladas", function()
+H.check("hay 60 piñatitos y 46 modeladas", function()
 	local seen: { [string]: boolean } = {}
 	local count = 0
 	local modeled = 0
@@ -152,8 +203,8 @@ H.check("hay 41 piñatitos y 27 modeladas", function()
 			H.eq(mesh.Neon, nil, id)
 		end
 	end
-	H.eq(count, 41)
-	H.eq(modeled, 27)
+	H.eq(count, 60)
+	H.eq(modeled, 46)
 	for _, id in EXPECTED do
 		H.truthy(seen[id] == true, id)
 	end
@@ -186,6 +237,24 @@ H.check("hay 41 piñatitos y 27 modeladas", function()
 	H.eq(Pinatas.aguacaton.Rarity, "Mythic")
 	H.eq(Pinatas.pulpo_dj.Price, nil)
 	H.eq(Pinatas.pulpo_dj.Set, "Random")
+	-- Colección LatAm: una por país (19)
+	local latam = 0
+	for _, def in Pinatas do
+		if def.Set == "LatAm" then
+			latam += 1
+		end
+	end
+	H.eq(latam, 19)
+	H.eq(Pinatas.saltena_jugosa.Rarity, "Common")
+	H.eq(Pinatas.baleada_con_todo.Rarity, "Uncommon")
+	H.eq(Pinatas.coqui_bocina.Price, 5200)
+	H.eq(Pinatas.alpaca_esponjada.Rarity, "Epic")
+	H.eq(Pinatas.carpincho_tranqui.CandyPerSec, 3400)
+	H.eq(Pinatas.quetzalete.Rarity, "Mythic")
+	H.eq(Pinatas.chivita_rumbera.Price, 8500000)
+	H.eq(Pinatas.boto_bailao.Price, nil)
+	H.eq(Pinatas.ajolote_trajinero.Rarity, "Secret")
+	H.eq(Pinatas.ajolote_trajinero.Price, nil)
 end)
 
 H.check("cada piñata tiene nombre traducido en el catálogo", function()

@@ -319,5 +319,227 @@
    "pulpo_dj": 17520,
    "pulpo_dj_Neon": 1220
   }
+ },
+ "saltena_jugosa": {
+  "name": "saltena_jugosa",
+  "size_studs": [
+   3.06,
+   3.27,
+   1.69
+  ],
+  "tris": {
+   "saltena_jugosa": 12760
+  }
+ },
+ "cucurucho_mani": {
+  "name": "cucurucho_mani",
+  "size_studs": [
+   3.07,
+   4.75,
+   2.22
+  ],
+  "tris": {
+   "cucurucho_mani": 14264
+  }
+ },
+ "arepa_reina": {
+  "name": "arepa_reina",
+  "size_studs": [
+   3.23,
+   3.97,
+   1.04
+  ],
+  "tris": {
+   "arepa_reina": 12548
+  }
+ },
+ "completito_italiano": {
+  "name": "completito_italiano",
+  "size_studs": [
+   4.35,
+   2.97,
+   1.67
+  ],
+  "tris": {
+   "completito_italiano": 13614
+  }
+ },
+ "platanito_merenguero": {
+  "name": "platanito_merenguero",
+  "size_studs": [
+   3.88,
+   4.49,
+   1.72
+  ],
+  "tris": {
+   "platanito_merenguero": 12170
+  }
+ },
+ "baleada_con_todo": {
+  "name": "baleada_con_todo",
+  "size_studs": [
+   4.09,
+   3.59,
+   1.2
+  ],
+  "tris": {
+   "baleada_con_todo": 15300
+  }
+ },
+ "coqui_bocina": {
+  "name": "coqui_bocina",
+  "size_studs": [
+   3.9,
+   3.56,
+   3.33
+  ],
+  "tris": {
+   "coqui_bocina": 15790,
+   "coqui_bocina_Neon": 1236
+  }
+ },
+ "matecito_termero": {
+  "name": "matecito_termero",
+  "size_studs": [
+   3.67,
+   4.33,
+   2.39
+  ],
+  "tris": {
+   "matecito_termero": 13314,
+   "matecito_termero_Neon": 84
+  }
+ },
+ "gallo_pinton": {
+  "name": "gallo_pinton",
+  "size_studs": [
+   4.02,
+   4.27,
+   3.82
+  ],
+  "tris": {
+   "gallo_pinton": 14644,
+   "gallo_pinton_Neon": 368
+  }
+ },
+ "aranita_nanduti": {
+  "name": "aranita_nanduti",
+  "size_studs": [
+   4.28,
+   5.33,
+   3.31
+  ],
+  "tris": {
+   "aranita_nanduti": 17006,
+   "aranita_nanduti_Neon": 180
+  }
+ },
+ "piquero_patazul": {
+  "name": "piquero_patazul",
+  "size_studs": [
+   4.2,
+   4.61,
+   3.25
+  ],
+  "tris": {
+   "piquero_patazul": 9862,
+   "piquero_patazul_Neon": 220
+  }
+ },
+ "alpaca_esponjada": {
+  "name": "alpaca_esponjada",
+  "size_studs": [
+   3.9,
+   5.32,
+   3.24
+  ],
+  "tris": {
+   "alpaca_esponjada": 16420,
+   "alpaca_esponjada_Neon": 144
+  }
+ },
+ "carretica_pura_vida": {
+  "name": "carretica_pura_vida",
+  "size_studs": [
+   4.1,
+   4.25,
+   3.68
+  ],
+  "tris": {
+   "carretica_pura_vida": 17108,
+   "carretica_pura_vida_Neon": 84
+  }
+ },
+ "harpia_despeinada": {
+  "name": "harpia_despeinada",
+  "size_studs": [
+   3.6,
+   5.22,
+   2.55
+  ],
+  "tris": {
+   "harpia_despeinada": 11332,
+   "harpia_despeinada_Neon": 84
+  }
+ },
+ "carpincho_tranqui": {
+  "name": "carpincho_tranqui",
+  "size_studs": [
+   4.2,
+   4.18,
+   4.2
+  ],
+  "tris": {
+   "carpincho_tranqui": 11948,
+   "carpincho_tranqui_Neon": 156
+  }
+ },
+ "quetzalete": {
+  "name": "quetzalete",
+  "size_studs": [
+   4.77,
+   5.2,
+   3.72
+  ],
+  "tris": {
+   "quetzalete": 9772,
+   "quetzalete_Neon": 716
+  }
+ },
+ "chivita_rumbera": {
+  "name": "chivita_rumbera",
+  "size_studs": [
+   3.61,
+   4.17,
+   4.68
+  ],
+  "tris": {
+   "chivita_rumbera": 13976,
+   "chivita_rumbera_Neon": 2976
+  }
+ },
+ "boto_bailao": {
+  "name": "boto_bailao",
+  "size_studs": [
+   3.8,
+   4.67,
+   3.8
+  ],
+  "tris": {
+   "boto_bailao": 9338,
+   "boto_bailao_Neon": 472
+  }
+ },
+ "ajolote_trajinero": {
+  "name": "ajolote_trajinero",
+  "size_studs": [
+   5.0,
+   4.89,
+   2.9
+  ],
+  "tris": {
+   "ajolote_trajinero": 17104,
+   "ajolote_trajinero_Neon": 564
+  }
  }
 }

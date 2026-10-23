@@ -1,7 +1,8 @@
 """Generates papel picado atlas (RGBA, cut-outs in alpha) - 4 designs x 1 row, 1024x512."""
+import os
 from PIL import Image, ImageDraw
 import math
-OUT = "/workspace/roblox/steal-a-pinata/art/textures/papel_picado_atlas.png"
+OUT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "textures", "papel_picado_atlas.png")
 W, H = 1024, 512; FW = W // 4
 cols = ["#FF3E9A", "#FFE14D", "#16D3E8", "#8BE530"]
 img = Image.new("RGBA", (W, H), (0, 0, 0, 0))

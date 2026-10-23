@@ -3,9 +3,10 @@
  - plaza_cobble_*  : 2048px, cream cobblestones for paths (StudsPerTile 16)
  - plaza_mosaic_color : 4096px circular sun mosaic medallion for the fountain court (decal on a disc)
 """
+import os
 import numpy as np, math
 from PIL import Image, ImageFilter
-OUT = "/workspace/roblox/steal-a-pinata/art/textures/plaza"
+OUT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "textures", "plaza")
 rng = np.random.default_rng(7)
 
 def hexc(h): h = h.lstrip('#'); return np.array([int(h[i:i+2], 16) for i in (0, 2, 4)], np.float32) / 255

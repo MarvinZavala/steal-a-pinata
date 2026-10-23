@@ -16,6 +16,19 @@ SETS = {
         ("caracol_turbo", "Caracol Turbo", "ÉPICO"), ("cactus_abrazos", "Cactus Abrazos", "LEGENDARIO"),
         ("aguacaton", "Aguacatón", "MÍTICO"), ("pulpo_dj", "Pulpo DJ", "SECRETO")],
         rot={"caracol_turbo": -38}),
+    # Colección LatAm: 19 piñatas en dos filas (label_set.py latam las apila en art/renders/lineup_latam.png)
+    "latam_a": dict(out="lineup_latam_a", res=(4400, 1150), bg=("#C2187A", "#FF7A1A"), order=[
+        ("saltena_jugosa", "Salteña Jugosa", "COMÚN"), ("cucurucho_mani", "Cucurucho Maní", "COMÚN"), ("arepa_reina", "Arepa Reina", "COMÚN"),
+        ("completito_italiano", "Completito Italiano", "POCO COMÚN"), ("platanito_merenguero", "Platanito Merenguero", "POCO COMÚN"),
+        ("baleada_con_todo", "Baleada Con Todo", "POCO COMÚN"), ("coqui_bocina", "Coquí Bocina", "RARO"), ("matecito_termero", "Matecito Termero", "RARO"),
+        ("gallo_pinton", "Gallo Pintón", "RARO"), ("aranita_nanduti", "Arañita Ñandutí", "ÉPICO")],
+        rot={"gallo_pinton": -25, "completito_italiano": -15}, side_keys=(-15, 15)),
+    "latam_b": dict(out="lineup_latam_b", res=(4400, 1150), bg=("#C2187A", "#FF7A1A"), order=[
+        ("piquero_patazul", "Piquero Patazul", "ÉPICO"), ("alpaca_esponjada", "Alpaca Esponjada", "ÉPICO"),
+        ("carretica_pura_vida", "Carretica Pura Vida", "LEGENDARIO"), ("harpia_despeinada", "Harpía Despeinada", "LEGENDARIO"),
+        ("carpincho_tranqui", "Carpincho Tranqui", "LEGENDARIO"), ("quetzalete", "Quetzalete", "MÍTICO"), ("chivita_rumbera", "Chivita Rumbera", "MÍTICO"),
+        ("boto_bailao", "Boto Bailão", "SECRETO"), ("ajolote_trajinero", "Ajolote Trajinero", "SECRETO")],
+        rot={"carretica_pura_vida": -30, "chivita_rumbera": -30}, side_keys=(-15, 15)),
 }
 PEDCOL = {"COMÚN": "donkey_grey", "POCO COMÚN": "lime", "RARO": "sky", "ÉPICO": "grape", "LEGENDARIO": "gold", "EVENTO NAVIDAD": "xmas_red", "MÍTICO": "fiesta_pink", "SECRETO": "ink"}
 GLOW = {"ÉPICO": "neon_pink", "LEGENDARIO": "neon_gold", "EVENTO NAVIDAD": "neon_green", "MÍTICO": "neon_pink", "SECRETO": "neon_cyan"}
@@ -43,6 +56,10 @@ def run(setname):
     setup_render(cfg["res"], int(os.environ.get("SAMPLES", "128")))
     bpy.context.scene.view_settings.view_transform = "AgX"; bpy.context.scene.view_settings.look = "AgX - Punchy"
     backdrop(*cfg["bg"], size=200); lights(scale=3.2, center=(0, 0, 2.5))
+    for k, xo in enumerate(cfg.get("side_keys", ())):   # wide sets: extra key lights so the ends aren't dark
+        ld = bpy.data.lights.new(f"KeyX{k}", 'AREA'); ld.energy = 1300 * 3.2 * 3.2 * .55; ld.size = 4 * 3.2
+        o = bpy.data.objects.new(f"KeyX{k}", ld); link(o); o.location = Vector((xo - 16, -19, 22))
+        o.rotation_euler = (Vector((xo, 0, 2.5)) - o.location).to_track_quat('-Z', 'Y').to_euler()
     cd = bpy.data.cameras.new("Cam"); cd.lens = 50; cam = bpy.data.objects.new("Cam", cd); link(cam); bpy.context.scene.camera = cam
     fov_h = 2 * math.atan(36 / 2 / 50)
     dist = (total / 2 + 2.2) / math.tan(fov_h / 2)

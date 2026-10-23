@@ -14,9 +14,14 @@ local ServerStorage = game:GetService("ServerStorage")
 local ChangeHistoryService = game:GetService("ChangeHistoryService")
 
 local Config = ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Config")
-local Pinatas = require(Config:WaitForChild("Pinatas"))
-local Rarities = require(Config:WaitForChild("Rarities"))
-local Assets = require(Config:WaitForChild("Assets"))
+-- require de una copia: la Command Bar y el MCP guardan en caché el módulo de la primera corrida y no verían
+-- piñatas ni IDs nuevos que Rojo sincronizó después.
+local function fresh(name: string): any
+	return require(Config:WaitForChild(name):Clone() :: ModuleScript)
+end
+local Pinatas = fresh("Pinatas")
+local Rarities = fresh("Rarities")
+local Assets = fresh("Assets")
 
 local PROPS = {
 	bat_wood = true,

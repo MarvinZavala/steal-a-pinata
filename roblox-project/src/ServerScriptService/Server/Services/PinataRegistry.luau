@@ -10,8 +10,8 @@ local Pinatas = require(ReplicatedStorage.Shared.Config.Pinatas)
 local Assets = require(ReplicatedStorage.Shared.Config.Assets)
 local Rarities = require(ReplicatedStorage.Shared.Config.Rarities)
 
--- 9 de fase 1 + 6 de Temporada Meme 1 (bloque al final de Pinatas.luau).
-local EXPECTED_MODELED = 27
+-- 27 de fase 1-3 (clásicas, Memes, Memes2, Random) + 19 de la Colección LatAm.
+local EXPECTED_MODELED = 46
 
 local PinataRegistry = {}
 

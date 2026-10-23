@@ -3,7 +3,7 @@
 -- Remotes.init() crea las instancias y el anti-cheat escucha los C2S.
 -- Este módulo no crea RemoteEvents y no se llama desde el servidor.
 -- Contrato: roblox-project/UI_INTEGRATION.md
--- No duplicar LogFunnelStepEvent en el servidor para el mismo paso.
+-- El embudo de onboarding lo registra el servidor al recibir RequestFTUEStep (una vez por paso).
 
 local Payload = require(script.Parent.Payload)
 

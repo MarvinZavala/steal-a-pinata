@@ -2,7 +2,8 @@ import sys, os, math, random, json
 sys.path.insert(0, os.path.dirname(__file__))
 from plib import *
 from mathutils import Vector, Matrix
-FONT = "/usr/share/fonts/truetype/sand-box/google/Luckiest Guy/LuckiestGuy-Regular.ttf"
+# Luckiest Guy (Apache 2.0, google/fonts) va en el repo para que el texto 3D salga igual en cualquier máquina.
+FONT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "fonts", "LuckiestGuy-Regular.ttf")
 
 def text_mesh(name, body, size=1.0, extrude=.12, col="sun_yellow", loc=(0,0,0), rot=(90,0,0), bevel=.02, res=2, bres=0):
     cu = bpy.data.curves.new(name, 'FONT'); cu.body = body
@@ -193,10 +194,12 @@ def finish(name, parts, glow, sub, cam=(30, 18), bg=("#23A6FF", "#8FD8FF"), rend
         else: assign_mat(o, material_palette())
         smooth(o, 45)
     info = export(objs, name, sub)
-    bpy.ops.wm.save_as_mainfile(filepath=f"{BLEND}/{name}.blend")
+    # EXPORT_ONLY=1: solo FBX/OBJ (cambios de pipeline que no cambian cómo se ve el render ni el .blend fuente).
+    export_only = bool(os.environ.get("EXPORT_ONLY"))
+    if not export_only: bpy.ops.wm.save_as_mainfile(filepath=f"{BLEND}/{name}.blend")
     meta = {"name": name, "size_studs": [round(size.x, 2), round(size.z, 2), round(size.y, 2)], "tris": info}
     print("META", json.dumps(meta))
-    if render_it:
+    if render_it and not export_only:
         if render_rot:
             for o in objs:
                 o.matrix_world = Matrix.Translation((0, 0, render_rot[1])) @ Matrix.Rotation(math.radians(render_rot[0]), 4, 'Y') @ o.matrix_world

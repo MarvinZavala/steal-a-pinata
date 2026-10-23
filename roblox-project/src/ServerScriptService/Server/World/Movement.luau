@@ -30,7 +30,18 @@ end
 
 function Movement.applyWorld()
 	workspace.Gravity = Tuning.Gravity
-	workspace.FallenPartsDestroyHeight = Tuning.FallenPartsDestroyHeight
+	-- Un Script ya no puede escribir FallenPartsDestroyHeight (pide la capability PluginOrOpenCloud) y el error
+	-- cortaba el init del servidor. El valor va en default.project.json; acá solo se avisa si el place quedó distinto.
+	local applied = pcall(function()
+		if workspace.FallenPartsDestroyHeight ~= Tuning.FallenPartsDestroyHeight then
+			workspace.FallenPartsDestroyHeight = Tuning.FallenPartsDestroyHeight
+		end
+	end)
+	if not applied then
+		warn(
+			`[Movement] FallenPartsDestroyHeight = {workspace.FallenPartsDestroyHeight}; Tuning pide {Tuning.FallenPartsDestroyHeight} (fijalo en default.project.json)`
+		)
+	end
 	local starter = game:GetService("StarterPlayer")
 	starter.CharacterWalkSpeed = Tuning.WalkSpeed
 	starter.CharacterJumpHeight = Tuning.JumpHeight

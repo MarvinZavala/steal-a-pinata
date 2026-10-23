@@ -60,7 +60,7 @@ src/
 |---|---|
 | Tooling (Rojo 7, Wally, Selene, StyLua, Lune, CI) | ✅ WP-01 |
 | DataService + ProfileStore (esquema v3, migraciones, mock, autosave, EndSession) | ✅ WP-02. El dupe de 2 servers se prueba en Studio con API Services ([TESTING.md](TESTING.md)) |
-| Registro de 60 piñatas (23 de fase 1 + 6 Temporada Meme 1 + 8 Temporada Meme 2 + 4 Colección Random + 19 Colección LatAm), mesh ids placeholder y modelos en ServerStorage | ✅ WP-03. Los FBX se importan aparte; `rbxassetid://0` hasta subirlos (`art/export/creatures/<id>.fbx`) |
+| Registro de 60 piñatas, las 60 modeladas (23 de fase 1 + 6 Temporada Meme 1 + 8 Temporada Meme 2 + 4 Colección Random + 19 Colección LatAm), mesh ids y modelos en ServerStorage | ✅ WP-03. Los FBX se importan aparte; `rbxassetid://0` hasta subirlos (`art/export/creatures/<id>.fbx`) |
 | Anti-cheat (payload, leaky bucket, honeypots, movimiento, carga, puntaje) | ✅ WP-10a y WP-10b. La vista de admin está en `ServerStorage.FairPlayDebug` ([FAIRPLAY.md](FAIRPLAY.md)) |
 | WP-04 a WP-08 (bases, Pasarela, robo, bate, candado) + gravedad | ✅ ver `PLAYTEST.md` |
 | Ligas, escudo de novato y servers por Poder | ✅ WP-16. En Studio no teletransporta ([FAIRPLAY.md](FAIRPLAY.md)) |

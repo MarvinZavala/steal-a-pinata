@@ -13,6 +13,7 @@ local SpawnWeights = require(Shared:WaitForChild("Gameplay"):WaitForChild("Spawn
 local BuyRules = require(Shared:WaitForChild("Gameplay"):WaitForChild("BuyRules"))
 local EventCalendar = require(Shared:WaitForChild("Gameplay"):WaitForChild("EventCalendar"))
 local Events = require(Shared:WaitForChild("Config"):WaitForChild("Events"))
+local Layout = require(Shared:WaitForChild("Config"):WaitForChild("WorldLayout"))
 
 local Server = script.Parent.Parent
 local Records = require(Server:WaitForChild("Data"):WaitForChild("Records"))
@@ -37,7 +38,12 @@ type Slot = {
 	rarity: string,
 	born: number,
 	sold: boolean,
+	shown: boolean,
+	onShown: (() -> ())?,
 }
+
+-- Las piñatas miran a -Z del modelo; la plaza queda del lado opuesto a la Pasarela.
+local FACING = CFrame.lookAt(Vector3.zero, Vector3.new(0, 0, -math.sign(Layout.PasarelaZ)))
 
 local slots: { Slot } = {}
 local nextId = 1
@@ -128,12 +134,40 @@ local function rollPinata(): (string?, string)
 	return id, rarity
 end
 
+-- Una piñata nueva entra al menos MinGapSec después de la última; si tiene que esperar, queda oculta.
+local function nextBorn(): number
+	local newest = -math.huge
+	for _, slot in slots do
+		newest = math.max(newest, slot.born)
+	end
+	return math.max(os.clock(), newest + Economy.Conveyor.MinGapSec)
+end
+
+local function pending(): boolean
+	for _, slot in slots do
+		if not slot.shown then
+			return true
+		end
+	end
+	return false
+end
+
+local function reveal(slot: Slot)
+	slot.shown = true
+	local fn = slot.onShown
+	slot.onShown = nil
+	if fn ~= nil then
+		task.spawn(fn)
+	end
+end
+
 local function insertSlot(
 	pinataId: string,
 	rarity: string,
 	mutation: string?,
 	price: number?,
-	currency: string
+	currency: string,
+	onShown: (() -> ())?
 ): number?
 	local current = BaseService.getWorld()
 	if current == nil then
@@ -146,9 +180,13 @@ local function insertSlot(
 	local model = PinataVisual.create(pinataId, mutation)
 	local id = nextId
 	nextId += 1
+	local born = nextBorn()
+	local shown = born <= os.clock()
 	model:SetAttribute("ConveyorId", id)
-	model:PivotTo(CFrame.new(current.spawnPos))
-	model.Parent = current.folder
+	model:PivotTo(CFrame.new(current.spawnPos) * FACING)
+	if shown then
+		model.Parent = current.folder
+	end
 	local primary = model.PrimaryPart
 	if primary ~= nil then
 		local prompt = Instance.new("ProximityPrompt")
@@ -171,9 +209,14 @@ local function insertSlot(
 		price = price,
 		currency = currency,
 		rarity = rarity,
-		born = os.clock(),
+		born = born,
 		sold = false,
+		shown = false,
+		onShown = onShown,
 	})
+	if shown then
+		reveal(slots[#slots])
+	end
 	return id
 end
 
@@ -185,14 +228,15 @@ local function spawnSlot(pinataId: string, rarity: string)
 end
 
 -- La intro pone un slot concreto. free = true no cobra aunque el roster tenga precio.
-function ConveyorService.offer(pinataId: string, mutation: string?, free: boolean): number?
+-- onShown corre cuando la piñata aparece de verdad (puede esperar MinGapSec detrás de otra).
+function ConveyorService.offer(pinataId: string, mutation: string?, free: boolean, onShown: (() -> ())?): number?
 	local def = Pinatas[pinataId]
 	if def == nil then
 		return nil
 	end
 	local price = if free then nil else def.Price
 	local currency = if def.Currency == "Bastones" then "Bastones" else "Dulces"
-	return insertSlot(pinataId, def.Rarity, mutation, price, currency)
+	return insertSlot(pinataId, def.Rarity, mutation, price, currency, onShown)
 end
 
 function ConveyorService.tryBuy(player: Player, slotId: number)
@@ -238,8 +282,8 @@ function ConveyorService.tryBuy(player: Player, slotId: number)
 	local accepted, reject =
 		BaseService.acceptPurchase(player, slot.pinataId, slot.mutation, slot.model, slot.price, slot.currency)
 	if not accepted then
+		-- Sigue donde iba: volver a born = ahora la mandaba al inicio, encima de otra, y se podía retener.
 		slot.sold = false
-		slot.born = os.clock()
 		table.insert(slots, slot)
 		-- "funds" / "no_room" son rechazos normales, no un exploit.
 		if distance >= 200 then
@@ -256,16 +300,27 @@ local function step()
 	local cross = Economy.Conveyor.CrossSeconds
 	local keep: { Slot } = {}
 	for _, slot in slots do
-		if slot.sold or slot.model.Parent == nil then
+		if slot.sold then
 			continue
 		end
 		local alpha = (os.clock() - slot.born) / cross
+		if alpha < 0 then
+			table.insert(keep, slot)
+			continue
+		end
+		if slot.model.Parent == nil then
+			if slot.shown then
+				continue
+			end
+			slot.model.Parent = current.folder
+			reveal(slot)
+		end
 		if alpha >= 1 then
 			slot.model:Destroy()
 		else
 			local x = current.spawnPos.X + (current.exitPos.X - current.spawnPos.X) * alpha
 			local bob = math.sin(os.clock() * 4 + slot.id) * 0.25
-			slot.model:PivotTo(CFrame.new(x, current.height + bob, current.spawnPos.Z))
+			slot.model:PivotTo(CFrame.new(x, current.height + bob, current.spawnPos.Z) * FACING)
 			table.insert(keep, slot)
 		end
 	end
@@ -288,6 +343,12 @@ end
 function ConveyorService.start()
 	task.spawn(function()
 		while true do
+			-- Con una piñata de la intro esperando su turno no se sortea otra: la cola no crece.
+			if pending() then
+				step()
+				task.wait(Economy.Conveyor.SpawnEverySec)
+				continue
+			end
 			local pinataId, rarity = rollPinata()
 			local headline = SpawnWeights.isHeadline(rarity) or pinataId == Events.PosadasPinateras.RunwayId
 			if pinataId ~= nil and headline then

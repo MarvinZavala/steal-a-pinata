@@ -29,12 +29,12 @@ El CI (`.github/workflows/ci.yml`) corre selene, StyLua, los tests y `rojo build
 Play (F5). En el output del servidor tienen que aparecer, sin errores rojos:
 
 - `[WP-03] registro: 60 piñatas`
-- `[WP-03] smoke ok: 46 piñatas instanciadas`
+- `[WP-03] smoke ok: 60 piñatas instanciadas`
 - `[WP-02] ProfileStore.Mock`
 - `[WP-10a] anti-cheat escuchando`
 - `[Steal a Piñata] server listo`
 
-En el Explorer, **ServerStorage → Pinatas**: 29 Models. Cada uno tiene `PrimaryPart` = `Root` (en la base), attributes `PinataId`, `Rarity` y `CandyPerSec`. Las que llevan neón (`cohetin`, `toro`, `torogoz`, `sombra`, `renito`, `izalco`, `pixelin`, y las 6 de Temporada Meme 1) tienen una parte `*_Neon` con Material Neon. Mientras el mesh siga en `rbxassetid://0` (`Shared/Config/Assets.luau`), el cuerpo es un Part con attribute `MeshPlaceholder`. Cuando subas el FBX, reemplazá ese id y Rojo + Play vuelven a armar un MeshPart. Si ya importaste el modelo con el nombre del id (`toro`, etc.), el registry lo reutiliza y solo completa attributes, Root y el material Neon.
+En el Explorer, **ServerStorage → Pinatas**: 60 Models. Cada uno tiene `PrimaryPart` = `Root` (en la base), attributes `PinataId`, `Rarity` y `CandyPerSec`. Las que llevan neón (las que tienen `Neon` en `Shared/Config/Assets.luau`) tienen una parte `*_Neon` con Material Neon. Mientras el mesh siga en `rbxassetid://0` (`Shared/Config/Assets.luau`), el cuerpo es un Part con attribute `MeshPlaceholder`. Cuando subas el FBX, reemplazá ese id y Rojo + Play vuelven a armar un MeshPart. Si ya importaste el modelo con el nombre del id (`toro`, etc.), el registry lo reutiliza y solo completa attributes, Root y el material Neon.
 
 ## WP-01
 
@@ -70,7 +70,7 @@ Si la migración rechaza el perfil, el jugador es kickeado y **no** se reemplaza
 
 ## WP-03 — registro
 
-El smoke del output instancia las 46 modeladas (estrellita, burrito, michi, cohetin, dragon, toro, torogoz, sombra, renito; Temporada Meme 1: michi_aplausos, seis_siete, manzanin_iq, mapache_nel, fichadito, gemelos_pupusa; Temporada Meme 2: garrobita_terenga, fantasmita_bu, cochinito_quincena, lic_dos_peces, pinovela, chancla_teledirigida, aurazoso, abuelita_en_vivo; Colección Random: caracol_turbo, cactus_abrazos, aguacaton, pulpo_dj; Colección LatAm: saltena_jugosa, cucurucho_mani, arepa_reina, completito_italiano, platanito_merenguero, baleada_con_todo, coqui_bocina, matecito_termero, gallo_pinton, aranita_nanduti, piquero_patazul, alpaca_esponjada, carretica_pura_vida, harpia_despeinada, carpincho_tranqui, quetzalete, chivita_rumbera, boto_bailao, ajolote_trajinero) y revisa PrimaryPart, `PinataId`, `Rarity` y `_Neon`. Los tests de `lune` fijan las 60 entradas contra `Pinatas.luau` y que cada una tenga un mesh id en `Assets.luau`.
+El smoke del output instancia las 60 modeladas (estrellita, burrito, michi, cohetin, dragon, toro, torogoz, sombra, renito; Temporada Meme 1: michi_aplausos, seis_siete, manzanin_iq, mapache_nel, fichadito, gemelos_pupusa; Temporada Meme 2: garrobita_terenga, fantasmita_bu, cochinito_quincena, lic_dos_peces, pinovela, chancla_teledirigida, aurazoso, abuelita_en_vivo; Colección Random: caracol_turbo, cactus_abrazos, aguacaton, pulpo_dj; Colección LatAm: saltena_jugosa, cucurucho_mani, arepa_reina, completito_italiano, platanito_merenguero, baleada_con_todo, coqui_bocina, matecito_termero, gallo_pinton, aranita_nanduti, piquero_patazul, alpaca_esponjada, carretica_pura_vida, harpia_despeinada, carpincho_tranqui, quetzalete, chivita_rumbera, boto_bailao, ajolote_trajinero; las 14 del roster que faltaban: pollito, sandia, elotito, ranita, pupusita, paleton, tortuga, pulpo, robo, cadejo, izalco, pixelin, tamalito, jengibrin) y revisa PrimaryPart, `PinataId`, `Rarity` y `_Neon`. Los tests de `lune` fijan las 60 entradas contra `Pinatas.luau` y que cada una tenga un mesh id en `Assets.luau`.
 
 ## WP-10a — anti-cheat
 

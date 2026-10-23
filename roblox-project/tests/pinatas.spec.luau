@@ -116,6 +116,20 @@ local MODELED: { [string]: boolean } = {
 	chivita_rumbera = true,
 	boto_bailao = true,
 	ajolote_trajinero = true,
+	pollito = true,
+	sandia = true,
+	elotito = true,
+	ranita = true,
+	pupusita = true,
+	paleton = true,
+	tortuga = true,
+	pulpo = true,
+	robo = true,
+	cadejo = true,
+	izalco = true,
+	pixelin = true,
+	tamalito = true,
+	jengibrin = true,
 }
 
 local NEON: { [string]: boolean } = {
@@ -158,6 +172,8 @@ local NEON: { [string]: boolean } = {
 	chivita_rumbera = true,
 	boto_bailao = true,
 	ajolote_trajinero = true,
+	pulpo = true,
+	robo = true,
 }
 
 local RARITIES: { [string]: boolean } = {
@@ -171,7 +187,7 @@ local RARITIES: { [string]: boolean } = {
 	Event = true,
 }
 
-H.check("hay 60 piñatitos y 46 modeladas", function()
+H.check("hay 60 piñatitos y las 60 modeladas", function()
 	local seen: { [string]: boolean } = {}
 	local count = 0
 	local modeled = 0
@@ -204,7 +220,7 @@ H.check("hay 60 piñatitos y 46 modeladas", function()
 		end
 	end
 	H.eq(count, 60)
-	H.eq(modeled, 46)
+	H.eq(modeled, 60)
 	for _, id in EXPECTED do
 		H.truthy(seen[id] == true, id)
 	end

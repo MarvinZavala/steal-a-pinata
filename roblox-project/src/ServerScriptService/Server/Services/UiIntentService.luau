@@ -2,14 +2,17 @@
 -- Intenciones de la UI que el gameplay no cubre: mejoras de kiosco, ajustes
 -- y la intro. El pad amarillo junta los dulces; RequestCollect no se registra
 -- (un payload válido se acepta y no cambia el perfil). El bate es RequestSwing
--- y el candado es RequestLock. El embudo de analytics lo manda solo el cliente.
+-- y el candado es RequestLock. El embudo de onboarding se registra acá: las
+-- llamadas de AnalyticsService piden el Player y solo funcionan en el servidor.
 
+local AnalyticsService = game:GetService("AnalyticsService")
 local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Pinatas = require(Shared:WaitForChild("Config"):WaitForChild("Pinatas"))
+local FTUEScript = require(Shared:WaitForChild("UI"):WaitForChild("FTUEScript"))
 local Remotes = require(Shared:WaitForChild("Net"):WaitForChild("Remotes"))
 
 local Server = script.Parent.Parent
@@ -33,6 +36,29 @@ type Settings = {
 local settingsOf: { [Player]: Settings } = {}
 local offered: { [Player]: { [string]: boolean } } = {}
 local bots: { [Player]: BasePart } = {}
+local funnelLogged: { [Player]: { [number]: boolean } } = {}
+
+local stepIndex: { [string]: number } = {}
+for _, step in FTUEScript.Steps do
+	stepIndex[step.name] = step.index
+end
+
+-- Cada paso entra una sola vez por jugador: el cliente puede reenviarlo y el embudo cuenta usuarios.
+local function logFunnel(player: Player, name: string)
+	local index = stepIndex[name]
+	if index == nil then
+		return
+	end
+	local seen = funnelLogged[player] or {}
+	funnelLogged[player] = seen
+	if seen[index] then
+		return
+	end
+	seen[index] = true
+	pcall(function()
+		AnalyticsService:LogOnboardingFunnelStepEvent(player, index, name)
+	end)
+end
 
 function UiIntentService.settingsOf(player: Player): Settings?
 	return settingsOf[player]
@@ -144,12 +170,15 @@ local function offerOnce(player: Player, key: string, pinataId: string, mutation
 	if not claimOffer(player, key) then
 		return
 	end
-	local slotId = ConveyorService.offer(pinataId, mutation, free)
+	-- El aviso sale cuando la piñata aparece en la Pasarela (puede esperar su turno detrás de otra).
+	local slotId = ConveyorService.offer(pinataId, mutation, free, function()
+		if player.Parent ~= nil then
+			announce(player, pinataId)
+		end
+	end)
 	if slotId == nil then
 		releaseOffer(player, key)
-		return
 	end
-	announce(player, pinataId)
 end
 
 local function introOpen(player: Player): Records.PlayerData?
@@ -169,6 +198,7 @@ local function onStep(player: Player, args: { any })
 	if type(step) ~= "string" or data == nil then
 		return
 	end
+	logFunnel(player, step)
 	if step == "2_arrow_followed" or step == "3_first_claim" then
 		offerOnce(player, "michi", "michi", "Golden", true)
 	elseif step == "4_thief_seen" then
@@ -210,6 +240,15 @@ local function onAction(player: Player, args: { any })
 		return
 	end
 	if action == "complete" or action == "skip" then
+		-- Una vez por jugador y solo con la intro abierta: el cliente puede repetir "skip".
+		local seen = funnelLogged[player] or {}
+		funnelLogged[player] = seen
+		if action == "skip" and not seen[0] and introOpen(player) ~= nil then
+			seen[0] = true
+			pcall(function()
+				AnalyticsService:LogCustomEvent(player, "ftue_skip")
+			end)
+		end
 		markDone(player)
 	end
 	-- claim, collect y buy los resuelve la Pasarela o el pad. No se otorgan otra vez.
@@ -242,6 +281,7 @@ function UiIntentService.start()
 	Players.PlayerRemoving:Connect(function(player)
 		settingsOf[player] = nil
 		offered[player] = nil
+		funnelLogged[player] = nil
 		clearBot(player)
 	end)
 end

@@ -39,13 +39,13 @@
   "name": "lobby_shop_dulceria",
   "size_studs": [
    25.0,
-   34.13,
+   34.1,
    19.25
   ],
   "tris": {
-   "lobby_shop_dulceria": 19620,
+   "lobby_shop_dulceria": 14332,
    "lobby_shop_dulceria_Neon": 744,
-   "lobby_shop_dulceria_Sign": 9434
+   "lobby_shop_dulceria_Sign": 9430
   }
  },
  "lobby_shop_bates": {
@@ -56,7 +56,7 @@
    19.25
   ],
   "tris": {
-   "lobby_shop_bates": 18188,
+   "lobby_shop_bates": 13796,
    "lobby_shop_bates_Neon": 744,
    "lobby_shop_bates_Sign": 7656
   }
@@ -69,7 +69,7 @@
    19.25
   ],
   "tris": {
-   "lobby_shop_cajas": 18956,
+   "lobby_shop_cajas": 13904,
    "lobby_shop_cajas_Neon": 744,
    "lobby_shop_cajas_Sign": 7325
   }
@@ -82,7 +82,7 @@
    19.25
   ],
   "tris": {
-   "lobby_shop_vip": 18520,
+   "lobby_shop_vip": 14128,
    "lobby_shop_vip_Neon": 1344,
    "lobby_shop_vip_Sign": 2960
   }
@@ -164,6 +164,30 @@
   ],
   "tris": {
    "lobby_candy_cart": 4132
+  }
+ },
+ "lobby_fabrica_gate": {
+  "name": "lobby_fabrica_gate",
+  "size_studs": [
+   35.4,
+   29.96,
+   13.08
+  ],
+  "tris": {
+   "lobby_fabrica_gate": 7788,
+   "lobby_fabrica_gate_Neon": 1280,
+   "lobby_fabrica_gate_Sign": 17236
+  }
+ },
+ "lobby_pasarela_seg": {
+  "name": "lobby_pasarela_seg",
+  "size_studs": [
+   24.0,
+   3.4,
+   13.85
+  ],
+  "tris": {
+   "lobby_pasarela_seg": 1604
   }
  }
 }

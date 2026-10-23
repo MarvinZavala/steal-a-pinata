@@ -2,7 +2,7 @@
 
 La UI no crea `RemoteEvent`. Manda intenciones con `Remotes.fireServer` y solo si la instancia ya está en `ReplicatedStorage.Remotes` (si el servidor todavía no arrancó, el clic no se queda colgado). Las specs están en `Shared/Net/Payload.luau`. `Shared/Net/UIRemotes.luau` solo lista los nombres nuevos y comprueba que el catálogo los tenga. `Remotes.init()` los crea; `AntiCheatService` escucha todos los C2S.
 
-No registres un segundo `LogFunnelStepEvent` para el mismo paso: el cliente ya lo manda a Analytics. El servidor puede guardar la recompensa, no el embudo.
+El embudo de onboarding lo registra el servidor (`UiIntentService`, `LogOnboardingFunnelStepEvent`) al recibir `RequestFTUEStep`, una vez por paso y por jugador: `AnalyticsService` pide el `Player` y no funciona desde el cliente.
 
 ## Remotes que ya existían
 
@@ -76,7 +76,7 @@ Los textos de la UI salen de `Shared/Locale/Catalog.luau` (es, en, pt) y se carg
 
 ## FTUE
 
-Guion en `Shared/UI/FTUEScript.luau` (GDD §10.1). El cliente llama `LogFunnelStepEvent` y `LogCustomEvent("ftue_<paso>")`. El servidor no vuelve a loguear ese embudo. Saltar (solo Studio) manda `RequestFTUEAction` `"skip"` y `ftue_skip` en analytics.
+Guion en `Shared/UI/FTUEScript.luau` (GDD §10.1). El cliente manda cada paso con `RequestFTUEStep` y el servidor lo registra con `LogOnboardingFunnelStepEvent` (el número sale de `FTUEScript.Steps`). Saltar (solo Studio) manda `RequestFTUEAction` `"skip"` y el servidor registra `ftue_skip`. Los pasos del preview no se mandan, así que no entran al embudo.
 
 Con perfil y plaza (`StateChanged` y tag `Pasarela` / `FTUEBase`) la intro no tapa el mundo:
 

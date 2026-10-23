@@ -138,27 +138,27 @@ Es un álbum de colección por set (Clásicas, Comida, Fauna, Folklore, Navidad)
 | # | Piñata | Rareza | Estado | Visual (silueta + detalle clave) | Dulces/s | Precio | Set |
 |---|---|---|---|---|---:|---:|---|
 | 1 | **Estrellita** | Común | ✅ | Estrella clásica de 5 picos con conos de flecos de colores, panza redonda, pies de pompón y serpentinas | 1 | 15 | Clásicas |
-| 2 | **Pollito Pío** | Común | ⏳ | Bolita amarilla de flecos, pico naranja, 3 plumitas en la cabeza y patitas de pompón | 2 | 40 | Fauna |
+| 2 | **Pollito Pío** | Común | ✅ | Bolita amarilla de flecos, pico naranja, 3 plumitas en la cabeza y patitas de pompón | 2 | 40 | Fauna |
 | 3 | **Burrito** | Común | ✅ | El burro de piñata de siempre, gordito y medio dormido, con flecos gris-lila y florecita | 3 | 75 | Clásicas |
-| 4 | **Sandía Sonriente** | Común | ⏳ | Rebanada triangular con cáscara verde de flecos, semillas-ojos y sonrisa grande | 5 | 150 | Comida |
+| 4 | **Sandía Sonriente** | Común | ✅ | Rebanada triangular con cáscara verde de flecos, semillas-ojos y sonrisa grande | 5 | 150 | Comida |
 | 5 | **Michi** | Poco común | ✅ | Gato naranja sentado, cara presumida, una pata saludando y cola rayada | 9 | 350 | Fauna |
-| 6 | **Elotito** | Poco común | ⏳ | Elote parado con granos de flecos amarillos, hojas verdes como capa y bigote | 14 | 600 | Comida |
-| 7 | **Ranita Fiestera** | Poco común | ⏳ | Rana verde-lima con gorrito de fiesta, ojos enormes y lengua-serpentina | 20 | 950 | Fauna |
-| 8 | **Pupusita** | Poco común | ⏳ | Disco gordito de flecos crema con "curtido" verde-naranja como pelo y cara feliz (guiño salvadoreño) | 28 | 1,500 | Comida |
+| 6 | **Elotito** | Poco común | ✅ | Elote parado con granos de flecos amarillos, hojas verdes como capa y bigote | 14 | 600 | Comida |
+| 7 | **Ranita Fiestera** | Poco común | ✅ | Rana verde-lima con gorrito de fiesta, ojos enormes y lengua-serpentina | 20 | 950 | Fauna |
+| 8 | **Pupusita** | Poco común | ✅ | Disco gordito de flecos crema con "curtido" verde-naranja como pelo y cara feliz (guiño salvadoreño) | 28 | 1,500 | Comida |
 | 9 | **Cohetín** | Rara | ✅ | Cohete de flecos rojo y blanco con ojo de buey de cara, aletas barridas y llama neón | 60 | 4,500 | Clásicas |
-| 10 | **Paletón** | Rara | ⏳ | Paleta gigante en espiral rosa y turquesa con palito-cuerpo, brazos de flecos y lengua afuera | 90 | 7,500 | Comida |
-| 11 | **Tortuga Tambor** | Rara | ⏳ | Tortuga con caparazón de tambor, baquetas en la espalda y flecos jade | 130 | 12,000 | Fauna |
-| 12 | **Pulpo Confeti** | Épica | ⏳ | Pulpo morado con 8 tentáculos de serpentina que tiran confeti neón | 300 | 40,000 | Fauna |
-| 13 | **Robo-Piñata** | Épica | ⏳ | Robot cúbico de flecos plateados, antena con dulce y pantalla-cara con ojos LED (neón) | 450 | 65,000 | Clásicas |
+| 10 | **Paletón** | Rara | ✅ | Paleta gigante en espiral rosa y turquesa con palito-cuerpo, brazos de flecos y lengua afuera | 90 | 7,500 | Comida |
+| 11 | **Tortuga Tambor** | Rara | ✅ | Tortuga con caparazón de tambor, baquetas en la espalda y flecos jade | 130 | 12,000 | Fauna |
+| 12 | **Pulpo Confeti** | Épica | ✅ | Pulpo morado con 8 tentáculos de serpentina que tiran confeti neón | 300 | 40,000 | Fauna |
+| 13 | **Robo-Piñata** | Épica | ✅ | Robot cúbico de flecos plateados, antena con dulce y pantalla-cara con ojos LED (neón) | 450 | 65,000 | Clásicas |
 | 14 | **Dragón Chile** | Épica | ✅ | Dragón rojo chile con alas jade de abanico, colmillitos y ojos fieros pero tiernos | 700 | 110,000 | Folklore |
-| 15 | **Cadejo** | Legendaria | ⏳ | Perro-espíritu blanco del folklore centroamericano (el bueno) con ojos neón celeste y cadenita de papel | 2,000 | 450,000 | Folklore |
+| 15 | **Cadejo** | Legendaria | ✅ | Perro-espíritu blanco del folklore centroamericano (el bueno) con ojos neón celeste y cadenita de papel | 2,000 | 450,000 | Folklore |
 | 16 | **Toro de Oro** | Legendaria | ✅ | Toro dorado metálico, gordito, con corona, cuernos grandes, argolla y medallón | 3,500 | 900,000 | Clásicas |
-| 17 | **Volcán Izalco** | Mítica | ⏳ | Volcán con cara (el "Faro del Pacífico"), lava neón naranja que burbujea y humo de algodón | 12,000 | 4.5M | Folklore |
+| 17 | **Volcán Izalco** | Mítica | ✅ | Volcán con cara (el "Faro del Pacífico"), lava neón (rosa mítico, como todo el neón de su rareza) que burbujea y humo de algodón | 12,000 | 4.5M | Folklore |
 | 18 | **Torogoz Cósmico** | Mítica | ✅ | Torogoz (ave nacional de El Salvador) en versión galaxia, cola de raqueta neón y parado en una nube | 20,000 | 9M | Folklore |
 | 19 | **Sombra** | Secreta | ✅ | Erizo-estrella de sombra con un solo ojo gigante, puntas neón y sonrisa dentona | 75,000 | — (solo Pasarela 0.01% / Fiesta) | Secretas |
-| 20 | **Pixelín** | Secreta | ⏳ | Piñata "glitch": cubitos de flecos que parpadean entre colores, con ojos de píxel | 120,000 | — | Secretas |
-| 21 | **Tamalito** | Evento Navidad | ⏳ | Tamal envuelto en hoja de plátano con moñito rojo y cachetes de masa | 400 | 2,500 Bastones | Navidad |
-| 22 | **Jengibrín** | Evento Navidad | ⏳ | Galleta de jengibre de flecos canela, botones de dulce y glaseado blanco | 1,500 | 9,000 Bastones | Navidad |
+| 20 | **Pixelín** | Secreta | ✅ | Piñata "glitch": cubitos de flecos que parpadean entre colores, con ojos de píxel | 120,000 | — | Secretas |
+| 21 | **Tamalito** | Evento Navidad | ✅ | Tamal envuelto en hoja de plátano con moñito rojo y cachetes de masa | 400 | 2,500 Bastones | Navidad |
+| 22 | **Jengibrín** | Evento Navidad | ✅ | Galleta de jengibre de flecos canela, botones de dulce y glaseado blanco | 1,500 | 9,000 Bastones | Navidad |
 | 23 | **Renito** | Evento Navidad | ✅ | Reno gordito con gorro de Santa, bufanda, nariz neón y bastón de caramelo | 5,000 | 25,000 Bastones | Navidad |
 
 Temporada Meme 1 (set *Memes*). Line-up: `art/renders/lineup_memes.png`. En `Pinatas.luau` van en un bloque al final, sin borrar ni reordenar la fase 1 (`pixelin` sigue). Investigación y chiste: [`TRENDS_MEMES.md`](TRENDS_MEMES.md).
@@ -194,7 +194,7 @@ Temporada Meme 1 (set *Memes*). Line-up: `art/renders/lineup_memes.png`. En `Pin
 ### 5.1 Reglas de roster
 - **Temporada Meme 1:** 6 piñatas originales que riffean tendencias de octubre 2026. Copiamos el **formato** del meme, nunca un personaje, una cara real ni un audio. Se rotan por temporada. El bloque de config es aditivo: no reemplaza a Pixelín en `Pinatas.luau`.
 - Cada rareza tiene **una silueta reconocible a 30 m**. Las comunes son redondas y simples. Las épicas en adelante tienen alas, cuernos o tentáculos. Las míticas y secretas llevan partes neón (`*_Neon` MeshPart con Material Neon).
-- **1 piñata nueva por semana** en vivo (de las ⏳), anunciada el viernes y lanzada el sábado, que es el día de mayor tráfico [F7].
+- **1 piñata nueva por semana** en vivo (de las que todavía no salieron en vivo), anunciada el viernes y lanzada el sábado, que es el día de mayor tráfico [F7].
 
 ---
 
@@ -388,7 +388,7 @@ Cada **Work Package (WP)** se puede asignar a un agente de código o a una perso
 | **WP-16** | Ligas + escudo + offline | WP-04 | Escudo de 15 min, matchmaking por Poder (TeleportService / servers reservados) y offline 50% con tope de 8 h | Un novato no puede ser robado; un jugador de Liga Fuego no entra a Confeti; las ganancias offline son correctas |
 | **WP-17a** | VFX/SFX | WP-03 | Confeti, auras por rareza (sección "VFX" de ART_DIRECTION), BONK y caja registradora | ParticleEmitters con un tope de partículas en móvil; sonidos con licencia propia o de Roblox |
 | **WP-18** | Evento Navidad | WP-14, WP-15 | Bastones, adviento, Tamalito, Jengibrín y plaza nevada | Se activa y desactiva por fecha en config sin publicar de nuevo; los Bastones se convierten el 7 de enero |
-| **WP-19a/b** | Arte restante | — | 14 piñatas ⏳ (scripts en `art/scripts/creatures.py`) y variante nevada | ≤ 10K tris cada una, misma paleta, render de preview y fila en `TRIANGLES.md` |
+| **WP-19a/b** | Arte restante | — | ✅ 14 piñatas (`art/scripts/roster_a/b/c.py`); falta la variante nevada | ≤ 10K tris cada una, misma paleta, render de preview y fila en `TRIANGLES.md` |
 | **WP-20** | Rendimiento + QA | todo | StreamingEnabled, perfil en móvil de gama baja y checklist de lanzamiento | Ningún crash en un teléfono de 2 GB de RAM durante 20 min; ≥ 30 FPS en móvil medio; memoria del cliente < 1 GB |
 | **WP-21** | Localización | WP-12 | Tablas en, es y pt | 100% de strings de UI traducidos; nombres de piñatas localizados |
 

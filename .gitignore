@@ -14,3 +14,5 @@ roblox-project/sourcemap.json
 .DS_Store
 Thumbs.db
 .vscode/
+# Carpeta temporal para File → Import 3D (roblox-project/scripts/prepare-import.sh)
+art/export/_studio_import/

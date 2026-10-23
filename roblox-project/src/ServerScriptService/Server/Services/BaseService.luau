@@ -104,7 +104,8 @@ end
 
 function BaseService.hasRoom(userId: number): boolean
 	local data = Records.byUserId(userId)
-	if data == nil then
+	-- Sin base asignada (más jugadores que bases) acceptPurchase rechaza con "missing".
+	if data == nil or BaseService.plotOf(userId) == nil then
 		return false
 	end
 	return Records.hasRoom(data)
@@ -288,6 +289,11 @@ function BaseService.pushState(player: Player)
 		fairPlay.decorate(player, payload)
 	end
 	Remotes.get("StateChanged"):FireClient(player, payload)
+	-- Cada cosmético que se otorga (tienda, caja sorpresa, evento) termina en pushState: el Bate se cambia acá.
+	local combat = servicesRef.CombatService
+	if type(combat) == "table" and type(combat.refreshBat) == "function" then
+		task.spawn(combat.refreshBat, player)
+	end
 end
 
 local function paintPads(plot: Plot, count: number)
@@ -312,9 +318,10 @@ local function walk(model: Model, feet: Vector3, speed: number)
 	if primary == nil then
 		return
 	end
-	local lift = math.max(primary.Size.Y * 0.5, 1.4)
-	local goal = feet + Vector3.new(0, lift, 0)
+	local goal = feet + Vector3.new(0, PinataVisual.restLift(model), 0)
 	local startPos = model:GetPivot().Position
+	-- Camina mirando hacia la base; sin dirección, conserva el giro que traía de la Pasarela.
+	local facing = PinataVisual.facing(goal - startPos) or model:GetPivot().Rotation
 	local dist = (goal - startPos).Magnitude
 	local dur = math.clamp(dist / math.max(speed, 1), 0.6, 8)
 	local t0 = os.clock()
@@ -322,7 +329,7 @@ local function walk(model: Model, feet: Vector3, speed: number)
 		local alpha = math.clamp((os.clock() - t0) / dur, 0, 1)
 		local pos = startPos:Lerp(goal, alpha)
 		local bob = math.sin(alpha * math.pi * 6) * 0.3
-		model:PivotTo(CFrame.new(pos + Vector3.new(0, bob, 0)))
+		model:PivotTo(CFrame.new(pos + Vector3.new(0, bob, 0)) * facing)
 		if alpha >= 1 then
 			break
 		end
@@ -337,7 +344,10 @@ local function finishSeat(plot: Plot, pedestal: Pedestal, userId: number, owned:
 		end
 		return
 	end
-	PinataVisual.place(model, pedestal.anchor.Position)
+	-- La cara mira al pasillo central, un poco hacia la puerta, que es por donde entra quien visita.
+	local seat = plot.cframe:PointToObjectSpace(pedestal.anchor.Position)
+	local aisle = plot.cframe:PointToWorldSpace(Vector3.new(0, seat.Y, seat.Z - Layout.PedestalLookAhead))
+	PinataVisual.place(model, pedestal.anchor.Position, aisle)
 	model.Parent = plot.model
 	local hook = seatFn
 	if hook ~= nil then

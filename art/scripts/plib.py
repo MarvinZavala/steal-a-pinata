@@ -7,7 +7,7 @@ import bpy, bmesh, math, random, os, json
 from mathutils import Vector, Matrix, Euler
 from mathutils.bvhtree import BVHTree
 
-ROOT = "/workspace/roblox/steal-a-pinata/art"
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # repo/art (works in any worktree)
 TEX = ROOT + "/textures"
 EXP = ROOT + "/export"
 BLEND = ROOT + "/blend"
@@ -180,6 +180,8 @@ def torus(name, R=1, r=.2, loc=(0,0,0), rot=(0,0,0), col="white", seg=24, mseg=8
             bm.faces.new((a[j], a[(j+1) % mseg], b2[(j+1) % mseg], b2[j]))
     if arc < 360:
         bm.faces.new(list(reversed(verts[0]))); bm.faces.new(verts[-1])
+    # El orden de arriba deja las normales hacia adentro; Roblox no dibuja caras traseras.
+    bmesh.ops.reverse_faces(bm, faces=bm.faces[:])
     o = bm_to_obj(bm, name); xform(o, loc, rot); return paint(o, col)
 
 def tube(name, pts, radius=.1, col="white", seg=8, taper=None, closed=False):
@@ -457,6 +459,14 @@ def blush(name, objs, origin, direction, size=.12, push=.02):
 # ---------------------------------------------------------------- finalize / export
 def join(objs, name):
     objs = [o for o in objs if o is not None]
+    # Una matriz espejo (det < 0, p. ej. kawaii.place) deja la pieza al revés al unir: Blender no corrige el
+    # winding y Roblox no dibuja caras traseras. Se hornea la transformación y se invierten las caras.
+    bpy.context.view_layer.update()
+    for o in objs:
+        if o.type == 'MESH' and o.matrix_world.determinant() < 0:
+            if o.data.users > 1: o.data = o.data.copy()
+            o.data.transform(o.matrix_world); o.matrix_world = Matrix.Identity(4)
+            bm = bmesh.new(); bm.from_mesh(o.data); bmesh.ops.reverse_faces(bm, faces=bm.faces[:]); bm.to_mesh(o.data); bm.free()
     for o in bpy.context.selected_objects: o.select_set(False)
     for o in objs: o.select_set(True)
     bpy.context.view_layer.objects.active = objs[0]

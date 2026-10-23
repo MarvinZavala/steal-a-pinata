@@ -1,6 +1,7 @@
+import os
 from PIL import Image, ImageDraw, ImageFont
 import json
-R = "/workspace/roblox/steal-a-pinata/art/renders/"
+R = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "renders") + "/"
 im = Image.open(R + "lineup_raw.png").convert("RGB"); W, H = im.size
 d = ImageDraw.Draw(im)
 F = "/usr/share/fonts/truetype/sand-box/google/Luckiest Guy/LuckiestGuy-Regular.ttf"

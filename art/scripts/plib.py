@@ -7,7 +7,7 @@ import bpy, bmesh, math, random, os, json
 from mathutils import Vector, Matrix, Euler
 from mathutils.bvhtree import BVHTree
 
-ROOT = "/workspace/roblox/steal-a-pinata/art"
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # repo/art (works in any worktree)
 TEX = ROOT + "/textures"
 EXP = ROOT + "/export"
 BLEND = ROOT + "/blend"
@@ -509,6 +509,8 @@ def material_palette(name="M_Palette", emissive=None):
     nt.links.new(r.outputs[0], bsdf.inputs["Roughness"]); nt.links.new(me.outputs[0], bsdf.inputs["Metallic"])
     bsdf.inputs["Specular IOR Level"].default_value = 0.55
     bsdf.inputs["Coat Weight"].default_value = 0.15; bsdf.inputs["Coat Roughness"].default_value = 0.25
+    # fase 3: crepe-paper fuzz (render only; Roblox uses the palette maps)
+    bsdf.inputs["Sheen Weight"].default_value = 0.35; bsdf.inputs["Sheen Roughness"].default_value = 0.45
     if emissive:
         nt.links.new(c.outputs[0], bsdf.inputs["Emission Color"]); bsdf.inputs["Emission Strength"].default_value = emissive
     return m

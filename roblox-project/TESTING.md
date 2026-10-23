@@ -28,8 +28,8 @@ El CI (`.github/workflows/ci.yml`) corre selene, StyLua, los tests y `rojo build
 
 Play (F5). En el output del servidor tienen que aparecer, sin errores rojos:
 
-- `[WP-03] registro: 29 piñatas`
-- `[WP-03] smoke ok: 15 piñatas instanciadas`
+- `[WP-03] registro: 60 piñatas`
+- `[WP-03] smoke ok: 46 piñatas instanciadas`
 - `[WP-02] ProfileStore.Mock`
 - `[WP-10a] anti-cheat escuchando`
 - `[Steal a Piñata] server listo`
@@ -70,7 +70,7 @@ Si la migración rechaza el perfil, el jugador es kickeado y **no** se reemplaza
 
 ## WP-03 — registro
 
-El smoke del output instancia las 15 modeladas (estrellita, burrito, michi, cohetin, dragon, toro, torogoz, sombra, renito, más michi_aplausos, seis_siete, manzanin_iq, mapache_nel, fichadito y gemelos_pupusa) y revisa PrimaryPart, `PinataId`, `Rarity` y `_Neon`. Los tests de `lune` fijan las 29 entradas contra `Pinatas.luau` y que cada una tenga un mesh id en `Assets.luau`.
+El smoke del output instancia las 46 modeladas (estrellita, burrito, michi, cohetin, dragon, toro, torogoz, sombra, renito; Temporada Meme 1: michi_aplausos, seis_siete, manzanin_iq, mapache_nel, fichadito, gemelos_pupusa; Temporada Meme 2: garrobita_terenga, fantasmita_bu, cochinito_quincena, lic_dos_peces, pinovela, chancla_teledirigida, aurazoso, abuelita_en_vivo; Colección Random: caracol_turbo, cactus_abrazos, aguacaton, pulpo_dj; Colección LatAm: saltena_jugosa, cucurucho_mani, arepa_reina, completito_italiano, platanito_merenguero, baleada_con_todo, coqui_bocina, matecito_termero, gallo_pinton, aranita_nanduti, piquero_patazul, alpaca_esponjada, carretica_pura_vida, harpia_despeinada, carpincho_tranqui, quetzalete, chivita_rumbera, boto_bailao, ajolote_trajinero) y revisa PrimaryPart, `PinataId`, `Rarity` y `_Neon`. Los tests de `lune` fijan las 60 entradas contra `Pinatas.luau` y que cada una tenga un mesh id en `Assets.luau`.
 
 ## WP-10a — anti-cheat
 

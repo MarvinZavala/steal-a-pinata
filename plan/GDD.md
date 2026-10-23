@@ -128,7 +128,7 @@ Es un álbum de colección por set (Clásicas, Comida, Fauna, Folklore, Navidad)
 
 ---
 
-## 5. Roster de Piñatitos (23 de fase 1 + 6 Temporada Meme 1)
+## 5. Roster de Piñatitos (23 de fase 1 + 6 Temporada Meme 1 + 8 Temporada Meme 2 + 4 Colección Random)
 
 ✅ = modelada en Blender y exportada (`art/export/creatures/`). ⏳ = planeada (brief de arte incluido).
 **Dulces/s** = producción base sin multiplicadores. **Precio** = costo en la Pasarela (en Dulces).
@@ -171,6 +171,23 @@ Temporada Meme 1 (set *Memes*). Line-up: `art/renders/lineup_memes.png`. En `Pin
 | 27 | **Mapache Nel** | Mítica | ✅ | Mapache embistiendo con la escoba como lanza y un globo neón "¡NEL!". Riff del mapache *Hell Nah Cuh*: el guardia de seguridad de tu base | 16,500 | 7M | Memes |
 | 28 | **Fichadito** | Secreta | ✅ | El bebé piñata más tierno, con gorrito y chupón, posando para su **ficha policial** con cara de criminal veterano (y flash neón). Riff de *How Kids See Us* | 100,000 | — | Memes |
 | 29 | **Los Gemelos Pupusa** | Secreta | ✅ | Dos pupusas gemelas abrazadas con gorras de lado, cadenas de oro y grillz, rebotando y diciendo "¡gracias bebé!" cada vez que recolectás. Riff de *Thank You Baby* + formato dúo | 150,000 | — | Memes |
+
+**Temporada Meme 2** (set *Memes2*, fase 3). Line-up: `art/renders/lineup_memes_2.png`. Investigación: [`TRENDS_MEMES_2.md`](TRENDS_MEMES_2.md). **Colección Random** (set *Random*): 4 piñatas originales "random pero chidas", cada una con un solo chiste visual. Line-up: `art/renders/lineup_random.png`. Bloques aditivos al final de `Pinatas.luau`.
+
+| # | Nombre | Rareza | Modelada | Concepto | Dulces/s | Precio | Set |
+|---|---|---|---|---|---|---|---|
+| 30 | **Garrobita Terenga** | Épica | ✅ | Garrobo cipota de flecos lima que levanta las manos y bota el huacal de atol, ojos perdidos y chancla suelta. Riff de *bicha terenga* (SV) | 550 | 90,000 | Memes2 |
+| 31 | **Fantasmita Bú** | Épica | ✅ | Fantasmita de flecos bizco con corona de cempasúchil que te hace "¡BÚ!" neón. Riff del *Boo Trend* + Día de Muertos | 850 | 150,000 | Memes2 |
+| 32 | **Cochinito Quincena** | Legendaria | ✅ | Alcancía de cochinito con ojos de $, fuente de monedas y calendario "15". Riff de *#vivalaquincena*: produce 2,515 y cuesta 515,150 | 2,515 | 515,150 | Memes2 |
+| 33 | **Lic. Dos Peces** | Legendaria | ✅ | Dos pescaditos abogados con corbata, lentes, maletín y pizarra "DOS PECES". Riff de *Two Fishes* | 3,200 | 800,000 | Memes2 |
+| 34 | **Piñovela** | Mítica | ✅ | Piña de telenovela con la mano en la frente, lágrimas neón, rímel corrido, perlas y una rosa. Riff de las *frutinovelas* | 18,000 | 8M | Memes2 |
+| 35 | **La Chancla Teledirigida** | Mítica | ✅ | Chancla con cara de "ya sabés lo que hiciste", mira láser neón y estela; un vaso tumbado. Riff de *la chancla* / "Confío en mi latina" | 14,500 | 6M | Memes2 |
+| 36 | **Aurazoso** | Secreta | ✅ | Perezoso con lentes oscuros echado en su tronco, bufanda al viento, flamas neón y "+1000 AURA". Riff de *farmear aura* | 110,000 | — | Memes2 |
+| 37 | **Abuelita en Vivo** | Secreta | ✅ | Tortuguita abuela con rebozo, chongo y lentes, haciendo LIVE con selfie stick y corazones neón. Riff de las abuelas facturando en TikTok LIVE | 135,000 | — | Memes2 |
+| 38 | **Caracol Turbo** | Épica | ✅ | Caracol cuyo caparazón es un carro de carreras #7: alerón, escapes con flamas neón y goggles. El más lento con el carro más tuneado | 700 | 120,000 | Random |
+| 39 | **Cactus Abrazos** | Legendaria | ✅ | Cactus con brazos abiertos, letrero "ABRAZOS GRATIS", curita y un globo reventado en el piso | 2,800 | 650,000 | Random |
+| 40 | **Aguacatón** | Mítica | ✅ | Aguacate de gym haciendo doble bíceps: la semilla es su six-pack, guiño, banda en la frente y pesa. "Bien mamado y bien maduro" | 16,000 | 7.2M | Random |
+| 41 | **Pulpo DJ** | Secreta | ✅ | Pulpo DJ usando los 8 brazos: dos hacen scratch, uno al micro, uno con glow stick; audífonos neón, notas y bola disco | 125,000 | — | Random |
 
 **Escala:** las de fase 1 miden de ~2.7 a 4.5 studs de alto. En Temporada Meme 1, Mapache Nel (escoba y globo) llega a ~6 studs y Los Gemelos Pupusa son más anchos (~7.8). Siguen cerca del tamaño de un avatar (~5 studs), así se leen bien cargadas en la espalda. Los tamaños exactos están en `art/export/creatures/_meta.json`.
 
@@ -355,7 +372,7 @@ Cada **Work Package (WP)** se puede asignar a un agente de código o a una perso
 |---|---|---|---|---|
 | **WP-01** | Tooling | — | Rojo 7, Wally, StyLua, Selene, CI de lint en GitHub Actions | `rojo serve` sincroniza; `selene src` y `stylua --check src` pasan en CI; README actualizado |
 | **WP-02** | Datos (ProfileStore) | WP-01 | `DataService` con esquema v1, migraciones y mock en Studio | Guardar, salir, entrar y los datos siguen iguales. 2 servers simultáneos = no hay dupe (test con session lock). Autosave + `EndSession` al salir |
-| **WP-03** | Registro de piñatas + import | WP-01 | `Shared/Config/Pinatas.luau` (23 de fase 1 + bloque Temporada Meme 1, 29 entradas) y modelos en `ServerStorage/Pinatas` con Attributes | Cada modelo tiene PrimaryPart en la base, `Rarity`, `PinataId` y `_Neon` en Material Neon. Script de test que instancia las 15 modeladas (9 + 6 meme) y no tira errores |
+| **WP-03** | Registro de piñatas + import | WP-01 | `Shared/Config/Pinatas.luau` (23 de fase 1 + Temporada Meme 1 y 2 + Colección Random + Colección LatAm, 60 entradas) y modelos en `ServerStorage/Pinatas` con Attributes | Cada modelo tiene PrimaryPart en la base, `Rarity`, `PinataId` y `_Neon` en Material Neon. Script de test que instancia las 46 modeladas (9 + 6 Meme 1 + 8 Meme 2 + 4 Random + 19 LatAm) y no tira errores |
 | **WP-04** | Bases | WP-02, WP-03 | `BaseService`: asignación, pedestales, Dulcería, producción y recolección | 8 jugadores reciben base distinta; al salir la base se libera; Dulces/s exactos (±1%) en 10 min; tope de la Dulcería respetado |
 | **WP-05** | Pasarela | WP-03 | `ConveyorService`: spawn ponderado, movimiento (tween o AlignPosition en el server) y prompt de compra | 10K spawns simulados dentro de ±0.5% de los pesos; una compra sin Dulces se rechaza; la piñata camina al pedestal libre |
 | **WP-06** | Robo y carga | WP-04 | `StealService` | Las validaciones de la sección 7 tienen test unitario; el carrier va a 11 studs/s; soltar en base propia transfiere la propiedad; un exploit de remote a 200 studs se rechaza y se loguea |

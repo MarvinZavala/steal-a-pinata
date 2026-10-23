@@ -14,6 +14,7 @@ local specs = {
 	"./daily.spec",
 	"./event_calendar.spec",
 	"./translations.spec",
+	"./mutation_visual.spec",
 }
 
 local failed = 0

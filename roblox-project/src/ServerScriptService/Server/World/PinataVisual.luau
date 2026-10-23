@@ -2,9 +2,11 @@
 -- Clona una piñata de ServerStorage o arma un placeholder (bola + aro neón).
 -- El arte real se monta según art/IMPORT_GUIDE.md; si el mesh no está, el juego igual corre.
 
+local CollectionService = game:GetService("CollectionService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local MutationVisual = require(Shared:WaitForChild("Gameplay"):WaitForChild("MutationVisual"))
 local Pinatas = require(Shared:WaitForChild("Config"):WaitForChild("Pinatas"))
 local Rarities = require(Shared:WaitForChild("Config"):WaitForChild("Rarities"))
 local Tuning = require(Shared:WaitForChild("Config"):WaitForChild("Tuning"))
@@ -145,6 +147,10 @@ function PinataVisual.create(pinataId: string, mutation: string?): Model
 	model:SetAttribute("CandyPerSec", perSec)
 	if mutation ~= nil then
 		model:SetAttribute("Mutation", mutation)
+	end
+	-- El cliente pinta Dorada y Arcoíris. El servidor solo marca; no anima.
+	if MutationVisual.kind(mutation) ~= nil then
+		CollectionService:AddTag(model, MutationVisual.TAG)
 	end
 	local trail = Instance.new("ParticleEmitter")
 	trail.Name = "CarryTrail"

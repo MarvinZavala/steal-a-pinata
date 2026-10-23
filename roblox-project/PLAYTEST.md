@@ -88,6 +88,39 @@ M.debugOwnPass(p, "Vip", true)
 
 `debugGrant` y `debugOwnPass` no hacen nada fuera de Studio. Un `ProcessReceipt` con Id 0 queda en `NotProcessedYet` a propósito.
 
+## Mutaciones en el modelo 3D
+
+Dorada y Arcoíris se ven en la piñata del mundo: pedestal, Pasarela y encima de quien la roba. El servidor pone el attribute `Mutation` (`Golden` o `Rainbow`) y el tag `MutatedPinata`. El cliente pinta. En la vista **Server** el material no cambia (a propósito: el color no se replica). Pasá a la vista **Client** para verlo.
+
+- **Dorada:** el cuerpo pasa a `Foil` con tinte `#FFC22E`. Ojos, boca y partes chicas muy claras u oscuras no se pintan. El aro `Neon` / `*_Neon` sigue en Neon, en oro. Chispa suave y una luz cálida.
+- **Arcoíris:** el cuerpo y el aura ciclan el matiz (un solo controller, no un loop por modelo). Chispas de la paleta y luz. La cara se trata igual que en la Dorada.
+- **Navideña** no usa este pintado.
+- **Menos movimiento** (Ajustes) o calidad gráfica baja: menos chispas (tope 40), sin luz, y el ciclo de color se actualiza más espaciado. Calidad automática se ve completa.
+
+En la consola del **servidor** (hace falta un pedestal libre; el perfil de Studio arranca con 4):
+
+```lua
+local DS = require(game.ServerScriptService.Server.Services.DataService)
+local BS = require(game.ServerScriptService.Server.Services.BaseService)
+local CV = require(game.ServerScriptService.Server.Services.ConveyorService)
+local p = game.Players:GetPlayers()[1]
+print(DS.grantPinata(p, "michi", "Golden"))
+print(DS.grantPinata(p, "burrito", "Rainbow"))
+BS.resync(p)
+print(CV.offer("toro", "Golden", true))
+print(CV.offer("dragon", "Rainbow", true))
+```
+
+`resync` las sienta en la base. `offer(..., true)` las deja en la Pasarela sin cobrar (es el preview de la tienda). Robá una con otro jugador: tiene que seguir dorada o ciclando el color sobre la cabeza, y al entregarla el pedestal también.
+
+Para forzar calidad baja, en la consola del **cliente**:
+
+```lua
+settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+```
+
+Volvé a `Enum.QualityLevel.Level10` para las chispas y la luz completas. La intro también ofrece un Michi Golden en la Pasarela: se pinta igual.
+
 ## Pruebas sin Studio
 
 Desde `roblox-project/`, con [Lune](https://github.com/lune-org/lune):
@@ -96,4 +129,4 @@ Desde `roblox-project/`, con [Lune](https://github.com/lune-org/lune):
 lune run tests/run.luau
 ```
 
-`lune run tests/run` corre las suites de S1, el gameplay y las de economía, recibos y racha. `lune run tests/economy_sim.luau` imprime la proyección (no falla el CI). `selene src tests`, `stylua --check src tests` y `rojo build` son el CI.
+`lune run tests/run` corre las suites de S1, el gameplay y las de economía, recibos, racha y el pintado de mutaciones. `lune run tests/economy_sim.luau` imprime la proyección (no falla el CI). `selene src tests`, `stylua --check src tests` y `rojo build` son el CI.

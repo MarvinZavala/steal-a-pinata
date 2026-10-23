@@ -7,7 +7,7 @@ import bpy, bmesh, math, random, os, json
 from mathutils import Vector, Matrix, Euler
 from mathutils.bvhtree import BVHTree
 
-ROOT = "/workspace/roblox/steal-a-pinata/art"
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # repo/art (works in any worktree)
 TEX = ROOT + "/textures"
 EXP = ROOT + "/export"
 BLEND = ROOT + "/blend"

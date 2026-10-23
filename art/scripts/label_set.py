@@ -1,7 +1,8 @@
 """python3 label_set.py memes2|random  -> labels + title on the lineup raw render, crops, saves art/renders/<out>.png"""
+import os
 import sys, json
 from PIL import Image, ImageDraw, ImageFont
-R = "/workspace/roblox/steal-a-pinata/art/renders/"
+R = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "renders") + "/"
 CFG = {
     "memes2": ("lineup_memes_2", "TEMPORADA MEME 2", {
         "garrobita_terenga": "bien terenga, bota el atol", "fantasmita_bu": "¡BÚ! (bizco)", "cochinito_quincena": "rico 2 días al mes",

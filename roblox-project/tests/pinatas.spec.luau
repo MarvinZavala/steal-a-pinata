@@ -172,8 +172,6 @@ local NEON: { [string]: boolean } = {
 	chivita_rumbera = true,
 	boto_bailao = true,
 	ajolote_trajinero = true,
-	izalco = true,
-	pixelin = true,
 	pulpo = true,
 	robo = true,
 }

@@ -28,7 +28,7 @@ local Pinatas: { [string]: PinataDef } = {
 		Price = 40,
 		Currency = "Dulces",
 		Set = "Fauna",
-		Modeled = false,
+		Modeled = true,
 	},
 	burrito = {
 		Name = "Burrito",
@@ -46,7 +46,7 @@ local Pinatas: { [string]: PinataDef } = {
 		Price = 150,
 		Currency = "Dulces",
 		Set = "Food",
-		Modeled = false,
+		Modeled = true,
 	},
 	michi = {
 		Name = "Michi",
@@ -64,7 +64,7 @@ local Pinatas: { [string]: PinataDef } = {
 		Price = 600,
 		Currency = "Dulces",
 		Set = "Food",
-		Modeled = false,
+		Modeled = true,
 	},
 	ranita = {
 		Name = "Ranita Fiestera",
@@ -73,7 +73,7 @@ local Pinatas: { [string]: PinataDef } = {
 		Price = 950,
 		Currency = "Dulces",
 		Set = "Fauna",
-		Modeled = false,
+		Modeled = true,
 	},
 	pupusita = {
 		Name = "Pupusita",
@@ -82,7 +82,7 @@ local Pinatas: { [string]: PinataDef } = {
 		Price = 1500,
 		Currency = "Dulces",
 		Set = "Food",
-		Modeled = false,
+		Modeled = true,
 	},
 	cohetin = {
 		Name = "Cohetín",
@@ -100,7 +100,7 @@ local Pinatas: { [string]: PinataDef } = {
 		Price = 7500,
 		Currency = "Dulces",
 		Set = "Food",
-		Modeled = false,
+		Modeled = true,
 	},
 	tortuga = {
 		Name = "Tortuga Tambor",
@@ -109,7 +109,7 @@ local Pinatas: { [string]: PinataDef } = {
 		Price = 12000,
 		Currency = "Dulces",
 		Set = "Fauna",
-		Modeled = false,
+		Modeled = true,
 	},
 	pulpo = {
 		Name = "Pulpo Confeti",
@@ -118,7 +118,7 @@ local Pinatas: { [string]: PinataDef } = {
 		Price = 40000,
 		Currency = "Dulces",
 		Set = "Fauna",
-		Modeled = false,
+		Modeled = true,
 	},
 	robo = {
 		Name = "Robo-Piñata",
@@ -127,7 +127,7 @@ local Pinatas: { [string]: PinataDef } = {
 		Price = 65000,
 		Currency = "Dulces",
 		Set = "Classics",
-		Modeled = false,
+		Modeled = true,
 	},
 	dragon = {
 		Name = "Dragón Chile",
@@ -145,7 +145,7 @@ local Pinatas: { [string]: PinataDef } = {
 		Price = 450000,
 		Currency = "Dulces",
 		Set = "Folklore",
-		Modeled = false,
+		Modeled = true,
 	},
 	toro = {
 		Name = "Toro de Oro",
@@ -163,7 +163,7 @@ local Pinatas: { [string]: PinataDef } = {
 		Price = 4500000,
 		Currency = "Dulces",
 		Set = "Folklore",
-		Modeled = false,
+		Modeled = true,
 	},
 	torogoz = {
 		Name = "Torogoz Cósmico",
@@ -190,7 +190,7 @@ local Pinatas: { [string]: PinataDef } = {
 		Price = nil,
 		Currency = "Dulces",
 		Set = "Secrets",
-		Modeled = false,
+		Modeled = true,
 	},
 	tamalito = {
 		Name = "Tamalito",
@@ -199,7 +199,7 @@ local Pinatas: { [string]: PinataDef } = {
 		Price = 2500,
 		Currency = "Bastones",
 		Set = "Christmas",
-		Modeled = false,
+		Modeled = true,
 	},
 	jengibrin = {
 		Name = "Jengibrín",
@@ -208,7 +208,7 @@ local Pinatas: { [string]: PinataDef } = {
 		Price = 9000,
 		Currency = "Bastones",
 		Set = "Christmas",
-		Modeled = false,
+		Modeled = true,
 	},
 	renito = {
 		Name = "Renito",

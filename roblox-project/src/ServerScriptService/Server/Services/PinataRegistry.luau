@@ -10,8 +10,8 @@ local Pinatas = require(ReplicatedStorage.Shared.Config.Pinatas)
 local Assets = require(ReplicatedStorage.Shared.Config.Assets)
 local Rarities = require(ReplicatedStorage.Shared.Config.Rarities)
 
--- 27 de fase 1-3 (clásicas, Memes, Memes2, Random) + 19 de la Colección LatAm.
-local EXPECTED_MODELED = 46
+-- 27 de fase 1-3 (clásicas, Memes, Memes2, Random) + 19 de la Colección LatAm + las 14 del roster que faltaban.
+local EXPECTED_MODELED = 60
 
 local PinataRegistry = {}
 

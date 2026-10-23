@@ -33,6 +33,7 @@ Roblox limit: 20,000 triangles per MeshPart. Each row = one MeshPart after impor
 | creatures | burrito | burrito | 13,700 | ✅ |
 | creatures | cactus_abrazos | cactus_abrazos | 16,006 | ✅ |
 | creatures | cactus_abrazos | cactus_abrazos_Neon | 184 | ✅ |
+| creatures | cadejo | cadejo | 13,676 | ✅ |
 | creatures | caracol_turbo | caracol_turbo | 12,108 | ✅ |
 | creatures | caracol_turbo | caracol_turbo_Neon | 192 | ✅ |
 | creatures | carpincho_tranqui | carpincho_tranqui | 11,948 | ✅ |
@@ -53,6 +54,7 @@ Roblox limit: 20,000 triangles per MeshPart. Each row = one MeshPart after impor
 | creatures | cucurucho_mani | cucurucho_mani | 14,264 | ✅ |
 | creatures | dragon | dragon | 13,940 | ✅ |
 | creatures | dragon | dragon_Neon | 128 | ✅ |
+| creatures | elotito | elotito | 11,768 | ✅ |
 | creatures | estrellita | estrellita | 7,280 | ✅ |
 | creatures | fantasmita_bu | fantasmita_bu | 11,532 | ✅ |
 | creatures | fantasmita_bu | fantasmita_bu_Neon | 2,280 | ✅ |
@@ -66,9 +68,12 @@ Roblox limit: 20,000 triangles per MeshPart. Each row = one MeshPart after impor
 | creatures | gemelos_pupusa | gemelos_pupusa_Neon | 84 | ✅ |
 | creatures | harpia_despeinada | harpia_despeinada | 11,332 | ✅ |
 | creatures | harpia_despeinada | harpia_despeinada_Neon | 84 | ✅ |
+| creatures | izalco | izalco | 9,064 | ✅ |
+| creatures | izalco | izalco_Neon | 5,688 | ✅ |
+| creatures | jengibrin | jengibrin | 10,596 | ✅ |
 | creatures | lic_dos_peces | lic_dos_peces | 16,782 | ✅ |
 | creatures | lic_dos_peces | lic_dos_peces_Neon | 20 | ✅ |
-| creatures | manzanin_iq | manzanin_iq | 9,318 | ✅ |
+| creatures | manzanin_iq | manzanin_iq | 9,316 | ✅ |
 | creatures | manzanin_iq | manzanin_iq_Neon | 480 | ✅ |
 | creatures | mapache_nel | mapache_nel | 14,816 | ✅ |
 | creatures | mapache_nel | mapache_nel_Neon | 344 | ✅ |
@@ -77,26 +82,39 @@ Roblox limit: 20,000 triangles per MeshPart. Each row = one MeshPart after impor
 | creatures | michi | michi | 13,184 | ✅ |
 | creatures | michi_aplausos | michi_aplausos | 13,084 | ✅ |
 | creatures | michi_aplausos | michi_aplausos_Neon | 96 | ✅ |
+| creatures | paleton | paleton | 12,922 | ✅ |
 | creatures | pinovela | pinovela | 12,660 | ✅ |
 | creatures | pinovela | pinovela_Neon | 412 | ✅ |
 | creatures | piquero_patazul | piquero_patazul | 9,862 | ✅ |
 | creatures | piquero_patazul | piquero_patazul_Neon | 220 | ✅ |
+| creatures | pixelin | pixelin | 3,796 | ✅ |
+| creatures | pixelin | pixelin_Neon | 1,620 | ✅ |
 | creatures | platanito_merenguero | platanito_merenguero | 12,170 | ✅ |
+| creatures | pollito | pollito | 8,168 | ✅ |
+| creatures | pulpo | pulpo | 13,924 | ✅ |
+| creatures | pulpo | pulpo_Neon | 1,192 | ✅ |
 | creatures | pulpo_dj | pulpo_dj | 17,520 | ✅ |
 | creatures | pulpo_dj | pulpo_dj_Neon | 1,220 | ✅ |
+| creatures | pupusita | pupusita | 11,288 | ✅ |
 | creatures | quetzalete | quetzalete | 9,772 | ✅ |
 | creatures | quetzalete | quetzalete_Neon | 716 | ✅ |
+| creatures | ranita | ranita | 13,480 | ✅ |
 | creatures | renito | renito | 11,656 | ✅ |
 | creatures | renito | renito_Neon | 196 | ✅ |
+| creatures | robo | robo | 11,860 | ✅ |
+| creatures | robo | robo_Neon | 2,024 | ✅ |
 | creatures | saltena_jugosa | saltena_jugosa | 12,760 | ✅ |
-| creatures | seis_siete | seis_siete | 14,712 | ✅ |
+| creatures | sandia | sandia | 10,336 | ✅ |
+| creatures | seis_siete | seis_siete | 16,000 | ✅ |
 | creatures | seis_siete | seis_siete_Neon | 64 | ✅ |
 | creatures | sombra | sombra | 8,632 | ✅ |
 | creatures | sombra | sombra_Neon | 1,448 | ✅ |
+| creatures | tamalito | tamalito | 10,820 | ✅ |
 | creatures | toro | toro | 13,456 | ✅ |
 | creatures | toro | toro_Neon | 500 | ✅ |
 | creatures | torogoz | torogoz | 7,776 | ✅ |
 | creatures | torogoz | torogoz_Neon | 964 | ✅ |
+| creatures | tortuga | tortuga | 13,716 | ✅ |
 | lobby | lobby_bench | lobby_bench | 1,872 | ✅ |
 | lobby | lobby_candy_cart | lobby_candy_cart | 4,132 | ✅ |
 | lobby | lobby_fabrica_gate | lobby_fabrica_gate | 7,788 | ✅ |
@@ -135,4 +153,4 @@ Roblox limit: 20,000 triangles per MeshPart. Each row = one MeshPart after impor
 | props | papel_picado_banner | papel_picado_banner | 816 | ✅ |
 | props | papel_picado_banner | papel_picado_Flags | 144 | ✅ |
 
-**130 MeshParts, max 19,620 tris, 0 over the limit.**
+**148 MeshParts, max 19,620 tris, 0 over the limit.**

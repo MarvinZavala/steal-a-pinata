@@ -52,7 +52,7 @@ def gold_chain(name, pts, link=.13, col="gold"):
     return P
 
 def bake(o):
-    o.data.transform(o.matrix_world); o.matrix_world = Matrix.Identity(4); return o
+    return bake_xform(o)
 
 def stripe_paint(o, cols, band=.32, axis=2, cut=True):
     """Cut a mesh into horizontal bands and paint them alternately (crepe-paper stripes)."""

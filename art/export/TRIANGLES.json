@@ -175,6 +175,12 @@
  },
  {
   "folder": "creatures",
+  "file": "cadejo",
+  "mesh": "cadejo",
+  "tris": 13676
+ },
+ {
+  "folder": "creatures",
   "file": "caracol_turbo",
   "mesh": "caracol_turbo",
   "tris": 12108
@@ -295,6 +301,12 @@
  },
  {
   "folder": "creatures",
+  "file": "elotito",
+  "mesh": "elotito",
+  "tris": 11768
+ },
+ {
+  "folder": "creatures",
   "file": "estrellita",
   "mesh": "estrellita",
   "tris": 7280
@@ -373,6 +385,24 @@
  },
  {
   "folder": "creatures",
+  "file": "izalco",
+  "mesh": "izalco",
+  "tris": 9064
+ },
+ {
+  "folder": "creatures",
+  "file": "izalco",
+  "mesh": "izalco_Neon",
+  "tris": 5688
+ },
+ {
+  "folder": "creatures",
+  "file": "jengibrin",
+  "mesh": "jengibrin",
+  "tris": 10596
+ },
+ {
+  "folder": "creatures",
   "file": "lic_dos_peces",
   "mesh": "lic_dos_peces",
   "tris": 16782
@@ -387,7 +417,7 @@
   "folder": "creatures",
   "file": "manzanin_iq",
   "mesh": "manzanin_iq",
-  "tris": 9318
+  "tris": 9316
  },
  {
   "folder": "creatures",
@@ -439,6 +469,12 @@
  },
  {
   "folder": "creatures",
+  "file": "paleton",
+  "mesh": "paleton",
+  "tris": 12922
+ },
+ {
+  "folder": "creatures",
   "file": "pinovela",
   "mesh": "pinovela",
   "tris": 12660
@@ -463,9 +499,39 @@
  },
  {
   "folder": "creatures",
+  "file": "pixelin",
+  "mesh": "pixelin",
+  "tris": 3796
+ },
+ {
+  "folder": "creatures",
+  "file": "pixelin",
+  "mesh": "pixelin_Neon",
+  "tris": 1620
+ },
+ {
+  "folder": "creatures",
   "file": "platanito_merenguero",
   "mesh": "platanito_merenguero",
   "tris": 12170
+ },
+ {
+  "folder": "creatures",
+  "file": "pollito",
+  "mesh": "pollito",
+  "tris": 8168
+ },
+ {
+  "folder": "creatures",
+  "file": "pulpo",
+  "mesh": "pulpo",
+  "tris": 13924
+ },
+ {
+  "folder": "creatures",
+  "file": "pulpo",
+  "mesh": "pulpo_Neon",
+  "tris": 1192
  },
  {
   "folder": "creatures",
@@ -481,6 +547,12 @@
  },
  {
   "folder": "creatures",
+  "file": "pupusita",
+  "mesh": "pupusita",
+  "tris": 11288
+ },
+ {
+  "folder": "creatures",
   "file": "quetzalete",
   "mesh": "quetzalete",
   "tris": 9772
@@ -490,6 +562,12 @@
   "file": "quetzalete",
   "mesh": "quetzalete_Neon",
   "tris": 716
+ },
+ {
+  "folder": "creatures",
+  "file": "ranita",
+  "mesh": "ranita",
+  "tris": 13480
  },
  {
   "folder": "creatures",
@@ -505,15 +583,33 @@
  },
  {
   "folder": "creatures",
+  "file": "robo",
+  "mesh": "robo",
+  "tris": 11860
+ },
+ {
+  "folder": "creatures",
+  "file": "robo",
+  "mesh": "robo_Neon",
+  "tris": 2024
+ },
+ {
+  "folder": "creatures",
   "file": "saltena_jugosa",
   "mesh": "saltena_jugosa",
   "tris": 12760
  },
  {
   "folder": "creatures",
+  "file": "sandia",
+  "mesh": "sandia",
+  "tris": 10336
+ },
+ {
+  "folder": "creatures",
   "file": "seis_siete",
   "mesh": "seis_siete",
-  "tris": 14712
+  "tris": 16000
  },
  {
   "folder": "creatures",
@@ -532,6 +628,12 @@
   "file": "sombra",
   "mesh": "sombra_Neon",
   "tris": 1448
+ },
+ {
+  "folder": "creatures",
+  "file": "tamalito",
+  "mesh": "tamalito",
+  "tris": 10820
  },
  {
   "folder": "creatures",
@@ -556,6 +658,12 @@
   "file": "torogoz",
   "mesh": "torogoz_Neon",
   "tris": 964
+ },
+ {
+  "folder": "creatures",
+  "file": "tortuga",
+  "mesh": "tortuga",
+  "tris": 13716
  },
  {
   "folder": "lobby",

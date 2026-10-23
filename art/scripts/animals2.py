@@ -123,7 +123,7 @@ def burrito():
     bpy.context.view_layer.update()
     R = Matrix.Rotation(math.radians(70), 4, 'Z')
     for o in P:
-        o.data.transform(o.matrix_world); o.matrix_world = Matrix.Identity(4); o.data.transform(R)
+        bake_xform(o); o.data.transform(R)
     return P, {"glow": []}
 
 # ======================================================================= DRAGON CHILE (epic)

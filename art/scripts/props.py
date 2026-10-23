@@ -2,7 +2,8 @@ import sys, os, math, random, json
 sys.path.insert(0, os.path.dirname(__file__))
 from plib import *
 from mathutils import Vector, Matrix
-FONT = "/usr/share/fonts/truetype/sand-box/google/Luckiest Guy/LuckiestGuy-Regular.ttf"
+# Luckiest Guy (Apache 2.0, google/fonts) va en el repo para que el texto 3D salga igual en cualquier máquina.
+FONT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "fonts", "LuckiestGuy-Regular.ttf")
 
 def text_mesh(name, body, size=1.0, extrude=.12, col="sun_yellow", loc=(0,0,0), rot=(90,0,0), bevel=.02, res=2, bres=0):
     cu = bpy.data.curves.new(name, 'FONT'); cu.body = body

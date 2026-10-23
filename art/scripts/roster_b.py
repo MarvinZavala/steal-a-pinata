@@ -42,6 +42,8 @@ def oval_tube(name, pts, a, b, side, col="white", seg=10, taper=None):
             bm.faces.new((rings[i][j], rings[i][(j + 1) % seg], rings[i + 1][(j + 1) % seg], rings[i + 1][j]))
     bm.faces.new(list(reversed(rings[0]))); bm.faces.new(rings[-1])
     bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    # En un tubo muy plano y ondulado recalc_face_normals puede fallar: el volumen con signo decide.
+    if bm.calc_volume(signed=True) < 0: bmesh.ops.reverse_faces(bm, faces=bm.faces[:])
     return paint(bm_to_obj(bm, name), col)
 
 def twist_ribbon(name, pts, a, b, side, cols, half_turns=2, n_twist=None, taper=None, seg=5, t0=0.0):

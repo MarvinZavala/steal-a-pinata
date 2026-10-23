@@ -132,8 +132,13 @@ def xform(obj, loc=(0,0,0), rot=(0,0,0), scl=(1,1,1)):
     return obj
 
 def bake_xform(obj):
+    """Hornea la transformación en la malla. Si era espejo (det < 0) el winding queda al revés: se invierten las
+    caras para que las normales sigan hacia afuera (Roblox no dibuja caras traseras)."""
+    mirrored = obj.matrix_world.determinant() < 0
+    if mirrored and obj.data.users > 1: obj.data = obj.data.copy()
     me = obj.data; me.transform(obj.matrix_world); obj.matrix_world = Matrix.Identity(4)
-    if obj.matrix_world.determinant() < 0: pass
+    if mirrored:
+        bm = bmesh.new(); bm.from_mesh(me); bmesh.ops.reverse_faces(bm, faces=bm.faces[:]); bm.to_mesh(me); bm.free()
     return obj
 
 # ---------------------------------------------------------------- primitives
@@ -147,6 +152,8 @@ def cyl(name, r1=1, r2=1, h=1, loc=(0,0,0), rot=(0,0,0), col="white", seg=16, be
     bm = bmesh.new()
     bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False, segments=seg, radius1=r1, radius2=max(r2, 1e-4), depth=h)
     if base: bmesh.ops.translate(bm, vec=(0, 0, h / 2), verts=bm.verts)
+    # h < 0 (colmillos hacia abajo) espeja el cono en Z y deja las caras al revés.
+    if h < 0: bmesh.ops.reverse_faces(bm, faces=bm.faces[:])
     o = bm_to_obj(bm, name); xform(o, loc, rot)
     if bevel > 0:
         m = o.modifiers.new("b", 'BEVEL'); m.width = bevel; m.segments = bseg; m.limit_method = 'ANGLE'
@@ -463,10 +470,7 @@ def join(objs, name):
     # winding y Roblox no dibuja caras traseras. Se hornea la transformación y se invierten las caras.
     bpy.context.view_layer.update()
     for o in objs:
-        if o.type == 'MESH' and o.matrix_world.determinant() < 0:
-            if o.data.users > 1: o.data = o.data.copy()
-            o.data.transform(o.matrix_world); o.matrix_world = Matrix.Identity(4)
-            bm = bmesh.new(); bm.from_mesh(o.data); bmesh.ops.reverse_faces(bm, faces=bm.faces[:]); bm.to_mesh(o.data); bm.free()
+        if o.type == 'MESH' and o.matrix_world.determinant() < 0: bake_xform(o)
     for o in bpy.context.selected_objects: o.select_set(False)
     for o in objs: o.select_set(True)
     bpy.context.view_layer.objects.active = objs[0]

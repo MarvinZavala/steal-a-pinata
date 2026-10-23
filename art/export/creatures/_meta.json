@@ -160,7 +160,7 @@
    2.03
   ],
   "tris": {
-   "seis_siete": 14712,
+   "seis_siete": 16000,
    "seis_siete_Neon": 64
   }
  },
@@ -172,7 +172,7 @@
    3.93
   ],
   "tris": {
-   "manzanin_iq": 9318,
+   "manzanin_iq": 9316,
    "manzanin_iq_Neon": 480
   }
  },
@@ -540,6 +540,164 @@
   "tris": {
    "ajolote_trajinero": 17104,
    "ajolote_trajinero_Neon": 564
+  }
+ },
+ "pollito": {
+  "name": "pollito",
+  "size_studs": [
+   3.46,
+   3.66,
+   3.25
+  ],
+  "tris": {
+   "pollito": 8168
+  }
+ },
+ "sandia": {
+  "name": "sandia",
+  "size_studs": [
+   4.36,
+   3.56,
+   1.57
+  ],
+  "tris": {
+   "sandia": 10336
+  }
+ },
+ "elotito": {
+  "name": "elotito",
+  "size_studs": [
+   3.26,
+   4.1,
+   2.91
+  ],
+  "tris": {
+   "elotito": 11768
+  }
+ },
+ "ranita": {
+  "name": "ranita",
+  "size_studs": [
+   3.23,
+   4.1,
+   3.94
+  ],
+  "tris": {
+   "ranita": 13480
+  }
+ },
+ "pupusita": {
+  "name": "pupusita",
+  "size_studs": [
+   3.86,
+   3.93,
+   1.62
+  ],
+  "tris": {
+   "pupusita": 11288
+  }
+ },
+ "paleton": {
+  "name": "paleton",
+  "size_studs": [
+   3.09,
+   4.03,
+   1.3
+  ],
+  "tris": {
+   "paleton": 12922
+  }
+ },
+ "tortuga": {
+  "name": "tortuga",
+  "size_studs": [
+   2.75,
+   3.47,
+   4.7
+  ],
+  "tris": {
+   "tortuga": 13716
+  }
+ },
+ "pulpo": {
+  "name": "pulpo",
+  "size_studs": [
+   3.99,
+   5.17,
+   3.83
+  ],
+  "tris": {
+   "pulpo": 13924,
+   "pulpo_Neon": 1192
+  }
+ },
+ "robo": {
+  "name": "robo",
+  "size_studs": [
+   3.46,
+   4.57,
+   2.54
+  ],
+  "tris": {
+   "robo": 11860,
+   "robo_Neon": 2024
+  }
+ },
+ "cadejo": {
+  "name": "cadejo",
+  "size_studs": [
+   3.55,
+   3.8,
+   3.14
+  ],
+  "tris": {
+   "cadejo": 13676
+  }
+ },
+ "izalco": {
+  "name": "izalco",
+  "size_studs": [
+   3.55,
+   4.71,
+   3.36
+  ],
+  "tris": {
+   "izalco": 9064,
+   "izalco_Neon": 5688
+  }
+ },
+ "pixelin": {
+  "name": "pixelin",
+  "size_studs": [
+   4.09,
+   3.97,
+   2.38
+  ],
+  "tris": {
+   "pixelin": 3796,
+   "pixelin_Neon": 1620
+  }
+ },
+ "tamalito": {
+  "name": "tamalito",
+  "size_studs": [
+   3.47,
+   3.57,
+   2.13
+  ],
+  "tris": {
+   "tamalito": 10820
+  }
+ },
+ "jengibrin": {
+  "name": "jengibrin",
+  "size_studs": [
+   4.25,
+   4.08,
+   1.9
+  ],
+  "tris": {
+   "jengibrin": 10596
   }
  }
 }

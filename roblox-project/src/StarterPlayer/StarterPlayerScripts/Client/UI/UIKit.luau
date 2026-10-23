@@ -169,6 +169,18 @@ function UIKit.button(parent: Instance, opts: ButtonOpts): (Frame, TextButton, T
 	caption.Size = UDim2.new(1, -16, 1, -8)
 	caption.Position = UDim2.fromOffset(8, 4)
 	caption.ZIndex = hit.ZIndex + 2
+	-- Con tamaño fijo, una palabra que no cabe se parte ("Setting" / "s"). Escalado con techo en m.body:
+	-- igual que antes cuando cabe, más chico cuando no (Inventario, Configuración, etc.).
+	caption.TextScaled = true
+	local fit = Instance.new("UITextSizeConstraint")
+	fit.MaxTextSize = m.body
+	fit.MinTextSize = math.max(9, math.floor(m.body * 0.55))
+	fit.Parent = caption
+	-- Quien después asigna TextSize (el HUD al redimensionar) sigue mandando: pasa a ser el techo.
+	caption:GetPropertyChangedSignal("TextSize"):Connect(function()
+		fit.MinTextSize = math.min(fit.MinTextSize, caption.TextSize)
+		fit.MaxTextSize = caption.TextSize
+	end)
 	styleCaption(caption, fill)
 	if opts.key then
 		Locale.bind(caption, opts.key)

@@ -28,7 +28,8 @@ local Economy = {
 	ReFiestaCandy = 5500000, -- el kiosco viejo lee este número; el nivel 1 coincide
 	Walk = { Normal = 16, Carrying = 11 },
 	Buy = { MaxDistance = 12 }, -- GDD §3.1, prompt de la Pasarela
-	Conveyor = { SpawnEverySec = 4, CrossSeconds = 40, LuckBoostMultiplier = 2, AnnounceLeadSec = 5 },
+	-- MinGapSec: separación mínima entre dos piñatas al entrar (la intro puede ofrecer una justo detrás de otra).
+	Conveyor = { SpawnEverySec = 4, CrossSeconds = 40, LuckBoostMultiplier = 2, AnnounceLeadSec = 5, MinGapSec = 3 },
 	Return = { ProtectSec = 3, WalkSpeed = 14 },
 	StealPromptHoldSec = 0.6,
 	Lock = {

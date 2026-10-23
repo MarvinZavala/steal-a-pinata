@@ -51,10 +51,15 @@ local function captionFor(model: Model): TextLabel
 		return existing
 	end
 	local primary = ensurePrimary(model)
+	-- El pivot de una importada es Root (en la base): el cartel va sobre la cabeza según el alto real
+	-- del modelo, con el borde de abajo apoyado ahí (SizeOffset) para no tapar la cara.
+	local box, size = model:GetBoundingBox()
+	local above = math.max(box.Position.Y + size.Y / 2 - primary.Position.Y, 1) + 0.5
 	local gui = Instance.new("BillboardGui")
 	gui.Name = "CaptionGui"
 	gui.Size = UDim2.fromOffset(160, 84)
-	gui.StudsOffset = Vector3.new(0, 3.2, 0)
+	gui.SizeOffset = Vector2.new(0, 0.5)
+	gui.StudsOffsetWorldSpace = Vector3.new(0, above, 0)
 	gui.MaxDistance = 80
 	gui.Parent = primary
 	local text = Instance.new("TextLabel")
@@ -199,16 +204,27 @@ function PinataVisual.setCaption(model: Model, pinataId: string, mutation: strin
 	label.Text = name .. "\n" .. Text.line("hud.per_sec", "es", { n = Format(perSec) }) .. "\n" .. priceText
 end
 
-function PinataVisual.place(model: Model, feet: Vector3)
-	local primary = ensurePrimary(model)
+-- lookAt: punto hacia el que mira la cara (el -Z del modelo), solo en el plano.
+function PinataVisual.place(model: Model, feet: Vector3, lookAt: Vector3?)
+	ensurePrimary(model)
 	for _, desc in model:GetDescendants() do
 		if desc:IsA("BasePart") then
 			desc.Anchored = true
 			desc.CanCollide = false
 		end
 	end
-	local lift = math.max(primary.Size.Y * 0.5, 1.4)
-	model:PivotTo(CFrame.new(feet + Vector3.new(0, lift, 0)))
+	local facing = CFrame.new()
+	if lookAt ~= nil then
+		local flat = Vector3.new(lookAt.X - feet.X, 0, lookAt.Z - feet.Z)
+		if flat.Magnitude > 0.01 then
+			facing = CFrame.lookAt(Vector3.zero, flat)
+		end
+	end
+	-- Apoyada en feet: el pivot de una importada es Root (en la base); el de un relleno, el centro del cuerpo.
+	model:PivotTo(CFrame.new(feet) * facing)
+	local box, size = model:GetBoundingBox()
+	local lift = feet.Y - (box.Position.Y - size.Y / 2)
+	model:PivotTo(CFrame.new(feet + Vector3.new(0, lift, 0)) * facing)
 end
 
 function PinataVisual.setTrail(model: Model, enabled: boolean)

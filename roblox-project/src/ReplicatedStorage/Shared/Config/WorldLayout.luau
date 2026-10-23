@@ -12,6 +12,8 @@ local WorldLayout = {
 	PedestalZ0 = -16,
 	PedestalStep = 10,
 	PedestalRows = 4,
+	PedestalLookAhead = 6, -- las piñatas miran al pasillo y estos studs hacia la puerta
+
 	FenceHeight = 10,
 	PlazaRadius = 46,
 	PlotX = 90, -- plaza 46 + 44, igual que lobby.py

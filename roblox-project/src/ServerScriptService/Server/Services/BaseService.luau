@@ -337,7 +337,10 @@ local function finishSeat(plot: Plot, pedestal: Pedestal, userId: number, owned:
 		end
 		return
 	end
-	PinataVisual.place(model, pedestal.anchor.Position)
+	-- La cara mira al pasillo central, un poco hacia la puerta, que es por donde entra quien visita.
+	local seat = plot.cframe:PointToObjectSpace(pedestal.anchor.Position)
+	local aisle = plot.cframe:PointToWorldSpace(Vector3.new(0, seat.Y, seat.Z - Layout.PedestalLookAhead))
+	PinataVisual.place(model, pedestal.anchor.Position, aisle)
 	model.Parent = plot.model
 	local hook = seatFn
 	if hook ~= nil then

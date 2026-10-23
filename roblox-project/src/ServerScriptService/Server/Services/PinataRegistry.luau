@@ -89,6 +89,10 @@ local function makePart(
 			pcall(function()
 				(part :: MeshPart).CollisionFidelity = Enum.CollisionFidelity.Box
 			end)
+			-- Sin el modelo importado no hay SurfaceAppearance: la paleta como TextureID evita la malla gris.
+			if not neon and not isPlaceholder(Assets.PaletteColor) then
+				mesh.TextureID = Assets.PaletteColor
+			end
 		else
 			mesh:Destroy()
 			part = Instance.new("Part")
@@ -162,6 +166,10 @@ local function buildPlaceholder(id: string, def: any): Model
 
 	local bodyId = if type(mesh) == "table" then mesh.Body else "rbxassetid://0"
 	local body = makePart("Body", size, CFrame.new(0, size.Y / 2, 0), bodyId, false, color)
+	if body:IsA("Part") then
+		-- Sin malla: bola de piñata en vez de un bloque.
+		body.Shape = Enum.PartType.Ball
+	end
 	body.Parent = model
 
 	local neonId = if type(mesh) == "table" then mesh.Neon else nil
@@ -170,6 +178,16 @@ local function buildPlaceholder(id: string, def: any): Model
 			Vector3.new(math.max(size.X * 0.35, 0.6), math.max(size.Y * 0.25, 0.4), math.max(size.Z * 0.35, 0.6))
 		local neon = makePart(id .. "_Neon", neonSize, CFrame.new(0, size.Y * 0.75, 0), neonId, true, color)
 		neon.Parent = model
+	end
+
+	-- PinataVisual.weldOverHead solo suelda Root al jugador: lo demás tiene que ir soldado a Root.
+	for _, child in model:GetChildren() do
+		if child:IsA("BasePart") and child ~= root then
+			local weld = Instance.new("WeldConstraint")
+			weld.Part0 = root
+			weld.Part1 = child
+			weld.Parent = child
+		end
 	end
 
 	applyAttributes(model, id, def)

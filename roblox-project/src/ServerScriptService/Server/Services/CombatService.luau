@@ -29,8 +29,15 @@ local CombatService = {}
 local lastSwing: { [Player]: number } = {}
 local spamState: { [Player]: BatSpam.State } = {}
 local eventService: any = nil
-local template: Tool? = nil
+local dataService: any = nil
+local templates: { [string]: Tool } = {}
 
+-- Malla importada por skin (art/export/props/bat_*.fbx → ServerStorage/Templates/Props).
+local SKIN_MODEL = { wood = "bat_wood", gold = "bat_gold" }
+-- Distancia del pomo a la mano: la malla tiene el pomo abajo y el barril arriba (art/scripts/props.py bat()).
+local GRIP_FROM_KNOB = 0.6
+
+-- Bate de Parts para cuando no se importó la malla (place recién armado con rojo build, CI).
 local function makeTemplate(): Tool
 	local tool = Instance.new("Tool")
 	tool.Name = "Bate"
@@ -62,8 +69,41 @@ local function makeTemplate(): Tool
 	return tool
 end
 
+local function meshTemplate(skin: string): Tool?
+	local name = SKIN_MODEL[skin]
+	local folder = ServerStorage:FindFirstChild("Templates")
+	local props = if folder ~= nil then folder:FindFirstChild("Props") else nil
+	local model = if props ~= nil and name ~= nil then props:FindFirstChild(name) else nil
+	local mesh = if model ~= nil then model:FindFirstChildWhichIsA("MeshPart", true) else nil
+	if mesh == nil then
+		return nil
+	end
+	local tool = Instance.new("Tool")
+	tool.Name = "Bate"
+	tool.RequiresHandle = true
+	tool.CanBeDropped = false
+	tool.ToolTip = "Bate"
+	local handle = mesh:Clone()
+	handle.Name = "Handle"
+	handle.Anchored = false
+	handle.CanCollide = false
+	handle.Massless = true
+	handle.Parent = tool
+	tool.Grip = CFrame.new(0, -handle.Size.Y / 2 + GRIP_FROM_KNOB, 0) * CFrame.Angles(math.rad(-90), 0, 0)
+	tool:SetAttribute("Skin", skin)
+	return tool
+end
+
+local function skinOf(player: Player): string
+	local data = if dataService ~= nil then dataService.profile(player) else nil
+	if data ~= nil and data.Cosmetics ~= nil and data.Cosmetics.bat_oro == true and templates.gold ~= nil then
+		return "gold"
+	end
+	return "wood"
+end
+
 local function give(player: Player, character: Model)
-	local toolTemplate = template
+	local toolTemplate = templates[skinOf(player)]
 	if toolTemplate == nil then
 		return
 	end
@@ -197,7 +237,9 @@ end
 
 function CombatService.init(services: { [string]: any })
 	eventService = services.EventService
-	template = makeTemplate()
+	dataService = services.DataService
+	templates.wood = meshTemplate("wood") or makeTemplate()
+	templates.gold = meshTemplate("gold")
 	AntiCheatService.register("RequestSwing", function(player, _args)
 		CombatService.trySwing(player)
 	end)

@@ -463,10 +463,9 @@ local function sendHome(item: Loose)
 			Transit.set(item.uid, false)
 			return
 		end
-		local primary = item.model.PrimaryPart
-		local lift = if primary ~= nil then math.max(primary.Size.Y * 0.5, 1.4) else 1.6
 		local startPos = item.model:GetPivot().Position
-		local target = goal + Vector3.new(0, lift, 0)
+		local target = goal + Vector3.new(0, PinataVisual.restLift(item.model), 0)
+		local facing = PinataVisual.facing(target - startPos) or item.model:GetPivot().Rotation
 		local dist = (target - startPos).Magnitude
 		local dur = math.clamp(dist / Economy.Return.WalkSpeed, 0.6, 10)
 		local t0 = os.clock()
@@ -474,7 +473,7 @@ local function sendHome(item: Loose)
 			local alpha = math.clamp((os.clock() - t0) / dur, 0, 1)
 			local pos = startPos:Lerp(target, alpha)
 			local bob = math.sin(alpha * math.pi * 6) * 0.3
-			item.model:PivotTo(CFrame.new(pos + Vector3.new(0, bob, 0)))
+			item.model:PivotTo(CFrame.new(pos + Vector3.new(0, bob, 0)) * facing)
 			if alpha >= 1 then
 				break
 			end

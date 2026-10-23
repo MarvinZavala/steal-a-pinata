@@ -39,6 +39,7 @@ type Slot = {
 	born: number,
 	sold: boolean,
 	shown: boolean,
+	onShown: (() -> ())?,
 }
 
 -- Las piñatas miran a -Z del modelo; la plaza queda del lado opuesto a la Pasarela.
@@ -142,12 +143,31 @@ local function nextBorn(): number
 	return math.max(os.clock(), newest + Economy.Conveyor.MinGapSec)
 end
 
+local function pending(): boolean
+	for _, slot in slots do
+		if not slot.shown then
+			return true
+		end
+	end
+	return false
+end
+
+local function reveal(slot: Slot)
+	slot.shown = true
+	local fn = slot.onShown
+	slot.onShown = nil
+	if fn ~= nil then
+		task.spawn(fn)
+	end
+end
+
 local function insertSlot(
 	pinataId: string,
 	rarity: string,
 	mutation: string?,
 	price: number?,
-	currency: string
+	currency: string,
+	onShown: (() -> ())?
 ): number?
 	local current = BaseService.getWorld()
 	if current == nil then
@@ -191,8 +211,12 @@ local function insertSlot(
 		rarity = rarity,
 		born = born,
 		sold = false,
-		shown = shown,
+		shown = false,
+		onShown = onShown,
 	})
+	if shown then
+		reveal(slots[#slots])
+	end
 	return id
 end
 
@@ -204,14 +228,15 @@ local function spawnSlot(pinataId: string, rarity: string)
 end
 
 -- La intro pone un slot concreto. free = true no cobra aunque el roster tenga precio.
-function ConveyorService.offer(pinataId: string, mutation: string?, free: boolean): number?
+-- onShown corre cuando la piñata aparece de verdad (puede esperar MinGapSec detrás de otra).
+function ConveyorService.offer(pinataId: string, mutation: string?, free: boolean, onShown: (() -> ())?): number?
 	local def = Pinatas[pinataId]
 	if def == nil then
 		return nil
 	end
 	local price = if free then nil else def.Price
 	local currency = if def.Currency == "Bastones" then "Bastones" else "Dulces"
-	return insertSlot(pinataId, def.Rarity, mutation, price, currency)
+	return insertSlot(pinataId, def.Rarity, mutation, price, currency, onShown)
 end
 
 function ConveyorService.tryBuy(player: Player, slotId: number)
@@ -257,8 +282,8 @@ function ConveyorService.tryBuy(player: Player, slotId: number)
 	local accepted, reject =
 		BaseService.acceptPurchase(player, slot.pinataId, slot.mutation, slot.model, slot.price, slot.currency)
 	if not accepted then
+		-- Sigue donde iba: volver a born = ahora la mandaba al inicio, encima de otra, y se podía retener.
 		slot.sold = false
-		slot.born = os.clock()
 		table.insert(slots, slot)
 		-- "funds" / "no_room" son rechazos normales, no un exploit.
 		if distance >= 200 then
@@ -288,7 +313,7 @@ local function step()
 				continue
 			end
 			slot.model.Parent = current.folder
-			slot.shown = true
+			reveal(slot)
 		end
 		if alpha >= 1 then
 			slot.model:Destroy()
@@ -318,6 +343,12 @@ end
 function ConveyorService.start()
 	task.spawn(function()
 		while true do
+			-- Con una piñata de la intro esperando su turno no se sortea otra: la cola no crece.
+			if pending() then
+				step()
+				task.wait(Economy.Conveyor.SpawnEverySec)
+				continue
+			end
 			local pinataId, rarity = rollPinata()
 			local headline = SpawnWeights.isHeadline(rarity) or pinataId == Events.PosadasPinateras.RunwayId
 			if pinataId ~= nil and headline then

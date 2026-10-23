@@ -204,6 +204,21 @@ function PinataVisual.setCaption(model: Model, pinataId: string, mutation: strin
 	label.Text = name .. "\n" .. Text.line("hud.per_sec", "es", { n = Format(perSec) }) .. "\n" .. priceText
 end
 
+-- Altura del pivot sobre la base del modelo: Root (en la base) en las importadas, el centro del cuerpo en los rellenos.
+function PinataVisual.restLift(model: Model): number
+	local box, size = model:GetBoundingBox()
+	return model:GetPivot().Position.Y - (box.Position.Y - size.Y / 2)
+end
+
+-- Rotación para mirar (el -Z del modelo) en la dirección del plano; nil si no hay dirección.
+function PinataVisual.facing(direction: Vector3): CFrame?
+	local flat = Vector3.new(direction.X, 0, direction.Z)
+	if flat.Magnitude < 0.01 then
+		return nil
+	end
+	return CFrame.lookAt(Vector3.zero, flat)
+end
+
 -- lookAt: punto hacia el que mira la cara (el -Z del modelo), solo en el plano.
 function PinataVisual.place(model: Model, feet: Vector3, lookAt: Vector3?)
 	ensurePrimary(model)
@@ -213,18 +228,9 @@ function PinataVisual.place(model: Model, feet: Vector3, lookAt: Vector3?)
 			desc.CanCollide = false
 		end
 	end
-	local facing = CFrame.new()
-	if lookAt ~= nil then
-		local flat = Vector3.new(lookAt.X - feet.X, 0, lookAt.Z - feet.Z)
-		if flat.Magnitude > 0.01 then
-			facing = CFrame.lookAt(Vector3.zero, flat)
-		end
-	end
-	-- Apoyada en feet: el pivot de una importada es Root (en la base); el de un relleno, el centro del cuerpo.
+	local facing = (if lookAt ~= nil then PinataVisual.facing(lookAt - feet) else nil) or CFrame.new()
 	model:PivotTo(CFrame.new(feet) * facing)
-	local box, size = model:GetBoundingBox()
-	local lift = feet.Y - (box.Position.Y - size.Y / 2)
-	model:PivotTo(CFrame.new(feet + Vector3.new(0, lift, 0)) * facing)
+	model:PivotTo(CFrame.new(feet + Vector3.new(0, PinataVisual.restLift(model), 0)) * facing)
 end
 
 function PinataVisual.setTrail(model: Model, enabled: boolean)

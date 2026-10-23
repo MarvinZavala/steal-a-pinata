@@ -45,6 +45,7 @@ local function makeTemplate(): Tool
 	tool.CanBeDropped = false
 	tool.ToolTip = "Bate"
 	tool.Grip = CFrame.new(0, -1.2, 0) * CFrame.Angles(math.rad(-90), 0, 0)
+	tool:SetAttribute("Skin", "wood")
 	local handle = Instance.new("Part")
 	handle.Name = "Handle"
 	handle.Size = Vector3.new(0.45, 4.2, 0.45)
@@ -129,6 +130,23 @@ local function give(player: Player, character: Model)
 			humanoid:EquipTool(tool)
 		end
 	end)
+end
+
+-- El personaje puede aparecer antes de que cargue el perfil (sale de madera) y el bate de oro se puede
+-- ganar a mitad de sesión. BaseService.pushState llama esto: si el skin cambió, se reemplaza el Bate.
+function CombatService.refreshBat(player: Player)
+	local character = player.Character
+	if character == nil then
+		return
+	end
+	local backpack = player:FindFirstChildOfClass("Backpack")
+	local current = character:FindFirstChild("Bate")
+		or (if backpack ~= nil then backpack:FindFirstChild("Bate") else nil)
+	if current == nil or current:GetAttribute("Skin") == skinOf(player) then
+		return
+	end
+	current:Destroy()
+	give(player, character)
 end
 
 function CombatService.trySwing(player: Player)

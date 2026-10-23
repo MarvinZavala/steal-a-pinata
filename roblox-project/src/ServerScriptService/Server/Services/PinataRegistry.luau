@@ -195,10 +195,35 @@ local function buildPlaceholder(id: string, def: any): Model
 	return model
 end
 
+-- PinataVisual.weldOverHead solo suelda Root al jugador: una pieza sin soldar se cae al cargarla.
+-- organize_imports.luau ya suelda todo; esto cubre un modelo puesto a mano en ServerStorage/Pinatas.
+local function weldToRoot(model: Model, root: BasePart)
+	local welded: { [BasePart]: boolean } = {}
+	for _, desc in model:GetDescendants() do
+		if desc:IsA("WeldConstraint") or desc:IsA("Weld") then
+			local a, b = desc.Part0, desc.Part1
+			if a ~= nil then
+				welded[a] = true
+			end
+			if b ~= nil then
+				welded[b] = true
+			end
+		end
+	end
+	for _, desc in model:GetDescendants() do
+		if desc:IsA("BasePart") and desc ~= root and not welded[desc] then
+			local weld = Instance.new("WeldConstraint")
+			weld.Part0 = root
+			weld.Part1 = desc
+			weld.Parent = desc
+		end
+	end
+end
+
 local function normalize(model: Model, id: string, def: any)
 	applyAttributes(model, id, def)
 	paintNeon(model, def.Rarity)
-	ensureRoot(model)
+	weldToRoot(model, ensureRoot(model))
 end
 
 function PinataRegistry.get(id: string): any?

@@ -170,12 +170,15 @@ local function offerOnce(player: Player, key: string, pinataId: string, mutation
 	if not claimOffer(player, key) then
 		return
 	end
-	local slotId = ConveyorService.offer(pinataId, mutation, free)
+	-- El aviso sale cuando la piñata aparece en la Pasarela (puede esperar su turno detrás de otra).
+	local slotId = ConveyorService.offer(pinataId, mutation, free, function()
+		if player.Parent ~= nil then
+			announce(player, pinataId)
+		end
+	end)
 	if slotId == nil then
 		releaseOffer(player, key)
-		return
 	end
-	announce(player, pinataId)
 end
 
 local function introOpen(player: Player): Records.PlayerData?
@@ -237,7 +240,11 @@ local function onAction(player: Player, args: { any })
 		return
 	end
 	if action == "complete" or action == "skip" then
-		if action == "skip" then
+		-- Una vez por jugador y solo con la intro abierta: el cliente puede repetir "skip".
+		local seen = funnelLogged[player] or {}
+		funnelLogged[player] = seen
+		if action == "skip" and not seen[0] and introOpen(player) ~= nil then
+			seen[0] = true
 			pcall(function()
 				AnalyticsService:LogCustomEvent(player, "ftue_skip")
 			end)

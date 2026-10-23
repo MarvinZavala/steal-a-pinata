@@ -450,7 +450,7 @@ function PlaceBuilder.build(): World
 		local bulb = part(
 			"Bulb" .. tostring(i),
 			Vector3.new(1.4, 1.4, 1.4),
-			lamp.Position + Vector3.new(0, 4, 0),
+			CFrame.new(lamp.Position + Vector3.new(0, 4, 0)),
 			YELLOW,
 			folder
 		)

@@ -30,7 +30,8 @@
     },
     "Workspace": {
       "$properties": {
-        "StreamingEnabled": true
+        "StreamingEnabled": true,
+        "FallenPartsDestroyHeight": -80
       }
     },
     "SoundService": {

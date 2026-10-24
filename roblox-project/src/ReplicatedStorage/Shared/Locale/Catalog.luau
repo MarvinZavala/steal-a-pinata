@@ -143,6 +143,36 @@ local entries: { [string]: Entry } = {
 		pt = "Um cosmético aleatório. Nunca uma piñata.",
 	},
 	["shop.odds_title"] = { es = "Probabilidades", en = "Odds", pt = "Probabilidades" },
+	["shop.box_sequence"] = {
+		es = "Sin azar: te toca",
+		en = "No luck needed: you get",
+		pt = "Sem sorteio: você ganha",
+	},
+	["shop.box_complete"] = {
+		es = "Ya tenés todos: te damos Dulces",
+		en = "You have them all: pays Candy",
+		pt = "Você já tem todos: ganha Doces",
+	},
+	["shop.box_sequence_note"] = {
+		es = "En tu región la caja da los premios en este orden.",
+		en = "In your region the box gives prizes in this order.",
+		pt = "Na sua região a caixa dá os prêmios nesta ordem.",
+	},
+	["shop.restricted"] = {
+		es = "No disponible en tu región",
+		en = "Not available in your region",
+		pt = "Indisponível na sua região",
+	},
+	["shop.odds_luck_note"] = {
+		es = "Rareza de cada piñata de la Pasarela con la Suerte activa.",
+		en = "Rarity of each Runway piñata while Luck is on.",
+		pt = "Raridade de cada piñata da Passarela com a Sorte ativa.",
+	},
+	["shop.odds_golden_note"] = {
+		es = "Rareza de las próximas piñatas de la Pasarela Dorada.",
+		en = "Rarity of the next Golden Runway piñatas.",
+		pt = "Raridade das próximas piñatas da Passarela Dourada.",
+	},
 	["shop.odds_trail"] = { es = "Estela de confeti", en = "Confetti trail", pt = "Rastro de confete" },
 	["shop.odds_ribbon"] = { es = "Estela serpentina", en = "Streamer trail", pt = "Rastro serpentina" },
 	["shop.odds_decor"] = { es = "Decoración de base", en = "Base decor", pt = "Decoração de base" },

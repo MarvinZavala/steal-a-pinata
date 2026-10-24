@@ -207,7 +207,7 @@ local function onEntry(entry: any)
 	end
 end
 
-local function addOdds(parent: Instance, odds: any)
+local function addOdds(parent: Instance, odds: any, noteKey: string?)
 	if typeof(odds) ~= "table" then
 		return
 	end
@@ -261,7 +261,7 @@ local function addOdds(parent: Instance, odds: any)
 			y += 22
 		end
 	end
-	local note = UIKit.label(block, Locale.t("shop.odds_dupe"), "body", 13, Theme.color.ink_soft)
+	local note = UIKit.label(block, Locale.t(noteKey or "shop.odds_dupe"), "body", 13, Theme.color.ink_soft)
 	note.Position = UDim2.fromOffset(0, y)
 	note.Size = UDim2.new(1, 0, 0, 18)
 	note.TextXAlignment = Enum.TextXAlignment.Left
@@ -356,7 +356,7 @@ local function renderKiosk(name: string)
 			oddsHost.Size = UDim2.new(1, 0, 0, 0)
 			oddsHost.LayoutOrder = 3
 			oddsHost.Parent = row
-			addOdds(oddsHost, entry.odds)
+			addOdds(oddsHost, entry.odds, entry.oddsNoteKey)
 		end
 		local priceText = Locale.t("common.buy")
 		local buttonColor = Theme.color.fiesta_pink
@@ -503,7 +503,7 @@ function ShopController.start()
 	})
 	UIKit.button(header, {
 		name = "CloseShop",
-		text = "✕",
+		text = "X", -- "✕" no existe en Fredoka: el botón quedaba vacío
 		color = Theme.color.cream,
 		anchor = Vector2.new(1, 0),
 		position = UDim2.new(1, -8, 0, 8),

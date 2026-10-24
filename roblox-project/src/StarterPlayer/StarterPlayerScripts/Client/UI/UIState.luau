@@ -26,6 +26,8 @@ local state: { [string]: any } = {
 		batPack = false,
 	},
 	batSkin = "wood",
+	paidRandomRestricted = true,
+	boxNext = nil,
 	settings = {
 		locale = "",
 		music = 0.8,
@@ -213,6 +215,11 @@ function UIState.patch(partial: any)
 	end
 	if typeof(partial.batSkin) == "string" then
 		state.batSkin = partial.batSkin
+	end
+	if typeof(partial.paidRandomRestricted) == "boolean" then
+		state.paidRandomRestricted = partial.paidRandomRestricted
+		-- boxNext viaja junto: nil significa que ya tiene toda la secuencia.
+		state.boxNext = if typeof(partial.boxNext) == "string" then partial.boxNext else nil
 	end
 	if typeof(partial.fiestaPhase) == "string" then
 		state.fiestaPhase = partial.fiestaPhase

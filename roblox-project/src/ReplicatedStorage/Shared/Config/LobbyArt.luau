@@ -25,6 +25,8 @@ local LobbyArt = {
 	Fountain = "lobby_fountain",
 	-- Estrellita gigante sobre la fuente (con sus colores: queda más fiestera que la versión dorada del render).
 	Statue = { Pinata = "estrellita", Scale = 2.4 },
+	-- Cartel "LA PLAZA" sobre la estatua (px del BillboardGui y distancia en studs).
+	HubSign = { Width = 140, MaxDistance = 90 },
 	-- Bases (ServerStorage/Templates/Base). Las paredes de PlaceBuilder quedan como muros invisibles.
 	Base = {
 		Floor = "base_floor",

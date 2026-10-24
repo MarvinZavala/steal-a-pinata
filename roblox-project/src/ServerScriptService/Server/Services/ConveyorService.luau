@@ -26,8 +26,6 @@ local BaseService = require(script.Parent:WaitForChild("BaseService"))
 
 local ConveyorService = {}
 
-local BOOST = { Rare = true, Epic = true, Legendary = true, Mythic = true, Secret = true }
-
 type Slot = {
 	id: number,
 	model: Model,
@@ -117,7 +115,7 @@ local function rollPinata(): (string?, string)
 			return runwayId, runway.Rarity
 		end
 	end
-	local rarity = SpawnWeights.pick(Rarities.SpawnWeight, math.random(), luckOn(), BOOST)
+	local rarity = SpawnWeights.pick(Rarities.SpawnWeight, math.random(), luckOn(), Rarities.LuckBoosted)
 	if goldenLeft > 0 then
 		goldenLeft -= 1
 		local lifted = rarity == "Rare"

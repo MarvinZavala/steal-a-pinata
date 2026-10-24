@@ -86,14 +86,15 @@ local rarityColor: { [string]: Color3 } = {
 	Event = hex("#FF5A6E"),
 }
 
+-- Solo glifos que Fredoka/Nunito (o el emoji de Roblox) dibujan: ♛ ✦ ✧ salen como cuadritos vacíos.
 local rarityShape: { [string]: { shape: string, frame: string } } = {
 	Common = { shape = "●", frame = "plain" },
 	Uncommon = { shape = "◎", frame = "double" },
 	Rare = { shape = "◆", frame = "diamond" },
 	Epic = { shape = "★", frame = "star" },
-	Legendary = { shape = "♛", frame = "crown" },
-	Mythic = { shape = "✦", frame = "pulse" },
-	Secret = { shape = "✧", frame = "glitch" },
+	Legendary = { shape = "👑", frame = "crown" },
+	Mythic = { shape = "❖", frame = "pulse" },
+	Secret = { shape = "◈", frame = "glitch" },
 	Event = { shape = "❄", frame = "stripe" },
 }
 

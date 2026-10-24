@@ -10,6 +10,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Layout = require(Shared:WaitForChild("Config"):WaitForChild("WorldLayout"))
 local Labels = require(script.Parent:WaitForChild("Labels"))
+local LobbyArt = require(script.Parent:WaitForChild("LobbyArt"))
 
 local PlaceBuilder = {}
 
@@ -567,6 +568,8 @@ function PlaceBuilder.build(): World
 	caption(holiday, "NavidadSign", "shop.kiosk_navidad", Vector3.new(0, 6, 0), 160)
 	shopPart = holiday
 	PlaceBuilder.setEventDress(false, false, false)
+	-- Con los modelos importados, la plaza se viste con el arte real (los Parts de arriba quedan de juego).
+	LobbyArt.dress(folder)
 
 	return {
 		folder = folder,

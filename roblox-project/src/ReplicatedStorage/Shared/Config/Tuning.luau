@@ -18,6 +18,8 @@ local Tuning = {
 	CarryOffsetX = 0,
 	CarryOffsetY = 3.6,
 	CarryOffsetZ = 0.35,
+	-- Tamaño de la piñata sentada en su pedestal (art/IMPORT_GUIDE.md §4); cargada vuelve a 1.
+	PedestalScale = 1.5,
 	-- No entregar en el mismo instante del robo si las zonas se tocaran.
 	MinCarrySec = 0.4,
 	-- Aterrizaje: elasticidad 0 y, si la caída pasó de esto (studs/s), shake chico.

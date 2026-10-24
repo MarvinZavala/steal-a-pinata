@@ -347,6 +347,7 @@ local function finishSeat(plot: Plot, pedestal: Pedestal, userId: number, owned:
 	-- La cara mira al pasillo central, un poco hacia la puerta, que es por donde entra quien visita.
 	local seat = plot.cframe:PointToObjectSpace(pedestal.anchor.Position)
 	local aisle = plot.cframe:PointToWorldSpace(Vector3.new(0, seat.Y, seat.Z - Layout.PedestalLookAhead))
+	PinataVisual.setScale(model, Tuning.PedestalScale)
 	PinataVisual.place(model, pedestal.anchor.Position, aisle)
 	model.Parent = plot.model
 	local hook = seatFn
@@ -488,6 +489,10 @@ function BaseService.detach(ownerUserId: number, pedestalIndex: number): (Model?
 	local model = pedestal.model
 	pedestal.model = nil
 	pedestal.uid = nil
+	if model ~= nil then
+		-- Fuera del pedestal (robo, carga) la piñata vuelve a su tamaño.
+		PinataVisual.setScale(model, 1)
+	end
 	return model, owned
 end
 

@@ -3,6 +3,7 @@
 -- El PurchaseId se marca en el mismo paso que el premio. No se concede dos veces.
 local MarketplaceService = game:GetService("MarketplaceService")
 local Players = game:GetService("Players")
+local PolicyService = game:GetService("PolicyService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
@@ -22,6 +23,25 @@ local ConveyorService = require(script.Parent:WaitForChild("ConveyorService"))
 local LockService = require(script.Parent:WaitForChild("LockService"))
 
 local MonetizationService = {}
+
+-- Política de Roblox sobre artículos pagos con azar. Mientras no hay respuesta, o si la consulta falla,
+-- se trata como restringido: la Caja Sorpresa entrega la secuencia conocida y la tienda bloquea la Suerte y
+-- la Pasarela Dorada (son modificadores de probabilidad).
+function MonetizationService.paidRandomRestricted(player: Player): boolean
+	return player:GetAttribute("PaidRandomRestricted") ~= false
+end
+
+local function refreshPolicy(player: Player)
+	local ok, info = pcall(function()
+		return PolicyService:GetPolicyInfoForPlayerAsync(player)
+	end)
+	local restricted = not ok or type(info) ~= "table" or info.ArePaidRandomItemsRestricted ~= false
+	if player.Parent == nil then
+		return
+	end
+	player:SetAttribute("PaidRandomRestricted", restricted)
+	BaseService.pushState(player)
+end
 
 local PASS_FIELD: { [string]: string } = {
 	DoubleCandy = "DoubleCandy",
@@ -92,6 +112,7 @@ local function processReceipt(receipt: any): Enum.ProductPurchaseDecision
 		roll = math.random(),
 		maxCurrency = Security.MaxCurrency,
 		today = DailyRules.dayIndex(os.time()),
+		sequence = MonetizationService.paidRandomRestricted(player),
 	})
 	if result.status == "granted" then
 		applyEffects(player, result.effects)
@@ -203,6 +224,7 @@ function MonetizationService.debugGrant(player: Player, productKey: string, purc
 	local patched = {
 		Products = products,
 		SurpriseOdds = Monetization.SurpriseOdds,
+		SurpriseDupeMinutes = Monetization.SurpriseDupeMinutes,
 		Rewarded = Monetization.Rewarded,
 	}
 	local result = Receipts.commit(data, patched, purchaseId, 91001, {
@@ -211,6 +233,7 @@ function MonetizationService.debugGrant(player: Player, productKey: string, purc
 		roll = math.random(),
 		maxCurrency = Security.MaxCurrency,
 		today = DailyRules.dayIndex(os.time()),
+		sequence = MonetizationService.paidRandomRestricted(player),
 	})
 	if result.status ~= "granted" and result.status ~= "duplicate" then
 		return false
@@ -263,6 +286,7 @@ function MonetizationService.start()
 				return
 			end
 			refreshPasses(player)
+			refreshPolicy(player)
 		end)
 	end
 	Players.PlayerAdded:Connect(hook)

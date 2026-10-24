@@ -57,6 +57,9 @@ export type GameState = {
 	reFiestas: number,
 	passes: Passes,
 	batSkin: string,
+	-- ArePaidRandomItemsRestricted: la caja muestra la secuencia (boxNext) y se bloquean Suerte y Pasarela Dorada.
+	paidRandomRestricted: boolean,
+	boxNext: string?,
 	settings: Settings,
 	ftueCompleted: boolean,
 	multiplier: number,
@@ -83,6 +86,8 @@ export type ShopEntry = {
 	enabled: boolean,
 	badgeKey: string?,
 	odds: { OddsRow }?,
+	-- Nota bajo las probabilidades (por defecto, la de repetidos de la Caja Sorpresa).
+	oddsNoteKey: string?,
 }
 
 export type OddsRow = {

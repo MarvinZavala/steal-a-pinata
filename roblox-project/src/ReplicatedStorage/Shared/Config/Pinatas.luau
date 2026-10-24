@@ -222,8 +222,7 @@ local Pinatas: { [string]: PinataDef } = {
 	-- Temporada Meme 1 (GDD §5, plan/TRENDS_MEMES.md). Bloque aditivo: no borra ni reordena la fase 1.
 	-- Curva de main: Legendaria entre Cadejo (2,000 / 450,000) y Toro (3,500 / 900,000),
 	-- salvo Seis-Siete (el chiste 6,767 / 1,676,767). Mítica entre Izalco y Torogoz Cósmico.
-	-- Secretas sin precio, como Sombra y Pixelín. Mesh ids en Assets.luau (rbxassetid://0).
-	-- TODO: subir el FBX de art/export/creatures/<id>.fbx y reemplazar el placeholder.
+	-- Secretas sin precio, como Sombra y Pixelín. Mesh ids en Assets.luau.
 	michi_aplausos = {
 		Name = "Michi Aplausos",
 		Rarity = "Legendary",
@@ -280,8 +279,7 @@ local Pinatas: { [string]: PinataDef } = {
 	},
 	-- Temporada Meme 2 (fase 3, plan/TRENDS_MEMES_2.md). Bloque aditivo, misma curva que Meme 1:
 	-- Épica entre las Épicas de main, Legendaria entre Cadejo y Toro (Cochinito = el chiste 2,515 / 515,150 = "15 y fin de mes"),
-	-- Mítica entre Izalco y Torogoz, Secretas sin precio. Mesh ids en Assets.luau (rbxassetid://0).
-	-- TODO: subir el FBX de art/export/creatures/<id>.fbx y reemplazar el placeholder.
+	-- Mítica entre Izalco y Torogoz, Secretas sin precio. Mesh ids en Assets.luau.
 	garrobita_terenga = {
 		Name = "Garrobita Terenga",
 		Rarity = "Epic",
@@ -355,7 +353,7 @@ local Pinatas: { [string]: PinataDef } = {
 		Modeled = true,
 	},
 	-- Colección Random (fase 3): piñatas originales "random pero chidas" (un chiste visual cada una).
-	-- Misma curva por rareza. TODO: subir art/export/creatures/<id>.fbx y reemplazar el placeholder.
+	-- Misma curva por rareza. Mesh ids en Assets.luau.
 	caracol_turbo = {
 		Name = "Caracol Turbo",
 		Rarity = "Epic",
@@ -393,7 +391,7 @@ local Pinatas: { [string]: PinataDef } = {
 		Modeled = true,
 	},
 	-- Colección LatAm: una piñata por país de Latinoamérica (plan/LATAM_COLLECTION.md).
-	-- Misma curva por rareza. TODO: subir art/export/creatures/<id>.fbx y reemplazar el placeholder.
+	-- Misma curva por rareza. Mesh ids en Assets.luau.
 	saltena_jugosa = {
 		Name = "Salteña Jugosa",
 		Rarity = "Common",

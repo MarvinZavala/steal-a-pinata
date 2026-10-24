@@ -93,6 +93,12 @@ local function dressFountain(world: Folder, art: Folder, groundY: number)
 		-- El Part queda invisible encima de la estatua solo para el cartel "LA PLAZA".
 		hub.Transparency = 1
 		hub.Position = Vector3.new(0, topOf(statue) + 1, 0)
+		-- Con las tiendas reales alrededor, el cartel de 220 px las tapaba: más chico y solo de cerca.
+		local sign = hub:FindFirstChild("Hub")
+		if sign ~= nil and sign:IsA("BillboardGui") then
+			sign.Size = UDim2.fromOffset(Art.HubSign.Width, math.floor(Art.HubSign.Width * 0.45))
+			sign.MaxDistance = Art.HubSign.MaxDistance
+		end
 	end
 end
 

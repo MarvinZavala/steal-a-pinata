@@ -6,6 +6,7 @@
 local Wallet = if typeof(script) == "Instance"
 	then require(script.Parent.Parent.Data.Wallet)
 	else require("../Data/Wallet")
+local PaidRandom = if typeof(script) == "Instance" then require(script.Parent.PaidRandom) else require("./PaidRandom")
 
 local Receipts = {}
 
@@ -21,6 +22,8 @@ export type ProductDef = {
 export type Catalog = {
 	Products: { [string]: ProductDef },
 	SurpriseOdds: { { Id: string, Weight: number } }?,
+	-- Minutos de producción que paga un repetido de la Caja Sorpresa ("Si ya lo tenés, te damos Dulces").
+	SurpriseDupeMinutes: number?,
 	Rewarded: { BoostSec: number?, DailyLimit: number? }?,
 }
 
@@ -30,6 +33,8 @@ export type Context = {
 	roll: number,
 	maxCurrency: number,
 	today: number,
+	-- ArePaidRandomItemsRestricted: la caja da la secuencia conocida (PaidRandom) en vez de sortear.
+	sequence: boolean?,
 }
 
 export type Effect = {
@@ -120,11 +125,20 @@ local function applyKey(data: any, key: string, def: ProductDef, ctx: Context, c
 		if odds == nil then
 			return false, effects
 		end
-		local cosmeticId = Receipts.pickWeighted(odds, ctx.roll)
-		if cosmeticId == nil then
-			return false, effects
-		end
 		ensureCosmetics(data)
+		local cosmeticId = if ctx.sequence
+			then PaidRandom.nextInSequence(odds, data.Cosmetics)
+			else Receipts.pickWeighted(odds, ctx.roll)
+		if cosmeticId == nil or data.Cosmetics[cosmeticId] == true then
+			-- Repetido (o la secuencia ya completa): paga Dulces, como dice la tienda.
+			local perSec = math.max(ctx.productionPerSec, 1)
+			local amount = math.floor(perSec * (catalog.SurpriseDupeMinutes or 10) * 60)
+			if not grantCandy(data, amount, ctx.maxCurrency) then
+				return false, effects
+			end
+			table.insert(effects, { kind = "candy", amount = amount })
+			return true, effects
+		end
 		data.Cosmetics[cosmeticId] = true
 		table.insert(effects, { kind = "cosmetic", cosmeticId = cosmeticId })
 		return true, effects

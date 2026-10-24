@@ -509,7 +509,7 @@ function PlaceBuilder.build(): World
 	end
 
 	-- TODO(WP-18): mallas nuevas que todavía no están en art/export:
-	-- nieve de techos y palmeras, faroles del desfile, Tamalito, Jengibrín y el gorro.
+	-- nieve de techos y palmeras, faroles del desfile y el gorro (Tamalito y Jengibrín ya están).
 	-- Hasta que lleguen, el vestido usa los faroles, las luces y los kioscos que ya existen.
 	local dress = Instance.new("Folder")
 	dress.Name = "EventDress"

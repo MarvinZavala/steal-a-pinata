@@ -9,6 +9,7 @@ local Pinatas = require(Shared:WaitForChild("Config"):WaitForChild("Pinatas"))
 local DailyRules = require(Shared:WaitForChild("Gameplay"):WaitForChild("DailyRules"))
 local EventCalendar = require(Shared:WaitForChild("Gameplay"):WaitForChild("EventCalendar"))
 local Receipts = require(Shared:WaitForChild("Gameplay"):WaitForChild("Receipts"))
+local PaidRandom = require(Shared:WaitForChild("Gameplay"):WaitForChild("PaidRandom"))
 local Remotes = require(Shared:WaitForChild("Net"):WaitForChild("Remotes"))
 
 local Server = script.Parent.Parent
@@ -60,7 +61,7 @@ local function baselineOf(data: Records.PlayerData, name: string): number
 	return 0
 end
 
-local function ensure(data: Records.PlayerData)
+local function ensure(data: Records.PlayerData, player: Player)
 	local today = DailyRules.dayIndex(os.time())
 	if data.EventQuestDay ~= today then
 		data.EventQuestDay = today
@@ -80,7 +81,11 @@ local function ensure(data: Records.PlayerData)
 		local week = DailyRules.weekIndex(os.time())
 		if data.Subscription.LastBoxWeek ~= week then
 			local odds = Monetization.SurpriseOdds
-			local cosmeticId = Receipts.pickWeighted(odds, math.random())
+			-- Con ArePaidRandomItemsRestricted (atributo de MonetizationService) la caja semanal también
+			-- entrega la secuencia conocida en vez de sortear.
+			local cosmeticId = if player:GetAttribute("PaidRandomRestricted") ~= false
+				then PaidRandom.nextInSequence(odds, data.Cosmetics)
+				else Receipts.pickWeighted(odds, math.random())
 			if cosmeticId ~= nil then
 				data.Cosmetics[cosmeticId] = true
 				data.Subscription.LastBoxWeek = week
@@ -111,7 +116,7 @@ function DailyService.snapshot(player: Player): { [string]: any }
 	if data == nil then
 		return {}
 	end
-	ensure(data)
+	ensure(data, player)
 	local today = DailyRules.dayIndex(os.time())
 	local streak, reason = DailyRules.nextStreak(data.Daily.ClaimedDay, data.Daily.Streak, today)
 	local reward =
@@ -198,7 +203,7 @@ local function onClaim(player: Player)
 	if data == nil then
 		return
 	end
-	ensure(data)
+	ensure(data, player)
 	local today = DailyRules.dayIndex(os.time())
 	local streak, reason = DailyRules.nextStreak(data.Daily.ClaimedDay, data.Daily.Streak, today)
 	if reason == "already" or reason == "clock" then
@@ -234,7 +239,7 @@ local function onEventQuest(player: Player, data: Records.PlayerData, id: string
 		deny(player, "event_off")
 		return
 	end
-	ensure(data)
+	ensure(data, player)
 	local quest = EventCalendar.questById(id)
 	if quest == nil then
 		return
@@ -271,7 +276,7 @@ local function onQuest(player: Player, args: { any })
 		onEventQuest(player, data, indexText)
 		return
 	end
-	ensure(data)
+	ensure(data, player)
 	local index = tonumber(indexText)
 	if index == nil then
 		return

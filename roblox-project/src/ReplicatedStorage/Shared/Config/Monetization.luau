@@ -32,6 +32,8 @@ return {
 		{ Id = "pedestal_oro", Weight = 8 },
 		{ Id = "bat_oro", Weight = 2 },
 	},
+	-- Un repetido de la Caja Sorpresa paga estos minutos de producción en Dulces (lo dice la tienda).
+	SurpriseDupeMinutes = 10,
 	Rewarded = { ProductId = 0, BoostSec = 10 * 60, DailyLimit = 1 },
 	-- Id vacío: la suscripción se crea en el dashboard. El servidor no cobra solo.
 	Subscription = { Id = "", Price = 49, Name = "Pase Fiesta" },

@@ -24,6 +24,8 @@ local Rarities = {
 		Mythic = 0.19,
 		Secret = 0.01,
 	},
+	-- Rarezas que la Suerte de Server dobla en la Pasarela (la tienda muestra estas probabilidades).
+	LuckBoosted = { Rare = true, Epic = true, Legendary = true, Mythic = true, Secret = true },
 	-- Golpes de bate necesarios para que el carrier suelte la piñata (GDD §4.3)
 	HitsToDrop = { Common = 1, Uncommon = 1, Rare = 1, Epic = 1, Legendary = 2, Mythic = 2, Secret = 2, Event = 2 },
 }

@@ -7,6 +7,8 @@ local Economy = require(script.Parent.Parent.Config.Economy)
 local Events = require(script.Parent.Parent.Config.Events)
 local Monetization = require(script.Parent.Parent.Config.Monetization)
 local Pinatas = require(script.Parent.Parent.Config.Pinatas)
+local Rarities = require(script.Parent.Parent.Config.Rarities)
+local PaidRandom = require(script.Parent.Parent.Gameplay.PaidRandom)
 local Types = require(script.Parent.Types)
 
 export type ShopEntry = Types.ShopEntry
@@ -26,6 +28,48 @@ local BOX_ODDS: { Types.OddsRow } = {
 	{ key = "shop.odds_pedestal", percent = 8, swatch = "grape" },
 	{ key = "shop.odds_bat", percent = 2, swatch = "gold" },
 }
+
+-- Fila de cada premio de la caja por id (mismo orden que Monetization.SurpriseOdds = la secuencia conocida).
+local BOX_ROW: { [string]: Types.OddsRow } = {}
+for index, row in Monetization.SurpriseOdds do
+	BOX_ROW[row.Id] = BOX_ODDS[index]
+end
+
+local RARITY_SWATCH: { [string]: string } = {
+	Common = "turquoise",
+	Uncommon = "lime",
+	Rare = "turquoise",
+	Epic = "grape",
+	Legendary = "gold",
+	Mythic = "fiesta_pink",
+	Secret = "grape",
+}
+
+-- Probabilidad de cada rareza en la Pasarela con la Suerte (luck) o en la Pasarela Dorada (liftTo).
+local function rarityRows(luck: boolean, liftTo: string?): { Types.OddsRow }
+	local rows: { Types.OddsRow } = {}
+	local odds = PaidRandom.rarityOdds(Rarities.SpawnWeight, Rarities.Order, luck, Rarities.LuckBoosted, liftTo)
+	for _, row in odds do
+		table.insert(rows, {
+			key = "rarity." .. row.rarity,
+			percent = row.percent,
+			swatch = RARITY_SWATCH[row.rarity] or "lime",
+		})
+	end
+	return rows
+end
+
+-- Modificadores de probabilidad pagos (política de Roblox): probabilidades antes de comprar y, con
+-- ArePaidRandomItemsRestricted, bloqueados con el aviso de la región.
+local function paidRandom(entry: ShopEntry, state: Types.GameState, odds: { Types.OddsRow }, noteKey: string): ShopEntry
+	entry.odds = odds
+	entry.oddsNoteKey = noteKey
+	if state.paidRandomRestricted then
+		entry.enabled = false
+		entry.badgeKey = "shop.restricted"
+	end
+	return entry
+end
 
 local ShopCatalog = {}
 
@@ -248,6 +292,14 @@ local function cajas(state: Types.GameState): { ShopEntry }
 			odds = BOX_ODDS,
 		},
 	}
+	if state.paidRandomRestricted and box.Id ~= 0 then
+		-- Sin azar en las regiones que lo restringen: se anuncia el próximo premio de la secuencia.
+		local nextRow = if state.boxNext ~= nil then BOX_ROW[state.boxNext] else nil
+		local entry = list[1]
+		entry.badgeKey = if nextRow ~= nil then "shop.box_sequence" else "shop.box_complete"
+		entry.odds = if nextRow ~= nil then { { key = nextRow.key, percent = 100, swatch = nextRow.swatch } } else nil
+		entry.oddsNoteKey = "shop.box_sequence_note"
+	end
 	local seen: { [string]: boolean } = {}
 	for _, item in state.owned do
 		if not seen[item.pinataId] and countSpecies(state.owned, item.pinataId) >= 3 then
@@ -354,23 +406,33 @@ local function vip(state: Types.GameState): { ShopEntry }
 			passes.AutoCollect.Id,
 			state.passes.autoCollect
 		),
-		productEntry(
-			"ServerLuck2x",
-			"shop.prod_luck",
-			"shop.prod_luck_body",
-			products.ServerLuck2x.Price,
-			products.ServerLuck2x.Id,
-			nil,
-			"shop.social"
+		paidRandom(
+			productEntry(
+				"ServerLuck2x",
+				"shop.prod_luck",
+				"shop.prod_luck_body",
+				products.ServerLuck2x.Price,
+				products.ServerLuck2x.Id,
+				nil,
+				"shop.social"
+			),
+			state,
+			rarityRows(true, nil),
+			"shop.odds_luck_note"
 		),
-		productEntry(
-			"GoldenConveyor",
-			"shop.prod_golden",
-			"shop.prod_golden_body",
-			products.GoldenConveyor.Price,
-			products.GoldenConveyor.Id,
-			nil,
-			"shop.social"
+		paidRandom(
+			productEntry(
+				"GoldenConveyor",
+				"shop.prod_golden",
+				"shop.prod_golden_body",
+				products.GoldenConveyor.Price,
+				products.GoldenConveyor.Id,
+				nil,
+				"shop.social"
+			),
+			state,
+			rarityRows(false, "Rare"),
+			"shop.odds_golden_note"
 		),
 		productEntry(
 			"CandyPackS",

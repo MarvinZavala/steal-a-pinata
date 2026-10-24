@@ -10,6 +10,8 @@ local Economy = require(Shared:WaitForChild("Config"):WaitForChild("Economy"))
 local Layout = require(Shared:WaitForChild("Config"):WaitForChild("WorldLayout"))
 local Tuning = require(Shared:WaitForChild("Config"):WaitForChild("Tuning"))
 local Pinatas = require(Shared:WaitForChild("Config"):WaitForChild("Pinatas"))
+local Monetization = require(Shared:WaitForChild("Config"):WaitForChild("Monetization"))
+local PaidRandom = require(Shared:WaitForChild("Gameplay"):WaitForChild("PaidRandom"))
 local Security = require(Shared:WaitForChild("Config"):WaitForChild("Security"))
 local Remotes = require(Shared:WaitForChild("Net"):WaitForChild("Remotes"))
 local EventCalendar = require(Shared:WaitForChild("Gameplay"):WaitForChild("EventCalendar"))
@@ -250,6 +252,8 @@ function BaseService.pushState(player: Player)
 			batPack = data.Passes.BatPack == true,
 		},
 		batSkin = if data.Cosmetics.bat_oro == true then "gold" else "wood",
+		paidRandomRestricted = player:GetAttribute("PaidRandomRestricted") ~= false,
+		boxNext = PaidRandom.nextInSequence(Monetization.SurpriseOdds, data.Cosmetics),
 		cosmetics = data.Cosmetics,
 		batUpgrade = data.BatUpgrade,
 		ftueCompleted = data.FtueCompleted == true,

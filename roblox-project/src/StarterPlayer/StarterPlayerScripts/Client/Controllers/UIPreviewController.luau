@@ -100,6 +100,8 @@ local function blank(): { [string]: any }
 			batPack = false,
 		},
 		batSkin = "wood",
+		paidRandomRestricted = false,
+		boxNext = nil,
 		settings = copySettings(),
 		ftueCompleted = false,
 		multiplier = 1,

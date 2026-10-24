@@ -37,6 +37,8 @@ El embudo de onboarding lo registra el servidor (`UiIntentService`, `LogOnboardi
 
 `RequestSwing` lo disparan el botón BATE y la tool `Bate` (un solo intento). `RequestLock` lo dispara el botón CANDADO. No hay un segundo HUD. El chip FIESTA abre el panel; HOY abre la racha.
 
+Acomodo del HUD (`HUDController.layout`): la tarjeta de Dulces y los chips (HOY, FIESTA, escudo, bastones, liga) van arriba a la izquierda, y los chips se miden por su texto y saltan de línea. En táctil, BATE va a la izquierda del salto de Roblox y CANDADO encima. Piñatas y Tienda van a la derecha del lugar de reposo del joystick: no tapan los controles de Roblox. Sin táctil quedan en las esquinas. Los íconos son emoji (`UIKit.button{icon}`); antes de usar un símbolo nuevo probalo en Fredoka/Nunito, porque ♛ ✦ ✧ ✕ salen vacíos.
+
 ## Parche `StateChanged`
 
 Solo se aplican estas claves. Un campo ausente no borra el valor anterior. `nil` no viaja: para soltar la piñata mandá `carrying = false` o `clearCarrying = true`.

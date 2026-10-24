@@ -5,6 +5,7 @@ local ContextActionService = game:GetService("ContextActionService")
 local GuiService = game:GetService("GuiService")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+local TextService = game:GetService("TextService")
 local UserInputService = game:GetService("UserInputService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -36,33 +37,51 @@ local rateTarget = -1
 local batReadyAt = 0
 local candyValue: NumberValue
 local numberLabel: TextLabel
+local numberFit: UITextSizeConstraint
 local rateLabel: TextLabel
 local rateScale: UIScale
 local numberScale: UIScale
 local candyWrap: Frame
+local candyIcon: Frame
+local vaultBg: Frame
 local vaultFill: Frame
 local fiestaLabel: TextLabel
 local shieldLabel: TextLabel
 local fiestaWrap: Frame
 local caneWrap: Frame
 local caneLabel: TextLabel
-local hoyWrap: Frame
-local hoyLabel: TextLabel
 local shieldWrap: Frame
+local leagueWrap: Frame
 local badge: TextLabel
 local carryWrap: Frame
 local carryLabel: TextLabel
+local carryFit: UITextSizeConstraint
 local collectWrap: Frame
+local collectFace: TextButton
 local collectLabel: TextLabel
 local batWrap: Frame
+local batFace: TextButton
+local batCaption: TextLabel
 local lockWrap: Frame
+local lockFace: TextButton
+local lockCaption: TextLabel
 local lockOverlay: Frame
 local invWrap: Frame
+local invFace: TextButton
 local shopWrap: Frame
+local shopFace: TextButton
 local settingsWrap: Frame
+local settingsFace: TextButton
 local multLabel: TextLabel
 local lockList: Frame
 local lockSig = ""
+-- Chips de estado bajo la tarjeta de Dulces, en este orden (placeStack los acomoda).
+type Chip = { wrap: Frame, face: TextButton, label: TextLabel }
+local chipsFlow: { Chip } = {}
+local stackSig = ""
+-- Borde izquierdo de Batear y base del cartel de "Llevás" (px del Stage); los fija layout.
+local actionsLeft = 0
+local carryBottom = 0
 
 local HUDController = {}
 
@@ -151,89 +170,236 @@ local function collect()
 	end
 end
 
+type Box = { x: number, y: number, w: number, h: number }
+
+local function visibleBox(gui: Instance?, origin: Vector2): Box?
+	if gui == nil or not gui:IsA("GuiObject") or not gui.Visible or gui.AbsoluteSize.X < 1 then
+		return nil
+	end
+	local pos = gui.AbsolutePosition - origin
+	return { x = pos.X, y = pos.Y, w = gui.AbsoluteSize.X, h = gui.AbsoluteSize.Y }
+end
+
+-- Salto y joystick de Roblox en px del Stage (TouchGui usa las mismas ScreenInsets que FiestaUI).
+-- nil sin controles táctiles o con el teléfono simulado del preview de Studio.
+local function touchControls(): (Box?, Box?)
+	local stage = UIRoot.stage()
+	local playerGui = Players.LocalPlayer:FindFirstChild("PlayerGui")
+	local touchGui = if playerGui then playerGui:FindFirstChild("TouchGui") else nil
+	if stage.Size.X.Scale ~= 1 or touchGui == nil or not touchGui:IsA("ScreenGui") or not touchGui.Enabled then
+		return nil, nil
+	end
+	local frame = touchGui:FindFirstChild("TouchControlFrame")
+	if frame == nil or not frame:IsA("GuiObject") or not frame.Visible then
+		return nil, nil
+	end
+	local origin = stage.AbsolutePosition
+	local jump = visibleBox(frame:FindFirstChild("JumpButton"), origin)
+	local stick = visibleBox(frame:FindFirstChild("ThumbstickFrame"), origin)
+	local dynamic = frame:FindFirstChild("DynamicThumbstickFrame")
+	if dynamic ~= nil and dynamic:IsA("GuiObject") and dynamic.Visible then
+		-- El aro del joystick dinámico se muda a donde tocás: uso su lugar de reposo, con la cuenta de
+		-- PlayerModule (DynamicThumbstick.ResizeThumbstick): centro (3.3r, alto - 2.8r), lado 3.7r.
+		local size = frame.AbsoluteSize
+		local ring = if math.min(size.X, size.Y) > 500 then 40 else 20
+		local side = ring * 3.7
+		local base = frame.AbsolutePosition - origin
+		stick = {
+			x = base.X + ring * 3.3 - side / 2,
+			y = base.Y + size.Y - ring * 2.8 - side / 2,
+			w = side,
+			h = side,
+		}
+	end
+	return jump, stick
+end
+
+local function touchSig(): string
+	local jump, stick = touchControls()
+	local parts = {}
+	for _, box in { jump, stick } do
+		table.insert(parts, if box then string.format("%d,%d,%d,%d", box.x, box.y, box.w, box.h) else "-")
+	end
+	return table.concat(parts, "|")
+end
+
+-- Ancho de la tarjeta de Dulces: proporcional a la pantalla, con piso y techo (antes en el celular
+-- ocupaba todo el ancho).
+local function cardWidth(m: any): number
+	return math.clamp(math.floor(m.w * (if m.compact then 0.3 else 0.22)), 200, 320)
+end
+
+local function chipHeight(m: any): number
+	return if m.compact then math.max(32, m.chip - 4) else m.chip
+end
+
+local function sideWidth(m: any): number
+	return math.max(120, math.floor(m.button * 2.2))
+end
+
+-- Ancho justo para ícono + texto. Los dígitos se miden como "0" para que el reloj no haga bailar la fila.
+local function chipWidth(text: string, height: number, size: number): number
+	local sample = string.gsub(text, "%d", "0")
+	local bounds = TextService:GetTextSize(sample, size, Theme.fontEnum.display, Vector2.new(1000, height))
+	local pad = math.max(6, math.floor(height * 0.2))
+	local side = math.floor(height * 0.58)
+	return pad * 2 + side + 2 + math.ceil(bounds.X) + 8
+end
+
+-- Chips bajo la tarjeta, en fila y con salto de línea; debajo van los candados cercanos y (en pantallas
+-- angostas) el cartel de "Llevás". Corre en cada refresh, pero solo reacomoda si algo cambió.
+local function placeStack(m: any, force: boolean?)
+	local left = m.safeLeft + m.margin
+	local right = m.safeRight + m.margin
+	local top = m.safeTop + m.margin + m.candyH + 8
+	local h = chipHeight(m)
+	local gap = 6
+	local parts = { tostring(m.w), tostring(m.h), tostring(carryWrap.Visible) }
+	for _, item in chipsFlow do
+		table.insert(parts, if item.wrap.Visible then string.gsub(item.label.Text, "%d", "0") else "-")
+	end
+	local sig = table.concat(parts, "|")
+	if sig == stackSig and not force then
+		return
+	end
+	stackSig = sig
+
+	local maxX = left + math.max(cardWidth(m), math.min(math.floor(m.w * 0.55), 440))
+	local x, y = left, top
+	local bottomY = top - 8
+	for _, item in chipsFlow do
+		if item.wrap.Visible then
+			item.label.TextSize = m.small
+			local w = chipWidth(item.label.Text, h, m.small)
+			if x > left and x + w > maxX then
+				x = left
+				y += h + gap
+			end
+			item.wrap.AnchorPoint = Vector2.zero
+			item.wrap.Position = UDim2.fromOffset(x, y)
+			item.wrap.Size = UDim2.fromOffset(w, h)
+			UIKit.stroke(item.face, Theme.color.white, if m.compact then 2 else 3)
+			UIKit.iconLayout(item.face, w, h)
+			x += w + gap
+			bottomY = y + h
+		end
+	end
+
+	lockList.Position = UDim2.fromOffset(left, bottomY + 8)
+	lockList.Size = UDim2.fromOffset(180, m.chip * 3)
+	carryFit.MaxTextSize = m.body
+
+	-- Centrado entre la barra de la izquierda y Batear; si no cabe, bajo los chips.
+	local carryW = 2 * (actionsLeft - m.w / 2 - 8)
+	if carryW < 200 then
+		carryWrap.AnchorPoint = Vector2.new(0, 0)
+		carryWrap.Position = UDim2.fromOffset(left, bottomY + 8)
+		carryWrap.Size = UDim2.fromOffset(math.min(m.w - left - right, 420), m.chip + 6)
+	else
+		carryWrap.AnchorPoint = Vector2.new(0.5, 1)
+		carryWrap.Position = UDim2.new(0.5, 0, 0, carryBottom)
+		carryWrap.Size = UDim2.fromOffset(math.min(math.floor(carryW), 460), m.chip + 8)
+	end
+end
+
 local function layout(m: any)
 	local left = m.safeLeft + m.margin
 	local right = m.safeRight + m.margin
 	local top = m.safeTop + m.margin
 	local bottom = m.safeBottom + m.margin
-	local candyWidth = if m.compact then m.w - left - right - m.button - 10 else math.min(320, math.floor(m.w * 0.36))
 
+	-- Tarjeta de Dulces: ícono a la izquierda, número grande, ritmo y barra de la Dulcería debajo.
+	local cardW = cardWidth(m)
+	local h = m.candyH
 	candyWrap.Position = UDim2.fromOffset(left, top)
-	candyWrap.Size = UDim2.fromOffset(math.max(160, candyWidth), m.candyH)
+	candyWrap.Size = UDim2.fromOffset(cardW, h)
+	local iconSide = math.clamp(h - 14, 30, 64)
+	candyIcon.Position = UDim2.new(0, 8, 0.5, 0)
+	candyIcon.Size = UDim2.fromOffset(iconSide, iconSide)
+	local cx = 8 + iconSide + 8
+	local numH = math.floor(h * 0.56)
+	local rateH = math.floor(h * 0.26)
+	numberLabel.Position = UDim2.fromOffset(cx, 3)
+	numberLabel.Size = UDim2.new(1, -(cx + 10), 0, numH)
 	numberLabel.TextSize = m.num
+	numberFit.MaxTextSize = m.num
+	rateLabel.Position = UDim2.fromOffset(cx, numH)
+	rateLabel.Size = UDim2.new(1, -(cx + 10), 0, rateH)
 	rateLabel.TextSize = m.small
+	multLabel.Position = UDim2.new(1, -10, 0, numH)
+	multLabel.Size = UDim2.fromOffset(56, rateH)
+	multLabel.TextSize = m.small
+	vaultBg.Position = UDim2.new(0, cx, 1, -6)
+	vaultBg.Size = UDim2.new(1, -(cx + 12), 0, if m.compact then 4 else 5)
 
+	-- Ajustes: solo el engranaje.
 	settingsWrap.AnchorPoint = Vector2.new(1, 0)
 	settingsWrap.Position = UDim2.new(1, -right, 0, top)
 	settingsWrap.Size = UDim2.fromOffset(m.button, m.button)
+	UIKit.iconLayout(settingsFace, m.button, m.button)
 
-	local chipW = if m.compact then 148 else 168
-	hoyWrap.AnchorPoint = Vector2.zero
-	hoyWrap.Position = UDim2.fromOffset(left, top + m.candyH + 6)
-	hoyWrap.Size = UDim2.fromOffset(chipW, m.chip)
-	hoyLabel.TextSize = m.small
-	caneWrap.Size = UDim2.fromOffset(chipW, m.chip)
-	caneLabel.TextSize = m.small
-	if m.compact then
-		caneWrap.AnchorPoint = Vector2.zero
-		caneWrap.Position = UDim2.fromOffset(left + chipW + 8, top + m.candyH + m.chip + 12)
-	else
-		caneWrap.AnchorPoint = Vector2.zero
-		caneWrap.Position = UDim2.fromOffset(left + chipW + 8, top + m.candyH + 6)
-	end
-	if m.compact then
-		fiestaWrap.AnchorPoint = Vector2.zero
-		fiestaWrap.Position = UDim2.fromOffset(left + chipW + 8, top + m.candyH + 6)
-		shieldWrap.AnchorPoint = Vector2.zero
-		shieldWrap.Position = UDim2.fromOffset(left, top + m.candyH + m.chip + 12)
-	else
-		fiestaWrap.AnchorPoint = Vector2.new(1, 0)
-		fiestaWrap.Position = UDim2.new(1, -(right + m.button + 8), 0, top)
-		shieldWrap.AnchorPoint = Vector2.new(1, 0)
-		shieldWrap.Position = UDim2.new(1, -(right + m.button + chipW + 16), 0, top)
-	end
-	fiestaWrap.Size = UDim2.fromOffset(chipW, m.chip)
-	shieldWrap.Size = UDim2.fromOffset(chipW, m.chip)
-	fiestaLabel.TextSize = m.small
-	shieldLabel.TextSize = m.small
-
-	badge.Position = UDim2.fromOffset(left, top + m.candyH - 4)
-	badge.TextSize = m.small
-
+	-- Batear y Candado abajo a la derecha (ícono arriba, palabra abajo). En táctil van alrededor del salto
+	-- de Roblox (Batear a su izquierda, Candado encima): antes lo tapaban.
+	local jump, stick = touchControls()
 	local bat = math.floor(m.button * 1.22)
-	batWrap.AnchorPoint = Vector2.new(1, 1)
-	batWrap.Position = UDim2.new(1, -right, 1, -bottom)
 	batWrap.Size = UDim2.fromOffset(bat, bat)
-	lockWrap.AnchorPoint = Vector2.new(1, 1)
-	lockWrap.Position = UDim2.new(1, -right, 1, -(bottom + bat + 8))
 	lockWrap.Size = UDim2.fromOffset(m.button, m.button)
-
-	local sideW = math.max(108, m.button + 36)
-	invWrap.AnchorPoint = Vector2.new(0, 1)
-	invWrap.Position = UDim2.new(0, left, 1, -bottom)
-	invWrap.Size = UDim2.fromOffset(sideW, m.button)
-	shopWrap.AnchorPoint = Vector2.new(0, 1)
-	shopWrap.Position = UDim2.new(0, left + sideW + 8, 1, -bottom)
-	shopWrap.Size = UDim2.fromOffset(sideW, m.button)
-
-	collectWrap.AnchorPoint = Vector2.new(0, 1)
-	collectWrap.Position = UDim2.new(0, left, 1, -(bottom + m.button + 8))
-	collectWrap.Size = UDim2.fromOffset(sideW * 2 + 8, m.button)
-
-	carryWrap.AnchorPoint = Vector2.new(0.5, 1)
-	carryWrap.Position = UDim2.new(0.5, 0, 1, -(bottom + bat + 12))
-	local carryW = m.w - left - right - sideW * 2 - bat - 36
-	if carryW < 180 then
-		local chipBottom = if m.compact then top + m.candyH + m.chip + 12 else top + m.candyH + 8
-		carryWrap.AnchorPoint = Vector2.new(0, 0)
-		carryWrap.Position = UDim2.fromOffset(left, chipBottom)
-		carryWrap.Size = UDim2.fromOffset(m.w - left - right, m.chip + 6)
+	if jump ~= nil then
+		local batX = jump.x - 10 - bat
+		batWrap.AnchorPoint = Vector2.zero
+		batWrap.Position = UDim2.fromOffset(batX, jump.y + jump.h - bat)
+		lockWrap.AnchorPoint = Vector2.zero
+		lockWrap.Position = UDim2.fromOffset(jump.x + math.floor((jump.w - m.button) / 2), jump.y - 10 - m.button)
+		actionsLeft = batX
 	else
-		carryWrap.Size = UDim2.fromOffset(carryW, m.chip + 8)
+		batWrap.AnchorPoint = Vector2.new(1, 1)
+		batWrap.Position = UDim2.new(1, -right, 1, -bottom)
+		lockWrap.AnchorPoint = Vector2.new(1, 1)
+		lockWrap.Position = UDim2.new(1, -right, 1, -(bottom + bat + 8))
+		actionsLeft = m.w - right - bat
 	end
+	batCaption.TextSize = m.small
+	UIKit.iconLayout(batFace, bat, bat)
+	lockCaption.TextSize = m.small
+	UIKit.iconLayout(lockFace, m.button, m.button)
 
-	lockList.Position = UDim2.fromOffset(left, if m.compact then top + m.candyH + m.chip + 8 else top + m.candyH + 8)
-	lockList.Size = UDim2.fromOffset(180, m.chip * 3)
+	-- Piñatas y Tienda abajo a la izquierda (ícono + palabra); en táctil, a la derecha del joystick.
+	-- Si ahí chocan con Batear (pantalla angosta), suben en columna encima del joystick.
+	local sideW = sideWidth(m)
+	local barX = left
+	local barBottom = bottom
+	local column = false
+	if stick ~= nil then
+		barX = math.max(left, math.floor(stick.x + stick.w + 12))
+		if barX + sideW * 2 + 16 > actionsLeft then
+			barX = left
+			barBottom = math.max(bottom, m.h - stick.y + 8)
+			column = true
+		end
+	end
+	invWrap.AnchorPoint = Vector2.new(0, 1)
+	invWrap.Position = UDim2.new(0, barX, 1, -barBottom)
+	invWrap.Size = UDim2.fromOffset(sideW, m.button)
+	UIKit.iconLayout(invFace, sideW, m.button)
+	shopWrap.AnchorPoint = Vector2.new(0, 1)
+	if column then
+		shopWrap.Position = UDim2.new(0, barX, 1, -(barBottom + m.button + 8))
+	else
+		shopWrap.Position = UDim2.new(0, barX + sideW + 8, 1, -barBottom)
+	end
+	shopWrap.Size = UDim2.fromOffset(sideW, m.button)
+	UIKit.iconLayout(shopFace, sideW, m.button)
+
+	local collectW = if column then sideW else sideW * 2 + 8
+	local collectUp = if column then m.button * 2 + 16 else m.button + 8
+	collectWrap.AnchorPoint = Vector2.new(0, 1)
+	collectWrap.Position = UDim2.new(0, barX, 1, -(barBottom + collectUp))
+	collectWrap.Size = UDim2.fromOffset(collectW, m.button)
+	UIKit.iconLayout(collectFace, collectW, m.button)
+	-- El cartel de "Llevás" va abajo al centro: encima de la barra, o al ras si la barra subió en columna.
+	carryBottom = if column then m.h - bottom - 10 else m.h - barBottom - m.button - 10
+
+	placeStack(m, true)
 
 	batWrap.Visible = actionsVisible
 	lockWrap.Visible = actionsVisible
@@ -342,13 +508,13 @@ local function refresh()
 	shieldLabel.Text = Locale.t("hud.shield", { time = UIKit.clock(shield) })
 	local league = s.league
 	if RunService:IsStudio() and not UIBridge.isAuthoritative() then
-		badge.Visible = true
+		leagueWrap.Visible = true
 		badge.Text = Locale.t("hud.local_badge")
 	elseif typeof(league) == "string" and league ~= "" and Locale.has("league." .. league) then
-		badge.Visible = true
+		leagueWrap.Visible = true
 		badge.Text = Locale.t("league." .. league)
 	else
-		badge.Visible = false
+		leagueWrap.Visible = false
 	end
 
 	local carry = s.carrying
@@ -378,16 +544,21 @@ local function refresh()
 	else
 		lockOverlay.Size = UDim2.fromScale(1, 0)
 	end
+	placeStack(Metrics.get())
 	paintLocks(s)
 end
 
 local function cornerHint(parent: TextButton, text: string, keyCode: Enum.KeyCode): ImageLabel
-	local hint = UIKit.label(parent, text, "body", 12, Theme.color.ink)
+	-- Arriba a la izquierda: abajo va la palabra del botón.
+	local hint = UIKit.label(parent, text, "display", 13, Theme.color.white)
 	hint.Name = "KeyHint"
-	hint.AnchorPoint = Vector2.new(1, 1)
-	hint.Position = UDim2.new(1, -4, 1, -2)
-	hint.Size = UDim2.fromOffset(22, 16)
-	hint.TextXAlignment = Enum.TextXAlignment.Right
+	hint.AnchorPoint = Vector2.zero
+	hint.Position = UDim2.fromOffset(6, 4)
+	hint.Size = UDim2.fromOffset(18, 16)
+	hint.TextXAlignment = Enum.TextXAlignment.Left
+	hint.TextStrokeColor3 = Theme.color.ink
+	hint.TextStrokeTransparency = 0
+	hint.ZIndex = parent.ZIndex + 3
 	local glyph = Instance.new("ImageLabel")
 	glyph.Name = "Glyph"
 	glyph.BackgroundTransparency = 1
@@ -412,56 +583,78 @@ function HUDController.start()
 	InventoryPanel.mount()
 	SettingsPanel.mount()
 
+	-- Tarjeta de Dulces: morada oscura para que el número se lea sobre la plaza (que es toda de colores).
 	local _candyRoot, candyFace = UIKit.button(layer, {
 		name = "Candy",
-		color = Theme.color.sun_yellow,
+		color = Theme.color.grape:Lerp(Theme.color.ink, 0.4),
 		size = UDim2.fromOffset(240, 72),
 	})
 	candyWrap = _candyRoot
 	candyFace.Active = false
 	candyFace.Selectable = false
 	candyFace.AutoButtonColor = false
+	-- Sin el brillo de botón: sobre el morado parecía una caja vacía detrás del número.
+	local candyGloss = candyFace:FindFirstChild("Gloss")
+	if candyGloss and candyGloss:IsA("Frame") then
+		candyGloss.Visible = false
+	end
+	local inner = candyFace.ZIndex + 2
+	candyIcon = Instance.new("Frame")
+	candyIcon.Name = "CandyIcon"
+	candyIcon.AnchorPoint = Vector2.new(0, 0.5)
+	candyIcon.BackgroundColor3 = Theme.color.fiesta_pink
+	candyIcon.BorderSizePixel = 0
+	candyIcon.ZIndex = inner
+	candyIcon.Parent = candyFace
+	UIKit.corner(candyIcon, nil)
+	UIKit.stroke(candyIcon, Theme.color.white, 2)
+	local candyGlyph = UIKit.label(candyIcon, "🍬", "display", 24, Theme.color.white)
+	candyGlyph.TextScaled = true
+	candyGlyph.AnchorPoint = Vector2.new(0.5, 0.5)
+	candyGlyph.Position = UDim2.fromScale(0.5, 0.5)
+	candyGlyph.Size = UDim2.fromScale(0.72, 0.72)
+	candyGlyph.ZIndex = inner + 1
+
 	numberLabel = UIKit.label(candyFace, "0", "number", 40, Theme.color.white)
 	Theme.outlineNumber(numberLabel)
-	numberLabel.Size = UDim2.new(1, -16, 0.62, 0)
-	numberLabel.Position = UDim2.fromOffset(8, 2)
 	numberLabel.TextXAlignment = Enum.TextXAlignment.Left
+	numberLabel.TextWrapped = false
+	numberLabel.TextScaled = true
+	numberLabel.ZIndex = inner
+	numberFit = Instance.new("UITextSizeConstraint")
+	numberFit.MinTextSize = 12
+	numberFit.MaxTextSize = 40
+	numberFit.Parent = numberLabel
 	numberScale = Instance.new("UIScale")
 	numberScale.Parent = numberLabel
-	rateLabel = UIKit.label(candyFace, "+0/s", "body", 16, Theme.color.ink)
-	rateLabel.Size = UDim2.new(0.55, 0, 0.32, 0)
-	rateLabel.Position = UDim2.new(0, 10, 1, -4)
-	rateLabel.AnchorPoint = Vector2.new(0, 1)
+	rateLabel = UIKit.label(candyFace, "+0/s", "display", 16, Theme.color.lime)
 	rateLabel.TextXAlignment = Enum.TextXAlignment.Left
+	rateLabel.TextWrapped = false
+	rateLabel.ZIndex = inner
 	rateScale = Instance.new("UIScale")
 	rateScale.Parent = rateLabel
-	multLabel = UIKit.label(candyFace, "", "body", 14, Theme.color.hot_magenta)
-	multLabel.Size = UDim2.fromOffset(64, 18)
-	multLabel.Position = UDim2.new(1, -8, 1, -4)
-	multLabel.AnchorPoint = Vector2.new(1, 1)
+	multLabel = UIKit.label(candyFace, "", "display", 14, Theme.color.gold)
+	multLabel.AnchorPoint = Vector2.new(1, 0)
 	multLabel.TextXAlignment = Enum.TextXAlignment.Right
+	multLabel.TextWrapped = false
+	multLabel.ZIndex = inner
 	multLabel.Visible = false
-	local vaultBg = Instance.new("Frame")
+	vaultBg = Instance.new("Frame")
 	vaultBg.Name = "Vault"
-	vaultBg.BackgroundColor3 = Theme.color.cream
+	vaultBg.BackgroundColor3 = Theme.color.white
+	vaultBg.BackgroundTransparency = 0.75
 	vaultBg.BorderSizePixel = 0
 	vaultBg.AnchorPoint = Vector2.new(0, 1)
-	vaultBg.Position = UDim2.new(0, 8, 1, -6)
-	vaultBg.Size = UDim2.new(0.46, 0, 0, 6)
-	vaultBg.ZIndex = 3
+	vaultBg.ZIndex = inner
 	vaultBg.Parent = candyFace
-	UIKit.corner(vaultBg, 3)
+	UIKit.corner(vaultBg, nil)
 	vaultFill = Instance.new("Frame")
 	vaultFill.BackgroundColor3 = Theme.color.lime
 	vaultFill.BorderSizePixel = 0
 	vaultFill.Size = UDim2.fromScale(0, 1)
+	vaultFill.ZIndex = inner + 1
 	vaultFill.Parent = vaultBg
-	UIKit.corner(vaultFill, 3)
-	-- La barra pisa el rate. Subo el rate a la derecha del número.
-	rateLabel.Position = UDim2.new(1, -8, 0, 6)
-	rateLabel.AnchorPoint = Vector2.new(1, 0)
-	rateLabel.Size = UDim2.fromOffset(90, 22)
-	rateLabel.TextXAlignment = Enum.TextXAlignment.Right
+	UIKit.corner(vaultFill, nil)
 
 	candyValue = Instance.new("NumberValue")
 	candyValue.Value = 0
@@ -470,117 +663,104 @@ function HUDController.start()
 		numberLabel.Text = Format(math.floor(value + 0.5))
 	end)
 
-	local function chip(name: string, color: Color3): (Frame, TextLabel)
-		local wrap, face, caption =
-			UIKit.button(layer, { name = name, color = color, size = UDim2.fromOffset(160, 40) })
-		face.Active = false
-		face.Selectable = false
+	-- Chips: pastillas chicas con ícono + texto; el ancho sale del texto (placeStack).
+	local function chip(name: string, color: Color3, icon: string, key: string?, onClick: (() -> ())?): Chip
+		local wrap, face, caption = UIKit.button(layer, {
+			name = name,
+			key = key,
+			icon = icon,
+			color = color,
+			size = UDim2.fromOffset(120, 34),
+			onClick = onClick,
+		})
+		face.Active = onClick ~= nil
+		face.Selectable = onClick ~= nil
+		-- Tamaño fijo y una sola línea: placeStack mide el texto y le da el ancho justo.
+		caption.TextScaled = false
+		caption.TextWrapped = false
 		caption.TextSize = 16
-		return wrap, caption
+		local item: Chip = { wrap = wrap, face = face, label = caption }
+		table.insert(chipsFlow, item)
+		return item
 	end
-	caneWrap, caneLabel = chip("Bastones", Theme.color.gold)
-	Theme.apply(caneLabel, "display", Theme.color.ink)
-	caneWrap.Visible = false
-	local caneFace = caneWrap:FindFirstChild("Bastones", true)
-	if caneFace and caneFace:IsA("TextButton") then
-		caneFace.Active = true
-		caneFace.Activated:Connect(function()
-			if UIState.get().eventShop == true then
-				ShopController.open("navidad")
-			else
-				DailyPanel.toggle()
-			end
-		end)
-	end
-	fiestaWrap, fiestaLabel = chip("Fiesta", Theme.color.hot_magenta)
-	Theme.apply(fiestaLabel, "display", Theme.color.white)
-	fiestaLabel.TextStrokeColor3 = Theme.color.ink
-	fiestaLabel.TextStrokeTransparency = 0
-	local fiestaFace = fiestaWrap:FindFirstChild("Fiesta", true)
-	if fiestaFace and fiestaFace:IsA("TextButton") then
-		fiestaFace.Active = true
-		fiestaFace.Activated:Connect(function()
-			FiestaPanel.toggle()
-		end)
-	end
-	local hoyButton: TextButton
-	hoyWrap, hoyButton, hoyLabel = UIKit.button(layer, {
-		name = "Hoy",
-		key = "hud.hoy",
-		color = Theme.color.sun_yellow,
-		size = UDim2.fromOffset(160, 40),
-		onClick = function()
+	local hoy = chip("Hoy", Theme.color.sun_yellow, "🎁", "hud.hoy", function()
+		DailyPanel.toggle()
+	end)
+	local fiesta = chip("Fiesta", Theme.color.hot_magenta, "🎉", nil, function()
+		FiestaPanel.toggle()
+	end)
+	local shield = chip("Shield", Theme.color.sky, "🛡")
+	local cane = chip("Bastones", Theme.color.xmas_red, "🎄", nil, function()
+		if UIState.get().eventShop == true then
+			ShopController.open("navidad")
+		else
 			DailyPanel.toggle()
-		end,
-	})
-	hoyButton.Active = true
-	Theme.apply(hoyLabel, "display", Theme.color.ink)
-	shieldWrap, shieldLabel = chip("Shield", Theme.color.bubblegum)
+		end
+	end)
+	local league = chip("League", Theme.color.lavender, "🏆")
+	fiestaWrap, fiestaLabel = fiesta.wrap, fiesta.label
+	shieldWrap, shieldLabel = shield.wrap, shield.label
+	caneWrap, caneLabel = cane.wrap, cane.label
+	leagueWrap, badge = league.wrap, league.label
+	hoy.wrap.Visible = true
 	fiestaWrap.Visible = false
-	hoyWrap.Visible = true
 	shieldWrap.Visible = false
+	caneWrap.Visible = false
+	leagueWrap.Visible = false
 
-	badge = UIKit.label(layer, "", "body", 14, Theme.color.ink_soft)
-	badge.BackgroundTransparency = 1
-	badge.Size = UDim2.fromOffset(140, 18)
-	badge.TextXAlignment = Enum.TextXAlignment.Left
-	badge.Visible = false
-
-	settingsWrap = UIKit.button(layer, {
+	settingsWrap, settingsFace = UIKit.button(layer, {
 		name = "Settings",
-		key = "hud.settings",
+		icon = "⚙",
 		color = Theme.color.cream,
 		onClick = function()
 			SettingsPanel.toggle()
 		end,
 	})
-	invWrap = UIKit.button(layer, {
+	invWrap, invFace = UIKit.button(layer, {
 		name = "Inventory",
 		key = "hud.inventory",
+		icon = "🎒",
 		color = Theme.color.mango,
 		onClick = function()
 			InventoryPanel.toggle()
 		end,
 	})
-	shopWrap = UIKit.button(layer, {
+	local shopCaption: TextLabel
+	shopWrap, shopFace, shopCaption = UIKit.button(layer, {
 		name = "Shop",
 		key = "hud.shop",
+		icon = "🛍",
 		color = Theme.color.grape,
 		onClick = function()
 			ShopController.open("picker")
 		end,
 	})
-	local shopCaption = shopWrap:FindFirstChild("Shop", true)
-	if shopCaption and shopCaption:IsA("TextButton") then
-		local caption = shopCaption:FindFirstChild("Caption")
-		if caption and caption:IsA("TextLabel") then
-			Theme.apply(caption, "display", Theme.color.white)
-			caption.TextStrokeTransparency = 0
-			caption.TextStrokeColor3 = Theme.color.ink
-		end
-	end
+	Theme.apply(shopCaption, "display", Theme.color.white)
+	shopCaption.TextStrokeTransparency = 0
+	shopCaption.TextStrokeColor3 = Theme.color.ink
 
-	collectWrap = UIKit.button(layer, {
+	collectWrap, collectFace, collectLabel = UIKit.button(layer, {
 		name = "Collect",
+		icon = "🍬",
 		color = Theme.color.lime,
 		onClick = collect,
 	})
-	collectLabel = collectWrap:FindFirstChild("Caption", true) :: TextLabel
 	collectWrap.Visible = false
 
-	batWrap = UIKit.button(layer, {
+	batWrap, batFace, batCaption = UIKit.button(layer, {
 		name = "Bat",
 		key = "hud.bat",
+		icon = "⚾",
 		color = Theme.color.fiesta_pink,
 		onClick = swing,
 	})
-	lockWrap = UIKit.button(layer, {
+	lockWrap, lockFace, lockCaption = UIKit.button(layer, {
 		name = "Lock",
 		key = "hud.lock",
+		icon = "🔒",
 		color = Theme.color.turquoise,
 		onClick = lockDoor,
 	})
-	local lockFace = lockWrap:FindFirstChild("Lock") :: TextButton
 	lockOverlay = Instance.new("Frame")
 	lockOverlay.Name = "Cooldown"
 	lockOverlay.BackgroundColor3 = Theme.color.ink
@@ -593,7 +773,6 @@ function HUDController.start()
 	lockOverlay.Active = false
 	lockOverlay.Parent = lockFace
 
-	local batFace = batWrap:FindFirstChild("Bat") :: TextButton
 	cornerHint(batFace, "E", Enum.KeyCode.ButtonR2)
 	cornerHint(lockFace, "Q", Enum.KeyCode.ButtonL1)
 
@@ -613,11 +792,16 @@ function HUDController.start()
 	carryFace.Size = UDim2.fromScale(1, 1)
 	carryFace.Parent = carryWrap
 	UIKit.corner(carryFace, 18)
-	carryLabel = UIKit.label(carryFace, "", "body", 16, Theme.color.white)
+	carryLabel = UIKit.label(carryFace, "", "display", 16, Theme.color.white)
 	carryLabel.TextStrokeColor3 = Theme.color.ink
 	carryLabel.TextStrokeTransparency = 0
-	carryLabel.Size = UDim2.new(1, -16, 1, -8)
-	carryLabel.Position = UDim2.fromOffset(8, 4)
+	carryLabel.Size = UDim2.new(1, -20, 1, -8)
+	carryLabel.Position = UDim2.fromOffset(10, 4)
+	carryLabel.TextScaled = true
+	carryFit = Instance.new("UITextSizeConstraint")
+	carryFit.MinTextSize = 11
+	carryFit.MaxTextSize = 20
+	carryFit.Parent = carryLabel
 
 	lockList = Instance.new("Frame")
 	lockList.BackgroundTransparency = 1
@@ -644,6 +828,18 @@ function HUDController.start()
 	Locale.onChange(refresh)
 	layout(Metrics.get())
 	refresh()
+	-- Salto y joystick aparecen con el personaje y cambian con la orientación o al pasar a teclado.
+	task.spawn(function()
+		local last = touchSig()
+		while true do
+			task.wait(0.5)
+			local sig = touchSig()
+			if sig ~= last then
+				last = sig
+				layout(Metrics.get())
+			end
+		end
+	end)
 
 	local high = Enum.ContextActionPriority.High.Value
 	local mid = Enum.ContextActionPriority.Medium.Value
@@ -709,19 +905,27 @@ function HUDController.start()
 	)
 	ContextActionService:BindActionAtPriority("FiestaLock", handle, false, mid, Enum.KeyCode.Q, Enum.KeyCode.ButtonL1)
 
-	local glyphs = {}
-	local batGlyph = batFace:FindFirstChild("Glyph")
-	local lockGlyph = lockFace:FindFirstChild("Glyph")
-	if batGlyph and batGlyph:IsA("ImageLabel") then
-		table.insert(glyphs, batGlyph)
-	end
-	if lockGlyph and lockGlyph:IsA("ImageLabel") then
-		table.insert(glyphs, lockGlyph)
+	-- Glifo del control con gamepad, letra (E/Q) con teclado o mouse, nada en táctil.
+	local glyphs: { ImageLabel } = {}
+	local hints: { TextLabel } = {}
+	for _, face in { batFace, lockFace } do
+		local glyph = face:FindFirstChild("Glyph")
+		if glyph and glyph:IsA("ImageLabel") then
+			table.insert(glyphs, glyph)
+		end
+		local hint = face:FindFirstChild("KeyHint")
+		if hint and hint:IsA("TextLabel") then
+			table.insert(hints, hint)
+		end
 	end
 	local function syncPad(inputType: Enum.UserInputType)
 		local pad = string.find(inputType.Name, "Gamepad") ~= nil
+		local keys = inputType == Enum.UserInputType.Keyboard or string.find(inputType.Name, "Mouse") ~= nil
 		for _, glyph in glyphs do
 			glyph.Visible = pad and glyph.Image ~= ""
+		end
+		for _, hint in hints do
+			hint.Visible = keys
 		end
 	end
 	syncPad(UserInputService:GetLastInputType())

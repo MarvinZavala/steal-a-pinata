@@ -101,6 +101,7 @@ export type ButtonOpts = {
 	name: string?,
 	key: string?,
 	text: string?,
+	icon: string?, -- emoji (ART_DIRECTION §6: íconos + 1 palabra); lo acomoda UIKit.iconLayout
 	color: Color3?,
 	size: UDim2?,
 	position: UDim2?,
@@ -185,6 +186,40 @@ function UIKit.button(parent: Instance, opts: ButtonOpts): (Frame, TextButton, T
 	if opts.key then
 		Locale.bind(caption, opts.key)
 	end
+	if opts.icon then
+		-- Hueco oscuro detrás del ícono en los botones cuadrados: los emoji claros (⚾) no se pierden en el brillo.
+		local well = Instance.new("Frame")
+		well.Name = "IconWell"
+		well.AnchorPoint = Vector2.new(0.5, 0.5)
+		well.BackgroundColor3 = Theme.color.ink
+		well.BackgroundTransparency = 0.8
+		well.BorderSizePixel = 0
+		well.Visible = false
+		well.ZIndex = hit.ZIndex + 2
+		well.Parent = hit
+		UIKit.corner(well, nil)
+		local icon = UIKit.label(hit, opts.icon, "display", m.body, Theme.color.white)
+		icon.Name = "Icon"
+		-- Sin tocar TextWrapped: ponerlo en false después apaga TextScaled.
+		icon.TextScaled = true
+		icon.ZIndex = hit.ZIndex + 3
+		local size = root.Size
+		UIKit.iconLayout(hit, size.X.Offset, size.Y.Offset)
+		-- Si la palabra aparece o se vacía después (chips con reloj, Juntar), se reacomoda.
+		local wasEmpty = caption.Text == ""
+		caption:GetPropertyChangedSignal("Text"):Connect(function()
+			local empty = caption.Text == ""
+			if empty == wasEmpty then
+				return
+			end
+			wasEmpty = empty
+			local w = hit:GetAttribute("IconW")
+			local h = hit:GetAttribute("IconH")
+			if typeof(w) == "number" and typeof(h) == "number" then
+				UIKit.iconLayout(hit, w, h)
+			end
+		end)
+	end
 
 	local scaler = Instance.new("UIScale")
 	scaler.Parent = root
@@ -212,6 +247,57 @@ function UIKit.button(parent: Instance, opts: ButtonOpts): (Frame, TextButton, T
 		end
 	end)
 	return root, hit, caption
+end
+
+-- Acomoda ícono y palabra según el tamaño del botón (px): sin palabra, el ícono al centro; ancho, en fila
+-- (ícono a la izquierda); casi cuadrado, el ícono arriba y la palabra chica abajo.
+function UIKit.iconLayout(hit: Instance, width: number, height: number)
+	local icon = hit:FindFirstChild("Icon")
+	local caption = hit:FindFirstChild("Caption")
+	if not (icon and icon:IsA("TextLabel") and caption and caption:IsA("TextLabel")) then
+		return
+	end
+	if width < 1 or height < 1 then
+		return
+	end
+	hit:SetAttribute("IconW", width)
+	hit:SetAttribute("IconH", height)
+	local well = hit:FindFirstChild("IconWell")
+	if well ~= nil and well:IsA("GuiObject") then
+		well.Visible = false
+	end
+	local pad = math.max(6, math.floor(height * 0.2))
+	if caption.Text == "" then
+		local side = math.floor(height * 0.6)
+		icon.AnchorPoint = Vector2.new(0.5, 0.5)
+		icon.Position = UDim2.fromScale(0.5, 0.5)
+		icon.Size = UDim2.fromOffset(side, side)
+		caption.Visible = false
+	elseif width >= height * 1.5 then
+		local side = math.floor(height * 0.58)
+		icon.AnchorPoint = Vector2.new(0, 0.5)
+		icon.Position = UDim2.new(0, pad, 0.5, 0)
+		icon.Size = UDim2.fromOffset(side, side)
+		caption.Visible = true
+		caption.AnchorPoint = Vector2.zero
+		caption.Position = UDim2.fromOffset(pad + side + 2, 2)
+		caption.Size = UDim2.new(1, -(pad * 2 + side + 2), 1, -4)
+	else
+		local side = math.floor(height * 0.5)
+		icon.AnchorPoint = Vector2.new(0.5, 0)
+		icon.Position = UDim2.new(0.5, 0, 0, math.floor(height * 0.08))
+		icon.Size = UDim2.fromOffset(side, side)
+		if well ~= nil and well:IsA("GuiObject") then
+			local ring = side + math.max(6, math.floor(height * 0.1))
+			well.Position = UDim2.new(0.5, 0, 0, math.floor(height * 0.08 + side / 2))
+			well.Size = UDim2.fromOffset(ring, ring)
+			well.Visible = true
+		end
+		caption.Visible = true
+		caption.AnchorPoint = Vector2.new(0.5, 1)
+		caption.Position = UDim2.new(0.5, 0, 1, -math.floor(height * 0.07))
+		caption.Size = UDim2.new(1, -8, 0, math.floor(height * 0.28))
+	end
 end
 
 function UIKit.retint(hit: TextButton, fill: Color3)
@@ -422,7 +508,7 @@ function UIKit.pinataFace(parent: Instance, pinataId: string, mutation: string, 
 		table.insert(shimmers, fx)
 		local crown = UIKit.label(
 			root,
-			if mutation == "Christmas" then "❄" else "♛",
+			if mutation == "Christmas" then "❄" else "👑",
 			"display",
 			math.floor(px * 0.28),
 			Theme.color.gold_deep
